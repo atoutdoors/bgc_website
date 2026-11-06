@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BGC Engineering</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  :root { --navy: #173f5f; --blue: #20639b; --page: #f7f9fb; --line: #dbe3e9; }
+  body { background: var(--page); color: #263746; }
+  .site-header { background: #fff; border-top: 5px solid var(--navy); border-bottom: 1px solid var(--line); }
+  .site-title { color: var(--navy); letter-spacing: -.02em; }
+  .eyebrow { color: var(--blue); font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .section-heading { color: var(--navy); font-size: 1.2rem; font-weight: 700; }
+  .action-card { height: 100%; border: 1px solid var(--line); border-radius: .6rem; background: #fff; }
+  .action-card .btn { white-space: nowrap; }
+  .table-card { border: 1px solid var(--line); border-radius: .6rem; background: #fff; box-shadow: 0 .2rem .7rem rgba(23,63,95,.05); }
+  #engineering-table, #s2bgc-engineering-table { overflow: hidden; }
+  #engineering-table table, #s2bgc-engineering-table table { width: 100%; table-layout: auto; margin-bottom: 0; }
+  #engineering-table th, #engineering-table td, #s2bgc-engineering-table th, #s2bgc-engineering-table td { white-space: normal; overflow-wrap: anywhere; font-size: .84rem; vertical-align: middle; }
+  #engineering-table th, #s2bgc-engineering-table th { cursor: pointer; user-select: none; color: var(--navy); background: #edf3f7; }
+  #engineering-table th:hover, #s2bgc-engineering-table th:hover { background: #dce9f1; }
+  #engineering-table td:first-child a, #s2bgc-engineering-table td:first-child a { display: inline-block; padding: .2rem .45rem; color: #075985; background: #e4f4fb; border: 1px solid #91cbe0; border-radius: .25rem; font-weight: 700; text-decoration: underline; }
+  .accordion { --bs-accordion-border-color: var(--line); --bs-accordion-btn-color: var(--navy); --bs-accordion-active-color: var(--navy); --bs-accordion-active-bg: #edf3f7; }
+  .accordion-button { font-weight: 600; }
+  .plot-link-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem 1.5rem; list-style: none; margin: 0; padding: 0; }
+  .plot-link-list a { color: var(--blue); text-decoration: none; }
+  .plot-link-list a:hover { text-decoration: underline; }
+  .diagnostic-item { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+  .diagnostic-item .serial { min-width: 3.5rem; font-weight: 700; color: var(--navy); }
+  @media (max-width: 900px) { .plot-link-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 576px) { .plot-link-list { grid-template-columns: 1fr; } #table-top-controls { align-items: stretch !important; flex-direction: column; } #table-top-controls input { width: 100%; } #engineering-table, #s2bgc-engineering-table { overflow-x: auto; -webkit-overflow-scrolling: touch; } #engineering-table table, #s2bgc-engineering-table table { min-width: 760px; } }
+</style>
+</head>
+<body>
+<header class="site-header py-4 mb-4">
+  <div class="container">
+    <div class="eyebrow mb-1">WHOI BGC</div>
+    <h1 class="site-title h2 mb-1">Engineering Website</h1>
+    <p class="text-secondary mb-0">Float status, engineering data, and diagnostic plots.</p>
+  </div>
+</header>
+
+<main class="container pb-5">
+  <section class="mb-4" aria-labelledby="table-heading">
+    <div class="d-flex justify-content-between align-items-end mb-2">
+      <div><div class="eyebrow">Current fleet</div><h2 id="table-heading" class="section-heading mb-0">Engineering information</h2></div>
+    </div>
+    <div id="engineering-table" class="table-card p-2" aria-live="polite"><div class="p-3 text-secondary">Loading engineering table...</div></div>
+  </section>
+
+  <section class="mb-4" aria-labelledby="s2bgc-table-heading">
+    <div class="d-flex justify-content-between align-items-end mb-2">
+      <div><div class="eyebrow">S2BGC fleet</div><h2 id="s2bgc-table-heading" class="section-heading mb-0">S2BGC engineering information</h2></div>
+    </div>
+    <div id="s2bgc-engineering-table" class="table-card p-2" aria-live="polite"><div class="p-3 text-secondary">Loading S2BGC engineering table...</div></div>
+  </section>
+
+  <section class="row g-3 mb-4" aria-label="Report links">
+    <div class="col-md-6"><div class="action-card d-flex justify-content-between align-items-center gap-3 p-3"><div><div class="fw-semibold text-dark">Float health reports</div><small class="text-secondary">Review health status for every float.</small></div><a class="btn btn-primary btn-sm" href="healthreports/index.html">Open reports</a></div></div>
+    <div class="col-md-6"><div class="action-card d-flex justify-content-between align-items-center gap-3 p-3"><div><div class="fw-semibold text-dark">Diagnostic plots</div><small class="text-secondary">Compare vertical velocity and park pressure.</small></div><a class="btn btn-outline-primary btn-sm" href="float_diagnostic_plots.html">Open plots</a></div></div>
+  </section>
+
+  <section aria-labelledby="plots-heading">
+    <div class="eyebrow">Explore data</div>
+    <h2 id="plots-heading" class="section-heading mb-2">Engineering plots</h2>
+    <div class="accordion" id="plotAccordion">
+      <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#telemetryPlots">Telemetry Info</button></h3><div id="telemetryPlots" class="accordion-collapse collapse" data-bs-parent="#plotAccordion"><div class="accordion-body"><ul class="plot-link-list">
+        <li><a href="surfaceinfo.html">Latest Surfacing Telemetry Info</a></li><li><a href="by_parameter/Average bps.html">Average Bytes Per Second</a></li><li><a href="by_parameter/Packet Count.html">Number of Packets Transmitted</a></li><li><a href="by_parameter/Packet Resending Count.html">Packet Transmission Retries</a></li><li><a href="by_parameter/Total Bytes.html">Total Bytes Transmitted</a></li><li><a href="by_parameter/Total Time Transmitting (s).html">Total Transmission Time</a></li><li><a href="by_parameter/COMDUR.html">Communication Duration By Float</a></li><li><a href="by_parameter/GpsFixTime.html">GPS Fix Time</a></li><li><a href="by_parameter/surfacingtimeBAR.html">Surfacing Time By Float</a></li><li><a href="by_parameter/Secondary Attempts.html">Secondary Server Attempts</a></li>
+      </ul></div></div></div>
+      <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#buoyancyPlots">Buoyancy Info</button></h3><div id="buoyancyPlots" class="accordion-collapse collapse" data-bs-parent="#plotAccordion"><div class="accordion-body"><ul class="plot-link-list">
+        <li><a href="by_parameter/ParkPressurevsBP.html">Park Pressure vs. Park Buoyancy Position</a></li><li><a href="by_parameter/PVBP.html">Pressure vs. Buoyancy Position</a></li><li><a href="by_parameter/DeepProfileBuoyancyPosition.html">Deep Buoyancy Position</a></li><li><a href="by_parameter/ParkBuoyancyPosition.html">Park Buoyancy Position</a></li><li><a href="by_parameter/SurfaceBuoyancyPosition.html">Surface Buoyancy Position</a></li><li><a href="by_parameter/ActiveBallastAdjustments.html">Active Ballast Adjustments</a></li><li><a href="buoyancy_movement.html">Oil Flow Rates</a></li>
+      </ul></div></div></div>
+      <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pressurePlots">Pressures</button></h3><div id="pressurePlots" class="accordion-collapse collapse" data-bs-parent="#plotAccordion"><div class="accordion-body"><ul class="plot-link-list">
+        <li><a href="by_parameter/SurfacePressure.html">Surface Pressure</a></li><li><a href="by_parameter/ParkPressure.html">Park Pressure</a></li><li><a href="by_parameter/AirBladderPressure.html">Air Bladder Pressure</a></li><li><a href="by_parameter/MAXP.html">Max Cycle Pressure</a></li>
+      </ul></div></div></div>
+      <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#energyPlots">Energy Usage</button></h3><div id="energyPlots" class="accordion-collapse collapse" data-bs-parent="#plotAccordion"><div class="accordion-body"><ul class="plot-link-list">
+        <li><a href="by_parameter/BPvsMCOMS.html">MCOMS vs. Buoyancy Pump Volts</a></li><li><a href="by_parameter/BuoyancyPumpOnTime.html">Buoyancy Pump Run Time</a></li><li><a href="by_parameter/BuoyancyPumpEnergy.html">Buoyancy Pump Energy</a></li><li><a href="by_parameter/BuoyancyPumpVolts.html">Buoyancy Pump Volts</a></li><li><a href="by_parameter/AirPumpVolts.html">Air Pump Volts</a></li><li><a href="by_parameter/Sbe41cpVolts.html">SBE41CP Volts</a></li><li><a href="by_parameter/Sbe63Volts.html">SBE63 Volts</a></li><li><a href="by_parameter/McomsVolts.html">MCOMS Volts</a></li><li><a href="by_parameter/QuiescentVolts.html">Quiescent Volts</a></li><li><a href="by_parameter/AirPumpAmps.html">Air Pump Current</a></li><li><a href="by_parameter/BuoyancyPumpAmps.html">Buoyancy Pump Current</a></li><li><a href="by_parameter/QuiescentAmps.html">Quiescent Amps</a></li><li><a href="by_parameter/Sbe41cpAmps.html">CTD Current</a></li><li><a href="by_parameter/Sbe63Amps.html">Doxy Current</a></li><li><a href="by_parameter/McomsAmps.html">MCOMS Current</a></li><li><a href="by_parameter/BatteryCounts.html">Battery Counts</a></li>
+      </ul></div></div></div>
+      <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#miscPlots">Miscellaneous</button></h3><div id="miscPlots" class="accordion-collapse collapse" data-bs-parent="#plotAccordion"><div class="accordion-body"><ul class="plot-link-list">
+        <li><a href="by_parameter/IsusPowerCycleCounter.html">ISUS Power Cycles</a></li><li><a href="by_parameter/Sbe41cpHumidity.html">Humidity</a></li><li><a href="calibration_coefficients/index.html">Calibration Coefficients</a></li><li><a href="by_parameter/sensorQC.html">Sensor Quality Control</a></li>
+      </ul></div></div></div>
+      <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#s2bgcPlots">S2BGC plots</button></h3><div id="s2bgcPlots" class="accordion-collapse collapse" data-bs-parent="#plotAccordion"><div class="accordion-body"><ul class="plot-link-list">
+        <li><a href="S2BGC/humidity.html">Humidity</a></li><li><a href="S2BGC/all_floats_engineering_profiles.html">All Floats Engineering Profiles</a></li>
+      </ul></div></div></div>
+    </div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function numericValue(text) { const match = text.replace(/,/g, '').match(/[-+]?\d*\.?\d+/); return match ? Number(match[0]) : null; }
+  function loadEngineeringTable(source, targetId) {
+    fetch(source).then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.text(); }).then(html => {
+    const parsed = new DOMParser().parseFromString(html, 'text/html');
+    const table = parsed.querySelector('table');
+    const root = document.getElementById(targetId);
+    if (!table) throw new Error('No table was found');
+    const firstHeader = table.tHead?.rows[0]?.cells[0];
+    if (firstHeader && !firstHeader.textContent.trim()) table.querySelectorAll('tr').forEach(row => row.cells[0]?.remove());
+    root.replaceChildren(table);
+    root.querySelectorAll('a[href$="/index.html"]').forEach(link => { link.target = '_blank'; link.rel = 'noopener noreferrer'; });
+    const rows = [...table.tBodies[0].rows], headers = [...table.tHead.rows[0].cells];
+    let sortColumn = headers.findIndex(h => h.textContent.trim().toLowerCase() === 'latest report'), sortDirection = -1, page = 1;
+    const controls = document.createElement('div'); controls.id = 'table-top-controls'; controls.className = 'd-flex justify-content-between align-items-center gap-3 mb-2';
+    controls.innerHTML = `<label class="d-flex align-items-center gap-2 small text-secondary">Rows per page:<select class="form-select form-select-sm" style="width:auto"><option selected>10</option><option>20</option><option>50</option><option>100</option></select></label><label class="d-flex align-items-center gap-2 small text-secondary">Search:<input class="form-control form-control-sm" type="search" placeholder="Search table..."></label>`;
+    const footer = document.createElement('div'); footer.className = 'd-flex justify-content-end align-items-center gap-2 mt-2'; footer.innerHTML = `<span class="status small text-secondary"></span><button class="btn btn-sm btn-outline-secondary previous" type="button">Previous</button><button class="btn btn-sm btn-outline-secondary next" type="button">Next</button>`;
+    root.insertBefore(controls, table); root.appendChild(footer);
+    const select = controls.querySelector('select'), search = controls.querySelector('input'), status = footer.querySelector('.status'), previous = footer.querySelector('.previous'), next = footer.querySelector('.next');
+    function render() {
+      const matching = rows.filter(row => row.textContent.toLowerCase().includes(search.value.trim().toLowerCase()));
+      matching.sort((a, b) => { const left = a.cells[sortColumn]?.textContent.trim() || '', right = b.cells[sortColumn]?.textContent.trim() || '', header = headers[sortColumn]?.textContent.trim().toLowerCase() || '', dateColumn = /^(first report|latest report|date)$/.test(header); if (dateColumn) { const ld = Date.parse(left), rd = Date.parse(right); if (!Number.isNaN(ld) || !Number.isNaN(rd)) { if (Number.isNaN(ld)) return 1; if (Number.isNaN(rd)) return -1; return sortDirection * (ld - rd); } } const ln = numericValue(left), rn = numericValue(right); if (/serial|wmo|pressure|age|cycle|days|length/i.test(header) || ln !== null || rn !== null) { if (ln === null) return 1; if (rn === null) return -1; return sortDirection * (ln - rn); } return sortDirection * left.localeCompare(right, undefined, {numeric:true, sensitivity:'base'}); });
+      matching.forEach(row => table.tBodies[0].appendChild(row)); const size = Number(select.value), pages = Math.max(1, Math.ceil(matching.length / size)); page = Math.min(page, pages); rows.forEach(row => row.hidden = true); matching.slice((page - 1) * size, page * size).forEach(row => row.hidden = false); const first = matching.length ? (page - 1) * size + 1 : 0; status.textContent = `${first}-${Math.min(page * size, matching.length)} of ${matching.length}`; previous.disabled = page === 1; next.disabled = page === pages;
+    }
+    headers.forEach((header, index) => header.addEventListener('click', () => { sortDirection = sortColumn === index ? sortDirection * -1 : 1; sortColumn = index; page = 1; render(); }));
+    select.addEventListener('change', () => { page = 1; render(); }); search.addEventListener('input', () => { page = 1; render(); }); previous.addEventListener('click', () => { page--; render(); }); next.addEventListener('click', () => { page++; render(); }); render();
+    }).catch(error => { document.getElementById(targetId).textContent = `Unable to load the engineering table: ${error.message}`; });
+  }
+  loadEngineeringTable('engineeringtable.html', 'engineering-table');
+  loadEngineeringTable('S2BGC/engineeringtable.html', 's2bgc-engineering-table');
+</script>
+</body>
+</html>

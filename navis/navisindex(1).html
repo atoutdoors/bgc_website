@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BGC Navis Flow Through</title>
+  <style>
+    :root { --blue: #174a70; --ink: #263746; --muted: #687783; --line: #d7dee4; --bg: #f6f8fa; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--bg); font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.45; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover, a:focus-visible { color: #0a6c9f; text-decoration: underline; }
+    .page { width: min(1180px, calc(100% - 32px)); margin: auto; padding: 28px 0 60px; }
+    header { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding-bottom: 22px; border-bottom: 3px solid var(--blue); }
+    h1 { margin: 0; color: var(--blue); font-size: 28px; font-weight: 600; }
+    .subtitle { margin: 4px 0 0; color: var(--muted); }
+    .back { white-space: nowrap; font-size: 13px; }
+    .layout { display: grid; grid-template-columns: 150px 1fr; gap: 30px; align-items: start; }
+    .nav { position: sticky; top: 16px; padding: 16px 0; }
+    .nav strong { display: block; margin-bottom: 8px; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .nav a { display: block; padding: 5px 0; font-size: 13px; }
+    section { scroll-margin-top: 18px; margin-top: 34px; }
+    section:first-child { margin-top: 28px; }
+    h2 { margin: 0 0 14px; padding-bottom: 8px; color: var(--blue); border-bottom: 1px solid var(--line); font-size: 21px; font-weight: 600; }
+    .summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 1fr); gap: 16px; align-items: start; }
+    .summary figure { margin: 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 4px; }
+    figure img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain; background: #fafafa; }
+    figcaption { margin-bottom: 8px; font-weight: 600; }
+    .date-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 14px; margin: 0; padding: 14px 18px; background: #fff; border: 1px solid var(--line); border-radius: 4px; list-style: none; }
+    .date-list a { font-size: 13px; }
+    footer { margin-top: 42px; padding-top: 16px; color: var(--muted); border-top: 1px solid var(--line); font-size: 12px; }
+    @media (max-width: 760px) {
+      .page { width: min(100% - 24px, 600px); padding-top: 20px; }
+      header { display: block; }
+      .back { display: inline-block; margin-top: 12px; }
+      .layout { display: block; }
+      .nav { position: static; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 16px 0 4px; border-bottom: 1px solid var(--line); }
+      .nav strong { width: 100%; }
+      .summary { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 430px) { .date-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div><h1>Flow Through Plots</h1><p class="subtitle">BGC Navis sensor observations</p></div>
+      <a class="back" href="../index.html">← Back to BGC home</a>
+    </header>
+
+    <div class="layout">
+      <nav class="nav" aria-label="Plot sections">
+        <strong>Sections</strong>
+        <a href="#salinity">Salinity</a><a href="#temperature">Temperature</a><a href="#pressure">Pressure</a>
+        <a href="#oxygen">Dissolved oxygen</a><a href="#ph">pH</a><a href="#backscattering">Backscattering</a>
+        <a href="#chlorophyll">Chlorophyll a</a><a href="#fdom">FDOM</a><a href="#nitrate">Nitrate</a>
+      </nav>
+      <div id="sections"></div>
+    </div>
+    <footer>WHOI BGC · Navis flow-through testing</footer>
+  </main>
+
+  <script>
+    const standardDates = ['2023-06-02', '2023-08-09', '2023-10-26', '2023-11-09', '2024-02-23', '2024-03-11', '2024-04-22', '2024-04-26', '2024-05-15', '2024-07-01', '2024-07-29', '2024-07-30', '2024-08-19', '2024-08-28', '2024-11-21', '2025-05-12', '2025-05-13', '2025-07-11', '2025-07-14', '2025-08-18', '2025-09-11', '2025-09-19', '2025-10-29', '2025-11-24', '2025-12-09', '2025-12-17', '2026-02-09', '2026-02-11', '2026-04-24', '2026-08-13'];
+    const nitrateDates = ['2023-06-02', '2023-08-09', '2023-10-26', '2023-11-09', '2024-02-23', '2024-03-11', '2024-04-22', '2024-04-26', '2024-05-15', '2024-07-01', '2024-07-29', '2024-07-30', '2024-11-21', '2025-08-18', '2025-09-11', '2025-09-19', '2025-12-09', '2025-12-17'];
+    const monthNames = { '01': 'January', '02': 'February', '03': 'March', '04': 'April', '05': 'May', '06': 'June', '07': 'July', '08': 'August', '09': 'September', '10': 'October', '11': 'November', '12': 'December' };
+    const formatDate = date => {
+      const [year, month, day] = date.split('-');
+      return `${monthNames[month]} ${Number(day)}, ${year}`;
+    };
+    const sensors = [
+      ['salinity', 'Salinity', 'PSAL'], ['temperature', 'Temperature', 'TEMP'], ['pressure', 'Pressure', 'PRES'],
+      ['oxygen', 'Dissolved Oxygen', 'DOXY'], ['ph', 'pH', 'PH_TOTAL'], ['backscattering', 'Backscattering', 'MCOMS3'],
+      ['chlorophyll', 'Chlorophyll a', 'MCOMS2'], ['fdom', 'FDOM', 'MCOMS1'], ['nitrate', 'Nitrate', 'NITRATE']
+    ];
+    const root = document.getElementById('sections');
+    sensors.forEach(([id, title, prefix]) => {
+      const dates = id === 'nitrate' ? nitrateDates : standardDates;
+      const section = document.createElement('section');
+      section.id = id;
+      section.innerHTML = `<h2>${title}</h2><div class="summary"><figure><figcaption>${title} time series</figcaption><a href="${prefix}.html"><img loading="lazy" decoding="async" src="${prefix}.png" alt="${title} time series"></a></figure><ul class="date-list" aria-label="${title} test dates">${dates.map(date => `<li><a href="${prefix}/${date}.html">${formatDate(date)}</a></li>`).join('')}</ul></div>`;
+      root.appendChild(section);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Float Diagnostic Plots</title>
+<style>
+  :root { --blue: #174a70; --text: #273746; --muted: #687783; --line: #d7dee4; --background: #f6f8fa; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 28px 18px; color: var(--text); background: var(--background); font-family: Arial, sans-serif; }
+  main { width: min(1000px, 100%); margin: 0 auto; }
+  h1 { margin: 0 0 8px; color: var(--blue); font-size: 25px; }
+  p { margin: 0 0 22px; color: var(--muted); }
+  .back { display: inline-block; margin-bottom: 24px; color: var(--blue); text-decoration: none; }
+  .back:hover, .back:focus-visible { text-decoration: underline; }
+  .plot-list { overflow-x: auto; background: white; border: 1px solid var(--line); border-radius: 5px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+  th { color: var(--blue); background: #eef3f6; font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child { font-weight: 700; }
+  td a { display: inline-block; padding: 5px 9px; color: #075985; background: #dff2fb; border: 1px solid #83c7df; border-radius: 4px; font-weight: 600; text-decoration: underline; }
+  td a:hover, td a:focus-visible { color: #033b5c; background: #bfe5f3; }
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="index(7).html">← Back to Engineering Index</a>
+<h1>Float Diagnostic Plots</h1>
+<p>Select a plot for each float.</p>
+<div class="plot-list">
+<table>
+<thead><tr><th>Float Serial Number</th><th>Vertical Velocity</th><th>Park Pressure</th></tr></thead>
+<tbody id="float-plot-rows"><tr><td colspan="3">Loading float links...</td></tr></tbody>
+</table>
+</div>
+</main>
+<script>
+  fetch('engineeringtable.html')
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.text();
+    })
+    .then(html => {
+      const source = new DOMParser().parseFromString(html, 'text/html');
+      const floatLinks = [...source.querySelectorAll('table tbody tr')]
+        .map(row => row.cells[0]?.querySelector('a'))
+        .filter(link => link && /(?:^|\/)index\.html$/.test(link.getAttribute('href') || ''));
+      const rows = document.getElementById('float-plot-rows');
+      rows.replaceChildren(...floatLinks.map(floatLink => {
+        const floatIndexUrl = new URL(floatLink.getAttribute('href'), window.location.href);
+        const row = document.createElement('tr');
+        const serial = document.createElement('td');
+        serial.textContent = floatLink.textContent.trim();
+        row.appendChild(serial);
+        [['vertical_velocity_overlay.html', 'View plot'], ['park_pressure_overlay.html', 'View plot']].forEach(([fileName, label]) => {
+          const cell = document.createElement('td');
+          const link = document.createElement('a');
+          link.href = new URL(fileName, floatIndexUrl).href;
+          link.textContent = label;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          cell.appendChild(link);
+          row.appendChild(cell);
+        });
+        return row;
+      }));
+    })
+    .catch(error => {
+      document.getElementById('float-plot-rows').innerHTML =
+        `<tr><td colspan="3">Unable to load float links: ${error.message}</td></tr>`;
+    });
+</script>
+</body>
+</html>

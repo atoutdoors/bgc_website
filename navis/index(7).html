@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+	<style>a { color: #000080; text-decoration: none; } a:hover {color: #064579;} body { font-family: "Open Sans", verdana, arial, sans-serif; margin: 20px; background-color: #e4e6eb; } h2 { font-size: 24px; } th { text-align: left; } .nav { width: 200px; position: fixed; z-index: 1; top: 10px; left: 10px; overflow-x: hidden; background: #f9f9f9; padding: 2px 0 6px 0; line-height: 1.4; border: 1px solid #dcdcdc; border-radius: 5px; } .nav a { font-size: 12px; padding: 5px 8px; } .plots-top-div { margin-left: 130px; width: 85%; } .plots-div { margin: auto; max-width: 805px; } .fig, .fig2 { width: 50%; margin-left: auto; margin-right: auto; display: block;} .figWide, .figWideL, .figWideXL, .figWideXXL, .figWideS, .figWideXS { max-width: 100%; padding-top: 10px; margin: auto; } .figt { font-size: 11px; margin: auto; } .figt td { padding: 4px; vertical-align: top; max-width: 220px; } .figt td img { width: 150px; text-align: center; } .footer { font-size: 12px; color: #aaa; padding: 40px; } h1{text-align: center;} h2 {text-align: center;} table {margin-left: auto; margin-right: auto;} h3{text-align:center;} ul{display: inline-block; vertical-align:top;}h3{text-align:left;}</style>
+
+<style>
+:root { --blue: #174a70; --text: #273746; --muted: #687783; --line: #d7dee4; --background: #f6f8fa; }
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--text); background: var(--background); font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.45; min-width: 0; overflow-x: hidden; }
+body { text-align: center; }
+body > h2, #engineering-table { width: min(1100px, calc(100% - 32px)); margin-left: auto; margin-right: auto; }
+h2 { margin: 18px auto 10px; color: var(--blue); font-size: clamp(19px, 2.5vw, 24px); font-weight: 600; }
+h3 { margin: 0 0 10px; color: var(--blue); font-size: 16px; font-weight: 600; }
+#engineering-table { margin-bottom: 18px; padding: 7px; background: #fff; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; text-align: left; }
+#engineering-table table { width: 100%; max-width: 100%; border-collapse: collapse; table-layout: auto; background: #fff; }
+#engineering-table th, #engineering-table td { width: auto; padding: 7px 6px; border-bottom: 1px solid var(--line); white-space: normal; overflow-wrap: anywhere; word-break: break-word; font-size: clamp(10px, 1vw, 12px); line-height: 1.3; }
+#engineering-table th { color: var(--blue); background: #eef3f6; font-weight: 600; }
+#engineering-table tr:hover td { background: #f7fafb; }
+#engineering-table td:first-child a { display: inline-block; padding: 3px 7px; color: #075985; background: #dff2fb; border: 1px solid #83c7df; border-radius: 4px; font-weight: 700; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+#engineering-table td:first-child a:hover, #engineering-table td:first-child a:focus-visible { color: #033b5c; background: #bfe5f3; border-color: #318db0; }
+#table-top-controls, #table-bottom-controls { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; }
+#table-top-controls { justify-content: space-between; margin-bottom: 12px; }
+#table-bottom-controls { justify-content: flex-end; margin-top: 12px; }
+#table-top-controls label { display: inline-flex; align-items: center; gap: 7px; }
+#table-top-controls input, #table-top-controls select, #table-bottom-controls button { padding: 5px 8px; color: var(--text); background: #fff; border: 1px solid var(--line); border-radius: 3px; }
+#table-top-controls input { width: min(260px, 42vw); }
+#table-bottom-controls button { cursor: pointer; }
+#table-bottom-controls button:disabled { cursor: default; opacity: .45; }
+#engineering-table th { cursor: pointer; user-select: none; }
+#health-reports-section { width: min(1100px, calc(100% - 32px)); margin: 18px auto 22px; padding: 8px; text-align: center; }
+#health-reports-section h2 { margin: 0 0 8px; }
+#health-reports-link { display: inline-block; padding: 9px 16px; color: #fff; background: var(--blue); border-radius: 4px; font-weight: 600; }
+#health-reports-link:hover, #health-reports-link:focus-visible { color: #fff; background: #0a6c9f; text-decoration: none; }
+.page-header { width: min(1100px, calc(100% - 32px)); margin: 12px auto 8px; padding: 8px 16px; text-align: left; }
+.page-header h1 { margin: 0 0 2px; color: var(--blue); font-size: clamp(22px, 3vw, 28px); font-weight: 600; }
+.page-header p { margin: 0; color: var(--muted); }
+a { color: var(--blue); text-decoration: none; }
+a:hover, a:focus-visible { color: #0a6c9f; text-decoration: underline; }
+body > ul { display: inline-block; vertical-align: top; width: min(340px, calc(33.333% - 18px)); min-height: 0; margin: 0 5px 10px; padding: 8px 16px 8px 28px; text-align: left; }
+#plot-directory { width: min(1000px, calc(100% - 32px)); margin: 0 auto 22px; text-align: left; }
+.plot-category { margin: 0 0 8px; border-bottom: 1px solid #d7dee4; }
+.plot-category summary { padding: 10px 12px; color: var(--blue); background: #eef3f6; cursor: pointer; font-weight: 600; list-style-position: inside; }
+.plot-category summary:hover, .plot-category summary:focus-visible { background: #dfeaf0; }
+.plot-category ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 24px; margin: 0; padding: 10px 14px 12px 34px; list-style: none; }
+.plot-category li { margin: 0; }
+#float-diagnostic-plot-links { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#float-diagnostic-plot-links li { display: flex; flex-wrap: wrap; gap: 8px; }
+#float-diagnostic-plot-links li span { min-width: 48px; font-weight: 600; }
+ul { text-align: left; }
+li { margin: 3px 0; }
+.individual-floats { width: 100%; }
+.individual-floats li { display: inline-block; min-width: 62px; margin: 4px 14px 4px 0; }
+@media (max-width: 900px) { .plot-category ul, #float-diagnostic-plot-links { grid-template-columns: repeat(2, minmax(0, 1fr)); } body > ul { width: min(440px, calc(50% - 24px)); } }
+@media (max-width: 600px) { body > h2, #engineering-table, #plot-directory { width: calc(100% - 20px); } .plot-category ul, #float-diagnostic-plot-links { grid-template-columns: 1fr; } body > ul { display: block; width: calc(100% - 20px); margin-left: auto; margin-right: auto; min-height: 0; } #engineering-table { padding: 8px; } }
+</style>
+<body>
+<header class="page-header">
+<h1>BGC Engineering Website</h1>
+<p>Engineering data, health reports, diagnostic plots, and float-specific results.</p>
+</header>
+<h2 id="engineering-table-heading">Engineering Information Table</h2>	
+ 
+    <div id="engineering-table" aria-live="polite">Loading engineering table...</div>
+
+<section id="health-reports-section">
+<h2>Float Health Reports</h2>
+<a id="health-reports-link" href="healthreports/index.html">View all float health reports</a>
+</section>
+
+<h2 id="engineering-plots-heading">Engineering Plots</h2>
+<div id="plot-directory">
+<details class="plot-category">
+<summary>Telemetry Info</summary>
+<ul>
+
+<li><a href="surfaceinfo.html">Latest Surfacing Telemetry Info</a></li>
+<li><a href="by_parameter/Average bps.html">Average Bytes Per Second</a></li>
+<li><a href="by_parameter/Packet Count.html">Number of Packets Transmitted</a></li>
+<li><a href="by_parameter/Packet Resending Count.html">Number of Packet Transmition Retries</a></li>
+<li><a href="by_parameter/Total Bytes.html">Total Bytes Transmitted</a></li>
+<li><a href="by_parameter/Total Time Transmitting (s).html">Total Time Spent Transmitting Data</a></li>
+<li><a href="by_parameter/COMDUR.html">Communication Duration By Float</a></li>
+<li><a href="by_parameter/GpsFixTime.html">GPS Fix Time</a></li>
+<li><a href="by_parameter/surfacingtimeBAR.html">Surfacing Time By Float</a></li>
+<li><a href="by_parameter/Secondary Attempts.html">Attempts to Connect to Secondary Server</a></li>
+</ul>
+</details>
+<details class="plot-category">
+<summary>Buoyancy Info</summary>
+<ul>
+<li><a href="by_parameter/ParkPressurevsBP.html">Park Pressure vs. Park Buoyancy Position</a></li>
+<li><a href="by_parameter/PVBP.html">Pressure vs. Buoyancy Position</a></li>
+<li><a href="by_parameter/DeepProfileBuoyancyPosition.html">Deep Buoyancy Position</a></li>
+<li><a href="by_parameter/ParkBuoyancyPosition.html">Park Buoyancy Position</a></li>
+<li><a href="by_parameter/SurfaceBuoyancyPosition.html">Surface Buoyancy Position</a></li>
+<li><a href="by_parameter/ActiveBallastAdjustments.html">Active Ballast Adjustments</a></li>
+<li><a href="buoyancy_movement.html">Oil Flow Rates</a></li>
+
+</ul>
+</details>
+<details class="plot-category">
+<summary>Pressures</summary>
+<ul>
+<li><a href="by_parameter/SurfacePressure.html">Surface Pressure</a></li>
+<li><a href="by_parameter/ParkPressure.html">Park Pressure</a></li>
+<li><a href="by_parameter/AirBladderPressure.html">Air Bladder Pressure</a></li>
+<li><a href="by_parameter/MAXP.html">Max Cycle Pressure</a></li>
+
+</ul>
+</details>
+<details class="plot-category">
+<summary>Energy Usage</summary>
+<ul>
+<li><a href="by_parameter/BPvsMCOMS.html">MCOMS vs. Buoyancy Pump Volts</a></li>
+<li><a href="by_parameter/BuoyancyPumpOnTime.html">Buoyancy Pump Run Time</a></li>
+<li><a href="by_parameter/BuoyancyPumpEnergy.html">Buoyancy Pump Energy</a></li>
+<li><a href="by_parameter/BuoyancyPumpVolts.html">Buoyancy Pump Volts</a></li>
+<li><a href="by_parameter/AirPumpVolts.html">Air Pump Volts</a></li>
+<li><a href="by_parameter/Sbe41cpVolts.html">SBE41CP Volts</a></li>
+<li><a href="by_parameter/Sbe63Volts.html">SBE63 Volts</a></li>
+<li><a href="by_parameter/McomsVolts.html">MCOMS Volts</a></li>
+<li><a href="by_parameter/QuiescentVolts.html">Quiescent Volts</a></li>
+<li><a href="by_parameter/AirPumpAmps.html">Air Pump Current</a></li>
+<li><a href="by_parameter/BuoyancyPumpAmps.html">Buoyancy Pump Current</a></li>
+<li><a href="by_parameter/QuiescentAmps.html">Quiescent Amps</a></li>
+<li><a href="by_parameter/Sbe41cpAmps.html">CTD Current</a></li>
+<li><a href="by_parameter/Sbe63Amps.html">Doxy Current</a></li>
+<li><a href="by_parameter/McomsAmps.html">MCOMS Current</a></li>
+<li><a href="by_parameter/BatteryCounts.html">Battery Counts</a></li>
+</ul>
+</details>
+<details class="plot-category">
+<summary>Miscellaneous</summary>
+<ul>
+<li><a href="by_parameter/IsusPowerCycleCounter.html">Isus Power Cycles</a></li>
+<li><a href="by_parameter/Sbe41cpHumidity.html">Humidity</a></li>
+<li><a href="calibration_coefficients/index.html">Calibration Coefficients</a></li>
+<li><a href="by_parameter/sensorQC.html">Sensor Quality Control</a></li>
+ </ul>
+</details>
+<details class="plot-category">
+<summary>S2BGC plots</summary>
+<ul>
+<li><a href="s2bgc/humidity.html">Humidity</a></li>
+</ul>
+</details>
+<details class="plot-category">
+<summary>Float Diagnostic Plots</summary>
+<ul id="float-diagnostic-plot-links"><li>Loading float links...</li></ul>
+</details>
+</div>
+
+<ul>
+<h3 id="individual-floats">Individual Floats</h3>
+<li style = list-style:none;><a href="1200/index.html">1200</a>
+<a href="1201/index.html">1201</a>
+<a href="1203/index.html">1203</a>
+<a href="1343/index.html">1343</a>
+</li>
+<li style = list-style:none;>
+<a href="1345/index.html">1345</a>
+<a href="1346/index.html">1346</a>
+<a href="1347/index.html">1347</a>
+<a href="1348/index.html">1348</a>
+</li>
+<li style = list-style:none;>
+<a href="1349/index.html">1349</a>
+<a href="1350/index.html">1350</a>
+<a href="1351/index.html">1351</a>
+<a href="1352/index.html">1352</a>
+</li>
+<li style = list-style:none;>
+<a href="1354/index.html">1354</a>
+<a href="1355/index.html">1355</a>
+<a href="1356/index.html">1356</a>
+<a href="1357/index.html">1357</a>
+</li>
+<li style = list-style:none;>
+<a href="1358/index.html">1358</a>
+<a href="1359/index.html">1359</a>
+<a href="1360/index.html">1360</a>
+<a href="1361/index.html">1361</a>
+</li>
+<li style = list-style:none;>
+<a href="1474/index.html">1474</a>
+<a href="1475/index.html">1475</a>
+<a href="1476/index.html">1476</a>
+<a href="1477/index.html">1477</a>
+</li>
+<li style = list-style:none;>
+<a href="1482/index.html">1482</a>
+<a href="1483/index.html">1483</a>
+<a href="1484/index.html">1484</a>
+<a href="1485/index.html">1485</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1486/index.html">1486</a>
+<a href="1487/index.html">1487</a>
+<a href="1488/index.html">1488</a>
+<a href="1489/index.html">1489</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1490/index.html">1490</a>
+<a href="1528/index.html">1528</a>
+<a href="1530/index.html">1530</a>
+<a href="1531/index.html">1531</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1542/index.html">1542</a>
+<a href="1557/index.html">1557</a>
+<a href="1558/index.html">1558</a>
+<a href="1559/index.html">1559</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1560/index.html">1560</a>
+<a href="1561/index.html">1561</a>
+<a href="1562/index.html">1562</a>
+<a href="1529/index.html">1529</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1556/index.html">1556</a>
+<a href="1634/index.html">1634</a>
+<a href="1633/index.html">1633</a>
+<a href="1565/index.html">1565</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1533/index.html">1533</a>
+<a href="1635/index.html">1635</a>
+<a href="1566/index.html">1566</a>
+<a href="1567/index.html">1567</a>
+</li> 
+
+<li style = list-style:none;>
+<a href="1581/index.html">1581</a>
+<a href="1636/index.html">1636</a>
+<a href="1577/index.html">1577</a>
+<a href="1568/index.html">1568</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1569/index.html">1569</a>
+<a href="1573/index.html">1573</a>
+<a href="1583/index.html">1583</a>
+<a href="1645/index.html">1645</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1646/index.html">1646</a>
+<a href="1648/index.html">1648</a>
+<a href="1564/index.html">1564</a>
+<a href="1650/index.html">1650</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1651/index.html">1651</a>
+<a href="1584/index.html">1584</a>
+<a href="1585/index.html">1585</a>
+<a href="1640/index.html">1640</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1539/index.html">1539</a>
+<a href="1540/index.html">1540</a>
+<a href="1563/index.html">1563</a>
+<a href="1638/index.html">1638</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1639/index.html">1639</a>
+<a href="1637/index.html">1637</a>
+<a href="1481/index.html">1481</a>
+<a href="1553/index.html">1553</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1642/index.html">1642</a>
+<a href="1647/index.html">1647</a>
+<a href="1663/index.html">1663</a>
+<a href="1649/index.html">1649</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1644/index.html">1644</a>
+<a href="1662/index.html">1662</a>
+<a href="1586/index.html">1586</a>
+<a href="1664/index.html">1664</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1661/index.html">1661</a>
+<a href="1580/index.html">1580</a>
+<a href="1652/index.html">1652</a>
+<a href="1680/index.html">1680</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1675/index.html">1675</a>
+<a href="1641/index.html">1641</a>
+<a href="1667/index.html">1667</a>
+<a href="1659/index.html">1659</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1643/index.html">1643</a>
+<a href="1555/index.html">1555</a>
+<a href="1673/index.html">1673</a>
+<a href="1669/index.html">1669</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1574/index.html">1574</a>
+<a href="1631/index.html">1631</a>
+<a href="1632/index.html">1632</a>
+<a href="1668/index.html">1668</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1757/index.html">1757</a>
+<a href="1759/index.html">1759</a>
+<a href="1541/index.html">1541</a>
+<a href="2001/index.html">2001</a>
+</li>
+
+<li style = list-style:none;>
+<a href="2005/index.html">2005</a>
+<a href="2008/index.html">2008</a>
+<a href="1760/index.html">1760</a>
+<a href="2002/index.html">2002</a>
+</li>
+
+<li style = list-style:none;>
+<a href="2003/index.html">2003</a>
+<a href="2004/index.html">2004</a>
+<a href="2010/index.html">2010</a>
+<a href="2009/index.html">2009</a>
+</li>
+
+<li style = list-style:none;>
+<a href="2011/index.html">2011</a>
+<a href="2012/index.html">2012</a>
+<a href="2007/index.html">2007</a>
+<a href="1665/index.html">1665</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1754/index.html">1754</a>
+<a href="2015/index.html">2015</a>
+<a href="1755/index.html">1755</a>
+<a href="1658/index.html">1658</a>
+</li>
+
+<li style = list-style:none;>
+<a href="2016/index.html">2016</a>
+<a href="2018/index.html">2018</a>
+<a href="1660/index.html">1660</a>
+<a href="2014/index.html">2014</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1554/index.html">1554</a>
+<a href="2017/index.html">2017</a>
+<a href="1758/index.html">1758</a>
+<a href="2006/index.html">2006</a>
+</li>
+
+<li style = list-style:none;>
+<a href="1761/index.html">1761</a>
+<a href="1756/index.html">1756</a>
+<a href="1762/index.html">1762</a>
+</li>
+
+</ul>
+</body>
+<script>
+  const heading = document.getElementById('individual-floats');
+  if (heading) heading.parentElement.remove();
+
+  function makeTableLinksOpenInNewTab(tableRoot) {
+    tableRoot.querySelectorAll('a[href$="/index.html"]').forEach(link => {
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.onclick = event => {
+        event.preventDefault();
+        window.open(link.href, '_blank', 'noopener,noreferrer');
+      };
+    });
+  }
+
+  function populateFloatLinks(tableRoot) {
+    const floatLinks = [...tableRoot.querySelectorAll('tbody tr')]
+      .map(row => row.cells[0]?.querySelector('a'))
+      .filter(link => link && /(?:^|\/)index\.html$/.test(link.getAttribute('href') || ''));
+    const diagnosticList = document.getElementById('float-diagnostic-plot-links');
+    diagnosticList.replaceChildren(...floatLinks.map(floatLink => {
+      const item = document.createElement('li');
+      const serial = document.createElement('span');
+      serial.textContent = floatLink.textContent.trim();
+      item.appendChild(serial);
+      const floatIndexUrl = new URL(floatLink.getAttribute('href'), window.location.href);
+      [['vertical_velocity_overlay.html', 'Vertical velocity'], ['park_pressure_overlay.html', 'Park pressure']]
+        .forEach(([fileName, label]) => {
+          const plotLink = document.createElement('a');
+          plotLink.href = new URL(fileName, floatIndexUrl).href;
+          plotLink.textContent = label;
+          plotLink.target = '_blank';
+          plotLink.rel = 'noopener noreferrer';
+          item.appendChild(plotLink);
+        });
+      return item;
+    }));
+  }
+
+  fetch('engineeringtable.html')
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.text();
+    })
+    .then(html => {
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      const table = parsed.querySelector('table');
+      const tableRoot = document.getElementById('engineering-table');
+      if (!table) throw new Error('No table was found');
+      const firstHeader = table.tHead?.rows[0]?.cells[0];
+      if (firstHeader && !firstHeader.textContent.trim()) {
+        table.querySelectorAll('tr').forEach(row => row.cells[0]?.remove());
+      }
+      tableRoot.replaceChildren(table);
+      makeTableLinksOpenInNewTab(tableRoot);
+      populateFloatLinks(tableRoot);
+
+      const rows = Array.from(table.tBodies[0]?.rows || []);
+      const topControls = document.createElement('div');
+      topControls.id = 'table-top-controls';
+      topControls.innerHTML = `
+        <label>Rows per page:
+          <select aria-label="Rows per page">
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <label>Search:
+          <input type="search" placeholder="Search table..." aria-label="Search table">
+        </label>`;
+      const bottomControls = document.createElement('div');
+      bottomControls.id = 'table-bottom-controls';
+      bottomControls.innerHTML = `
+        <span class="table-page-status"></span>
+        <button type="button" class="table-previous">Previous</button>
+        <button type="button" class="table-next">Next</button>`;
+      tableRoot.insertBefore(topControls, table);
+      tableRoot.appendChild(bottomControls);
+
+      const select = topControls.querySelector('select');
+      const search = topControls.querySelector('input');
+      const status = bottomControls.querySelector('.table-page-status');
+      const previous = bottomControls.querySelector('.table-previous');
+      const next = bottomControls.querySelector('.table-next');
+      let page = 1;
+      const allRows = Array.from(table.tBodies[0]?.rows || []);
+      const headers = Array.from(table.tHead?.rows[0]?.cells || []);
+      const latestReportColumn = headers.findIndex(header =>
+        header.textContent.trim().toLowerCase() === 'latest report'
+      );
+      let sortColumn = latestReportColumn >= 0 ? latestReportColumn : 6;
+      let sortDirection = -1;
+
+      headers.forEach((header, column) => {
+        header.setAttribute(
+          'aria-sort',
+          column === sortColumn ? 'descending' : 'none'
+        );
+        header.addEventListener('click', () => {
+          if (sortColumn === column) {
+            sortDirection *= -1;
+          } else {
+            sortColumn = column;
+            sortDirection = 1;
+          }
+          headers.forEach(cell => cell.setAttribute('aria-sort', 'none'));
+          header.setAttribute('aria-sort', sortDirection === 1 ? 'ascending' : 'descending');
+          page = 1;
+          renderTablePage();
+        });
+      });
+
+      function numericValue(text) {
+        const match = text.replace(/,/g, '').match(/[-+]?\d*\.?\d+/);
+        return match ? Number(match[0]) : null;
+      }
+
+      function renderTablePage() {
+        const rowsPerPage = Number(select.value);
+        const query = search.value.trim().toLowerCase();
+        const matchingRows = allRows.filter(row => row.textContent.toLowerCase().includes(query));
+        if (sortColumn >= 0) {
+          matchingRows.sort((left, right) => {
+            const leftText = left.cells[sortColumn]?.textContent.trim() || '';
+            const rightText = right.cells[sortColumn]?.textContent.trim() || '';
+            const headerName = headers[sortColumn]?.textContent.trim().toLowerCase() || '';
+            const isDateColumn = /^(first report|latest report|date)$/.test(headerName);
+            if (isDateColumn) {
+              const leftDate = Date.parse(leftText);
+              const rightDate = Date.parse(rightText);
+              if (!Number.isNaN(leftDate) && !Number.isNaN(rightDate)) {
+                return sortDirection * (leftDate - rightDate);
+              }
+            }
+            const numericValues = matchingRows.map(row =>
+              numericValue(row.cells[sortColumn]?.textContent.trim() || '')
+            );
+            const numericCount = numericValues.filter(value => value !== null).length;
+            const isNumericColumn = /serial|wmo|pressure|age|cycle|days|length/i.test(
+              headers[sortColumn]?.textContent || ''
+            ) || (numericCount >= 2 && numericCount >= matchingRows.length * 0.7);
+            if (isNumericColumn) {
+              const leftNumber = numericValue(leftText);
+              const rightNumber = numericValue(rightText);
+              if (leftNumber === null && rightNumber !== null) return 1;
+              if (leftNumber !== null && rightNumber === null) return -1;
+              if (leftNumber !== null && rightNumber !== null) {
+                return sortDirection * (leftNumber - rightNumber);
+              }
+            }
+            return sortDirection * leftText.localeCompare(rightText, undefined, {
+              numeric: true,
+              sensitivity: 'base'
+            });
+          });
+        }
+        matchingRows.forEach(row => table.tBodies[0].appendChild(row));
+        const pageCount = Math.max(1, Math.ceil(matchingRows.length / rowsPerPage));
+        page = Math.min(page, pageCount);
+        const firstRow = (page - 1) * rowsPerPage;
+        allRows.forEach(row => {
+          row.hidden = true;
+        });
+        matchingRows.forEach((row, index) => {
+          row.hidden = index < firstRow || index >= firstRow + rowsPerPage;
+        });
+        const firstShown = matchingRows.length ? firstRow + 1 : 0;
+        const lastShown = Math.min(firstRow + rowsPerPage, matchingRows.length);
+        status.textContent = `${firstShown}-${lastShown} of ${matchingRows.length}`;
+        previous.disabled = page === 1;
+        next.disabled = page === pageCount;
+      }
+
+      select.addEventListener('change', () => { page = 1; renderTablePage(); });
+      search.addEventListener('input', () => { page = 1; renderTablePage(); });
+      previous.addEventListener('click', () => { page -= 1; renderTablePage(); });
+      next.addEventListener('click', () => { page += 1; renderTablePage(); });
+      renderTablePage();
+    })
+    .catch(error => {
+      document.getElementById('engineering-table').textContent =
+        `Unable to load the engineering table: ${error.message}`;
+    });
+</script>
+</html>

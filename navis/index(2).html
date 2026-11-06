@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BGC Pressure Testing Plots</title>
+  <style>
+    :root { --blue: #174a70; --ink: #263746; --muted: #687783; --line: #d7dee4; --bg: #f6f8fa; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--bg); font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.45; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover, a:focus-visible { color: #0a6c9f; text-decoration: underline; }
+    .page { width: min(1180px, calc(100% - 32px)); margin: auto; padding: 28px 0 60px; }
+    header { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding-bottom: 22px; border-bottom: 3px solid var(--blue); }
+    h1 { margin: 0; color: var(--blue); font-size: 28px; font-weight: 600; }
+    .subtitle { margin: 4px 0 0; color: var(--muted); }
+    .back { white-space: nowrap; font-size: 13px; }
+    .layout { display: grid; grid-template-columns: 150px 1fr; gap: 30px; align-items: start; }
+    .nav { position: sticky; top: 16px; padding: 16px 0; }
+    .nav strong { display: block; margin-bottom: 8px; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .nav a { display: block; padding: 5px 0; font-size: 13px; }
+    section { scroll-margin-top: 18px; margin-top: 34px; }
+    section:first-child { margin-top: 28px; }
+    h2 { margin: 0 0 14px; padding-bottom: 8px; color: var(--blue); border-bottom: 1px solid var(--line); font-size: 21px; font-weight: 600; }
+    .plot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    figure { min-width: 0; margin: 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 4px; }
+    figcaption { min-height: 38px; margin-bottom: 8px; font-weight: 600; }
+    figure img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain; background: #fafafa; }
+    .float-note { margin: -4px 0 14px; color: var(--muted); }
+    .float-grid { display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 16px; background: #fff; border: 1px solid var(--line); border-radius: 4px; }
+    .float-grid a { min-width: 42px; }
+    footer { margin-top: 42px; padding-top: 16px; color: var(--muted); border-top: 1px solid var(--line); font-size: 12px; }
+    @media (max-width: 760px) {
+      .page { width: min(100% - 24px, 600px); padding-top: 20px; }
+      header { display: block; }
+      .back { display: inline-block; margin-top: 12px; }
+      .layout { display: block; }
+      .nav { position: static; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 16px 0 4px; border-bottom: 1px solid var(--line); }
+      .nav strong { width: 100%; }
+      .plot-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div><h1>Pressure Testing Plots</h1><p class="subtitle">BGC sensor and hardware observations</p></div>
+      <a class="back" href="../index.html">← Back to BGC home</a>
+    </header>
+
+    <div class="layout">
+      <nav class="nav" aria-label="Plot sections">
+        <strong>Sections</strong>
+        <a href="#salinity">Salinity</a><a href="#temperature">Temperature</a><a href="#pressure">Pressure</a>
+        <a href="#oxygen">Dissolved oxygen</a><a href="#ph">pH</a><a href="#backscattering">Backscattering</a>
+        <a href="#chlorophyll">Chlorophyll a</a><a href="#fdom">FDOM</a><a href="#hardware">Hardware</a><a href="#floats">Individual floats</a>
+      </nav>
+
+      <div id="plot-sections"></div>
+    </div>
+    <footer>WHOI BGC · Pressure testing</footer>
+  </main>
+
+  <script>
+    const sections = [
+      ['salinity', 'Salinity', [['Salinity Time Series', 'PSAL.html', 'PSAL.png'], ['Salinity vs. Pressure', 'P vs. PSAL.html', 'P vs. PSAL.png']]],
+      ['temperature', 'Temperature', [['Temperature Time Series', 'TEMP.html', 'TEMP.png'], ['Temperature vs. Pressure', 'P vs. TEMP.html', 'P vs. TEMP.png'], ['Potential Temperature Time Series', 'PTEMP.html', 'PTEMP.png'], ['Potential Temperature vs. Pressure', 'P vs. PTEMP.html', 'P vs. PTEMP.png']]],
+      ['pressure', 'Pressure', [['Pressure Time Series', 'PRES.html', 'PRES.png']]],
+      ['oxygen', 'Dissolved Oxygen', [['Dissolved Oxygen Time Series', 'OXYGEN.html', 'OXYGEN.png'], ['Dissolved Oxygen vs. Pressure', 'P vs. OXYGEN.html', 'P vs. OXYGEN.png'], ['Oxygen Phase Delay Time Series', 'O2_PHASE_DELAY.html', 'O2_PHASE_DELAY.png'], ['Oxygen Temperature Voltage Time Series', 'O2_TEMPERATURE_VOLTAGE.html', 'O2_TEMPERATURE_VOLTAGE.png']]],
+      ['ph', 'pH', [['pH Time Series', 'PH_9.html', 'PH_9.png'], ['pH vs. Pressure', 'P vs. PH_9.html', 'P vs. PH_9.png'], ['pH IK Time Series', 'PH_IK.html', 'PH_IK.png'], ['pH IB Time Series', 'PH_IB.html', 'PH_IB.png'], ['pH VK Time Series', 'PH_VK.html', 'PH_VK.png'], ['pH VRS Time Series', 'PH_VRS.html', 'PH_VRS.png']]],
+      ['backscattering', 'Backscattering', [['Calculated Backscattering Time Series', 'BBP.html', 'BBP.png'], ['Calculated Backscattering vs. Pressure', 'P vs. BBP.html', 'P vs. BBP.png'], ['Backscattering Dark Counts', 'rawBBP.html', 'rawBBP.png'], ['Backscattering Dark Counts vs. Pressure', 'P vs. rawBBP.html', 'P vs. rawBBP.png']]],
+      ['chlorophyll', 'Chlorophyll a', [['Calculated Chlorophyll a Time Series', 'FCHLA.html', 'FCHLA.png'], ['Calculated Chlorophyll a vs. Pressure', 'P vs. FCHLA.html', 'P vs. FCHLA.png'], ['Raw Chlorophyll a Time Series', 'rawFCHLA.html', 'rawFCHLA.png'], ['Raw Chlorophyll a vs. Pressure', 'P vs. rawFCHLA.html', 'P vs. rawFCHLA.png']]],
+      ['fdom', 'FDOM', [['Calculated FDOM Time Series', 'FCDOM.html', 'FCDOM.png'], ['Calculated FDOM vs. Pressure', 'P vs. FCDOM.html', 'P vs. FCDOM.png'], ['Raw FDOM Time Series', 'rawFCDOM.html', 'rawFCDOM.png'], ['Raw FDOM vs. Pressure', 'P vs. rawFCDOM.html', 'P vs. rawFCDOM.png']]],
+      ['hardware', 'Hardware', [['Buoyancy Position Time Series', 'BuoyancyPosition.html', 'BuoyancyPosition.png'], ['Humidity Time Series', 'HUMIDITY.html', 'HUMIDITY.png']]]
+    ];
+    const floats = [1481, 1531, 1533, 1540, 1541, 1542, 1553, 1554, 1555, 1556, 1557, 1558, 1559, 1560, 1561, 1563, 1564, 1566, 1567, 1568, 1569, 1573, 1574, 1577, 1581, 1583, 1584, 1585, 1586, 1631, 1632, 1633, 1634, 1635, 1636, 1637, 1638, 1639, 1640, 1641, 1642, 1643, 1644, 1645, 1646, 1647, 1648, 1649, 1650, 1651, 1652, 1658, 1659, 1660, 1661, 1662, 1663, 1664];
+    const root = document.getElementById('plot-sections');
+    sections.forEach(([id, title, plots]) => {
+      const section = document.createElement('section');
+      section.id = id;
+      section.innerHTML = `<h2>${title}</h2><div class="plot-grid">${plots.map(([label, page, image]) => `<figure><figcaption>${label}</figcaption><a href="${page}"><img loading="lazy" decoding="async" src="${image}" alt="${label}"></a></figure>`).join('')}</div>`;
+      root.appendChild(section);
+    });
+    const floatSection = document.createElement('section');
+    floatSection.id = 'floats';
+    floatSection.innerHTML = '<h2>Individual Floats</h2><p class="float-note">Currently available: dissolved oxygen by cycle.</p><div class="float-grid">' + floats.map(sn => `<a href="${sn}/bycycle.html">${sn}</a>`).join('') + '</div>';
+    root.appendChild(floatSection);
+  </script>
+</body>
+</html>
