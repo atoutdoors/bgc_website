@@ -1,0 +1,7365 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>S2BGC Engineering Data</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 24px; color: #222; }
+h1 { color: #123b5d; } h2 { margin-top: 28px; color: #245a7a; }
+table { border-collapse: collapse; margin: 10px 0 24px; width: 100%; }
+th, td { border: 1px solid #bbb; padding: 6px 8px; text-align: left; vertical-align: top; }
+th { background: #eaf2f8; position: sticky; top: 0; }
+tr:nth-child(even) { background: #f8fbfd; }
+</style></head><body>
+
+<h2>Relative Humidity vs Profile</h2>
+<div id="relative-humidity-plot" style="width:100%;height:520px;"></div>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script>
+const humidityPoints = [{"profile": 0, "humidity": 45, "file": "10785_004057_L0_0000.json"}, {"profile": 1, "humidity": 54, "file": "10785_004057_L0_0001.json"}, {"profile": 2, "humidity": 53, "file": "10785_004057_L0_0002.json"}, {"profile": 3, "humidity": 47, "file": "10785_004057_L0_0003.json"}, {"profile": 4, "humidity": 47, "file": "10785_004057_L0_0004.json"}, {"profile": 5, "humidity": 47, "file": "10785_004057_L0_0005.json"}, {"profile": 6, "humidity": 47, "file": "10785_004057_L0_0006.json"}, {"profile": 7, "humidity": 47, "file": "10785_004057_L0_0007.json"}, {"profile": 8, "humidity": 47, "file": "10785_004057_L0_0008.json"}, {"profile": 9, "humidity": 47, "file": "10785_004057_L0_0009.json"}, {"profile": 10, "humidity": 47, "file": "10785_004057_L0_0010.json"}, {"profile": 11, "humidity": 47, "file": "10785_004057_L0_0011.json"}];
+const humidityTrace = {
+  x: humidityPoints.map(point => point.profile),
+  y: humidityPoints.map(point => point.humidity),
+  text: humidityPoints.map(point => point.file),
+  mode: 'lines+markers',
+  type: 'scatter',
+  marker: {size: 8},
+  hovertemplate: 'Profile: %{x}<br>Relative humidity: %{y}%<br>%{text}<extra></extra>'
+};
+Plotly.newPlot('relative-humidity-plot', [humidityTrace], {
+  title: 'Relative Humidity vs Profile',
+  xaxis: {title: 'Profile / cycle number', dtick: 1},
+  yaxis: {title: 'Relative humidity (%)'},
+  hovermode: 'closest',
+  margin: {t: 60, r: 30, b: 70, l: 70}
+}, {responsive: true});
+</script>
+<h1>Engineering Data: Float `4057`</h1>
+<p>Files read: **13**</p>
+<table><thead><tr>
+<th>Source file</th>
+<th>File creation date</th>
+<th>Internal ID</th>
+<th>DAC ID</th>
+<th>WMO ID</th>
+<th>Cycle</th>
+</tr></thead><tbody>
+<tr>
+<td>10785_004057_L0_-001.json</td>
+<td>2026-07-27T08:31:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>2026-07-28T12:31:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>0</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>2026-07-28T16:01:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>1</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>2026-07-29T01:31:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>2</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>2026-08-08T03:31:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>3</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>2026-08-18T12:26:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>4</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>2026-08-28T08:01:02Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>5</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>2026-09-07T10:01:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>6</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>2026-09-17T12:31:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>7</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>2026-09-27T14:31:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>8</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>2026-10-07T17:01:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>9</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>2026-10-17T19:01:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>10</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>2026-10-27T21:01:01Z</td>
+<td>4057</td>
+<td>10785</td>
+<td>2904127</td>
+<td>11</td>
+</tr>
+</tbody></table>
+<h2>Decoded Engineering_Data</h2>
+<table><thead><tr>
+<th>Source file</th>
+<th>Parameter</th>
+<th>Value</th>
+<th>Unit</th>
+<th>Description</th>
+</tr></thead><tbody>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>nQueued</td>
+<td>4</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>SBDerr</td>
+<td>0</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>nTries</td>
+<td>0</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>SBDsecs</td>
+<td>0</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>Vcpu</td>
+<td>7.13</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>Vpmp</td>
+<td>15.22</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>Vple</td>
+<td>15.21</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>vacBIT0</td>
+<td>8.85</td>
+<td>inHg</td>
+<td>pcase vacuum @BITest</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>vac0</td>
+<td>9.22</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>vac1</td>
+<td>9.71</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>HPavgI</td>
+<td>406</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>HPmaxI</td>
+<td>423</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>PumpT_Hi</td>
+<td>167</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>PumpT_Lo</td>
+<td>251</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>SPRX</td>
+<td>-0.0</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>SPRXL</td>
+<td>-0.04</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>diagP0</td>
+<td>-10.0</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>diagT0</td>
+<td>-5.0</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>diagS0</td>
+<td>25.0</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>SBnScan</td>
+<td>1619</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>DiagP1</td>
+<td>0.64</td>
+<td>dbar</td>
+<td>Pressure at beginning of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>DiagT1</td>
+<td>24.658</td>
+<td>degC</td>
+<td>Temperature at beginning of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>DiagS1</td>
+<td>32.2768</td>
+<td>PSU</td>
+<td>Salinity at beginning of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>vacBIT</td>
+<td>8.85</td>
+<td>inHg</td>
+<td>BITest vacuum</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>ampBIT</td>
+<td>194</td>
+<td>mA</td>
+<td>BIT motor current</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>secBIT</td>
+<td>406</td>
+<td>s</td>
+<td>BIT motor run-time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>oilBIT</td>
+<td>825</td>
+<td>cnt</td>
+<td>BIT oil counts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>VpmpBIT</td>
+<td>15.31</td>
+<td>V</td>
+<td>BIT pump voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>VcpuBIT</td>
+<td>7.15</td>
+<td>V</td>
+<td>BIT cpu voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>ventTm</td>
+<td>0</td>
+<td>s</td>
+<td>time that air vent motor ran</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>ventStat</td>
+<td>0</td>
+<td>1</td>
+<td>LLD status before and after the air vent ran</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>abortFlg</td>
+<td>0</td>
+<td>1</td>
+<td>Abort status flag: 0=OK,2=BAD_P,3=BAD_TX,4=SHORE_CMD,5=FINAL_DIVE,6=BAD_PHASE,7=CANT_SURFACE,8=BEACON_TX,9=TIMED_OUT,32=WD_TIMER</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>CPUtemp</td>
+<td>22.62</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>RH</td>
+<td>45</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>phBat0</td>
+<td>7.19</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>nQueued</td>
+<td>8</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SBDerr</td>
+<td>0</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>nTries</td>
+<td>1</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SBDsecs</td>
+<td>79</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>Vcpu</td>
+<td>7.07</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>Vpmp</td>
+<td>15.09</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>Vple</td>
+<td>14.94</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>vac50m</td>
+<td>9.09</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>vac0</td>
+<td>9.43</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>vac1</td>
+<td>9.92</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>HPavgI</td>
+<td>1593</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>HPmaxI</td>
+<td>1632</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>PumpT_Hi</td>
+<td>183</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>PumpT_Lo</td>
+<td>243</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SPRX</td>
+<td>0.12</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SPRXL</td>
+<td>0.04</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>diagP0</td>
+<td>1079.0</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>diagT0</td>
+<td>4.622</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>diagS0</td>
+<td>34.673</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>diagP1</td>
+<td>0.8</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>diagT1</td>
+<td>24.43</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>diagS1</td>
+<td>35.464</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SBnScan</td>
+<td>7647</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>DPavg0</td>
+<td>-10.0</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>DTavg0</td>
+<td>-5.0</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>DSavg0</td>
+<td>-1.0</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>DPavg1</td>
+<td>-10.0</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>DTavg1</td>
+<td>-5.0</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>DSavg1</td>
+<td>-1.0</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>fallTm</td>
+<td>300</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>fallW</td>
+<td>234</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>exc_stat</td>
+<td>1024</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>ventTm</td>
+<td>2</td>
+<td>s</td>
+<td>time that air vent motor ran</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>ventStat</td>
+<td>7</td>
+<td>1</td>
+<td>LLD status before and after the air vent ran</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>pOffset</td>
+<td>0.08</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>seekSc</td>
+<td>10.5</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>nSent</td>
+<td>5</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>SubCycle</td>
+<td>0</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>CPUtemp</td>
+<td>6.12</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>RH</td>
+<td>54</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>phBat0</td>
+<td>7.17</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>phBat1</td>
+<td>0.0</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>nQueued</td>
+<td>9</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SBDerr</td>
+<td>0</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>nTries</td>
+<td>1</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SBDsecs</td>
+<td>112</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>Vcpu</td>
+<td>7.04</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>Vpmp</td>
+<td>15.03</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>Vple</td>
+<td>14.86</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>vac50m</td>
+<td>9.27</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>vac0</td>
+<td>9.5</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>vac1</td>
+<td>9.99</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>HPavgI</td>
+<td>2763</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>HPmaxI</td>
+<td>2843</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>PumpT_Hi</td>
+<td>216</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>PumpT_Lo</td>
+<td>245</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SPRX</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SPRXL</td>
+<td>-0.04</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>diagP0</td>
+<td>2012.88</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>diagT0</td>
+<td>3.495</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>diagS0</td>
+<td>34.954</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>diagP1</td>
+<td>0.68</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>diagT1</td>
+<td>24.36</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>diagS1</td>
+<td>35.413</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SBnScan</td>
+<td>13598</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>DPavg0</td>
+<td>-10.0</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>DTavg0</td>
+<td>-5.0</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>DSavg0</td>
+<td>-1.0</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>DPavg1</td>
+<td>-10.0</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>DTavg1</td>
+<td>-5.0</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>DSavg1</td>
+<td>-1.0</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>fallTm</td>
+<td>300</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>fallW</td>
+<td>236</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>ventTm</td>
+<td>4</td>
+<td>s</td>
+<td>time that air vent motor ran</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>ventStat</td>
+<td>7</td>
+<td>1</td>
+<td>LLD status before and after the air vent ran</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>pOffset</td>
+<td>0.13</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>seekSc</td>
+<td>91.1</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>nSent</td>
+<td>9</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>SubCycle</td>
+<td>1</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>CPUtemp</td>
+<td>3.5</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>RH</td>
+<td>53</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>phBat0</td>
+<td>7.11</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>phBat1</td>
+<td>7.09</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>nQueued</td>
+<td>10</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SBDerr</td>
+<td>123</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>nTries</td>
+<td>3</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SBDsecs</td>
+<td>344</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>Vcpu</td>
+<td>7.04</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>Vpmp</td>
+<td>15.01</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>Vple</td>
+<td>14.86</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>vac50m</td>
+<td>9.31</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>vac0</td>
+<td>9.55</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>vac1</td>
+<td>10.0</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>HPavgI</td>
+<td>2796</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>HPmaxI</td>
+<td>2858</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>PumpT_Hi</td>
+<td>231</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>PumpT_Lo</td>
+<td>228</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SPRX</td>
+<td>-0.04</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SPRXL</td>
+<td>-0.08</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>diagP0</td>
+<td>2034.44</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>diagT0</td>
+<td>3.547</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>diagS0</td>
+<td>34.957</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>diagP1</td>
+<td>0.56</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>diagT1</td>
+<td>25.088</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>diagS1</td>
+<td>35.26</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SBnScan</td>
+<td>13968</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>DPavg0</td>
+<td>1187.52</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>DTavg0</td>
+<td>4.569</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>DSavg0</td>
+<td>34.747</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>DPavg1</td>
+<td>1195.76</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>DTavg1</td>
+<td>4.551</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>DSavg1</td>
+<td>34.772</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>fallTm</td>
+<td>300</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>fallW</td>
+<td>233</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>ventTm</td>
+<td>7</td>
+<td>s</td>
+<td>time that air vent motor ran</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>ventStat</td>
+<td>5</td>
+<td>1</td>
+<td>LLD status before and after the air vent ran</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>pOffset</td>
+<td>0.07</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>seekSc</td>
+<td>79.8</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>nSent</td>
+<td>10</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>SubCycle</td>
+<td>2</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>CPUtemp</td>
+<td>3.5</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>RH</td>
+<td>47</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>phBat0</td>
+<td>7.09</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>phBat1</td>
+<td>7.08</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>nQueued</td>
+<td>10</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SBDerr</td>
+<td>0</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>nTries</td>
+<td>1</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SBDsecs</td>
+<td>157</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>Vcpu</td>
+<td>7.06</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>Vpmp</td>
+<td>15.02</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>Vple</td>
+<td>14.87</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>vac50m</td>
+<td>9.34</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>vac0</td>
+<td>9.51</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>vac1</td>
+<td>9.98</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>HPavgI</td>
+<td>2810</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>HPmaxI</td>
+<td>2865</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>PumpT_Hi</td>
+<td>215</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>PumpT_Lo</td>
+<td>241</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SPRX</td>
+<td>-0.08</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SPRXL</td>
+<td>-0.08</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>diagP0</td>
+<td>2034.96</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>diagT0</td>
+<td>3.602</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>diagS0</td>
+<td>34.958</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>diagP1</td>
+<td>0.8</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>diagT1</td>
+<td>24.967</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>diagS1</td>
+<td>35.397</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SBnScan</td>
+<td>13697</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>DPavg0</td>
+<td>1180.6</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>DTavg0</td>
+<td>4.552</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>DSavg0</td>
+<td>34.769</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>DPavg1</td>
+<td>1185.12</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>DTavg1</td>
+<td>4.55</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>DSavg1</td>
+<td>34.772</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>fallTm</td>
+<td>300</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>fallW</td>
+<td>248</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>ventTm</td>
+<td>6</td>
+<td>s</td>
+<td>time that air vent motor ran at 50dbar</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>ventStat</td>
+<td>7</td>
+<td>1</td>
+<td>LLD status (air present) before and after the air vent ran: 0x0001 Prior, 0x0010 Immed. After, 0x0100 10s After</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>pOffset</td>
+<td>0.12</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>seekSc</td>
+<td>81.1</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>nSent</td>
+<td>12</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>SubCycle</td>
+<td>2</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>CPUtemp</td>
+<td>3.5</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>RH</td>
+<td>47</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>phBat0</td>
+<td>7.04</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>phBat1</td>
+<td>6.98</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>nQueued</td>
+<td>10</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SBDerr</td>
+<td>-5</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>nTries</td>
+<td>2</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SBDsecs</td>
+<td>374</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>Vcpu</td>
+<td>7.06</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>Vpmp</td>
+<td>15.01</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>Vple</td>
+<td>14.86</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>vac50m</td>
+<td>9.39</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>vac0</td>
+<td>9.51</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>vac1</td>
+<td>9.97</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>HPavgI</td>
+<td>2802</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>HPmaxI</td>
+<td>2871</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>PumpT_Hi</td>
+<td>231</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>PumpT_Lo</td>
+<td>225</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SPRX</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SPRXL</td>
+<td>-0.04</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>diagP0</td>
+<td>2033.12</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>diagT0</td>
+<td>3.6</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>diagS0</td>
+<td>34.957</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>diagP1</td>
+<td>0.84</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>diagT1</td>
+<td>25.946</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>diagS1</td>
+<td>34.732</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SBnScan</td>
+<td>13788</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>DPavg0</td>
+<td>1196.52</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>DTavg0</td>
+<td>4.55</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>DSavg0</td>
+<td>34.773</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>DPavg1</td>
+<td>1200.52</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>DTavg1</td>
+<td>4.549</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>DSavg1</td>
+<td>34.776</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>fallTm</td>
+<td>300</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>fallW</td>
+<td>238</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>ventTm</td>
+<td>8</td>
+<td>s</td>
+<td>time that air vent motor ran at 50dbar</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>ventStat</td>
+<td>5</td>
+<td>1</td>
+<td>LLD status (air present) before and after the air vent ran: 0x0001 Prior, 0x0010 Immed. After, 0x0100 10s After</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>pOffset</td>
+<td>0.15</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>seekSc</td>
+<td>81.2</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>nSent</td>
+<td>11</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>SubCycle</td>
+<td>2</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>CPUtemp</td>
+<td>3.5</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>RH</td>
+<td>47</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>phBat0</td>
+<td>7.07</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>phBat1</td>
+<td>7.05</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>nQueued</td>
+<td>10</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SBDerr</td>
+<td>-5</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>nTries</td>
+<td>2</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>parXstat</td>
+<td>2</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SBDsecs</td>
+<td>473</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>Vcpu</td>
+<td>7.07</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>Vpmp</td>
+<td>15.01</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>Vple</td>
+<td>14.82</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>vac50m</td>
+<td>9.36</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>vac0</td>
+<td>9.54</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>vac1</td>
+<td>9.95</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>HPavgI</td>
+<td>2810</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>HPmaxI</td>
+<td>2869</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>PumpT_Hi</td>
+<td>247</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>PumpT_Lo</td>
+<td>220</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SPRX</td>
+<td>0.2</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SPRXL</td>
+<td>-0.12</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>diagP0</td>
+<td>2037.6</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>diagT0</td>
+<td>3.564</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>diagS0</td>
+<td>34.958</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>diagP1</td>
+<td>0.6</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>diagT1</td>
+<td>26.392</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>diagS1</td>
+<td>34.878</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SBnScan</td>
+<td>13823</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>DPavg0</td>
+<td>1203.16</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>DTavg0</td>
+<td>4.543</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>DSavg0</td>
+<td>34.783</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>DPavg1</td>
+<td>1204.92</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>DTavg1</td>
+<td>4.538</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>DSavg1</td>
+<td>34.79</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>fallTm</td>
+<td>300</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>fallW</td>
+<td>243</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>ventTm</td>
+<td>4</td>
+<td>s</td>
+<td>time that air vent motor ran at 50dbar</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>ventStat</td>
+<td>7</td>
+<td>1</td>
+<td>LLD status (air present) before and after the air vent ran: 0x0001 Prior, 0x0010 Immed. After, 0x0100 10s After</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>pOffset</td>
+<td>0.09</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>seekSc</td>
+<td>80.8</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>nSent</td>
+<td>12</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>SubCycle</td>
+<td>2</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>CPUtemp</td>
+<td>3.38</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>RH</td>
+<td>47</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>phBat0</td>
+<td>7.08</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>phBat1</td>
+<td>7.02</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>nQueued</td>
+<td>10</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SBDerr</td>
+<td>-5</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>nTries</td>
+<td>3</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SBDsecs</td>
+<td>435</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>Vcpu</td>
+<td>7.07</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>Vpmp</td>
+<td>14.97</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>Vple</td>
+<td>14.82</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>vac50m</td>
+<td>9.36</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>vac0</td>
+<td>9.54</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>vac1</td>
+<td>9.96</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>HPavgI</td>
+<td>2795</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>HPmaxI</td>
+<td>2861</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>PumpT_Hi</td>
+<td>247</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>PumpT_Lo</td>
+<td>220</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SPRX</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SPRXL</td>
+<td>0.08</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>diagP0</td>
+<td>2024.08</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>diagT0</td>
+<td>3.531</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>diagS0</td>
+<td>34.957</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>diagP1</td>
+<td>0.52</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>diagT1</td>
+<td>26.502</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>diagS1</td>
+<td>34.988</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SBnScan</td>
+<td>14056</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>DPavg0</td>
+<td>1191.12</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>DTavg0</td>
+<td>4.547</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>DSavg0</td>
+<td>34.777</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>DPavg1</td>
+<td>1193.24</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>DTavg1</td>
+<td>4.542</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>DSavg1</td>
+<td>34.783</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>fallTm</td>
+<td>300</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>fallW</td>
+<td>249</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>ventTm</td>
+<td>4</td>
+<td>s</td>
+<td>time that air vent motor ran at 50dbar</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>ventStat</td>
+<td>7</td>
+<td>1</td>
+<td>LLD status (air present) before and after the air vent ran: 0x0001 Prior, 0x0010 Immed. After, 0x0100 10s After</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>pOffset</td>
+<td>0.13</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>seekSc</td>
+<td>81.2</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>nSent</td>
+<td>11</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>SubCycle</td>
+<td>2</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>CPUtemp</td>
+<td>3.38</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>RH</td>
+<td>47</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>phBat0</td>
+<td>7.08</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>phBat1</td>
+<td>7.04</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>nQueued</td>
+<td>10</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SBDerr</td>
+<td>0</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>nTries</td>
+<td>1</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SBDsecs</td>
+<td>142</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>Vcpu</td>
+<td>7.07</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>Vpmp</td>
+<td>14.98</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>Vple</td>
+<td>14.81</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>vac50m</td>
+<td>9.24</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>vac0</td>
+<td>9.54</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>vac1</td>
+<td>9.95</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>HPavgI</td>
+<td>2798</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>HPmaxI</td>
+<td>2885</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>PumpT_Hi</td>
+<td>247</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>PumpT_Lo</td>
+<td>220</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SPRX</td>
+<td>0.12</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SPRXL</td>
+<td>0.04</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>diagP0</td>
+<td>2019.96</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>diagT0</td>
+<td>3.498</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>diagS0</td>
+<td>34.955</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>diagP1</td>
+<td>0.44</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>diagT1</td>
+<td>26.298</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>diagS1</td>
+<td>34.997</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SBnScan</td>
+<td>14200</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>DPavg0</td>
+<td>1194.6</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>DTavg0</td>
+<td>4.546</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>DSavg0</td>
+<td>34.779</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>DPavg1</td>
+<td>1198.76</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>DTavg1</td>
+<td>4.546</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>DSavg1</td>
+<td>34.78</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>fallTm</td>
+<td>200</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>fallW</td>
+<td>252</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>ventTm</td>
+<td>3</td>
+<td>s</td>
+<td>time that air vent motor ran at 50dbar</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>ventStat</td>
+<td>7</td>
+<td>1</td>
+<td>LLD status (air present) before and after the air vent ran: 0x0001 Prior, 0x0010 Immed. After, 0x0100 10s After</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>pOffset</td>
+<td>0.15</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>seekSc</td>
+<td>81.4</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>nSent</td>
+<td>11</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>SubCycle</td>
+<td>2</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>CPUtemp</td>
+<td>3.5</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>RH</td>
+<td>47</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>phBat0</td>
+<td>7.06</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>phBat1</td>
+<td>7.05</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>nQueued</td>
+<td>10</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SBDerr</td>
+<td>0</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>nTries</td>
+<td>1</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SBDsecs</td>
+<td>137</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>Vcpu</td>
+<td>7.07</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>Vpmp</td>
+<td>14.97</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>Vple</td>
+<td>14.81</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>vac50m</td>
+<td>9.22</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>vac0</td>
+<td>9.53</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>vac1</td>
+<td>9.95</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>HPavgI</td>
+<td>2785</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>HPmaxI</td>
+<td>2881</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>PumpT_Hi</td>
+<td>248</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>PumpT_Lo</td>
+<td>220</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SPRX</td>
+<td>-0.08</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SPRXL</td>
+<td>-0.08</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>diagP0</td>
+<td>2011.08</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>diagT0</td>
+<td>3.522</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>diagS0</td>
+<td>34.957</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>diagP1</td>
+<td>0.68</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>diagT1</td>
+<td>26.719</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>diagS1</td>
+<td>34.878</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SBnScan</td>
+<td>13849</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>DPavg0</td>
+<td>1200.68</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>DTavg0</td>
+<td>4.545</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>DSavg0</td>
+<td>34.781</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>DPavg1</td>
+<td>1201.24</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>DTavg1</td>
+<td>4.539</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>DSavg1</td>
+<td>34.791</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>fallTm</td>
+<td>200</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>fallW</td>
+<td>257</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>ventTm</td>
+<td>5</td>
+<td>s</td>
+<td>time that air vent motor ran at 50dbar</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>ventStat</td>
+<td>5</td>
+<td>1</td>
+<td>LLD status (air present) before and after the air vent ran: 0x0001 Prior, 0x0010 Immed. After, 0x0100 10s After</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>pOffset</td>
+<td>0.12</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>seekSc</td>
+<td>81.4</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>nSent</td>
+<td>11</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>SubCycle</td>
+<td>2</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>CPUtemp</td>
+<td>3.5</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>RH</td>
+<td>47</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>phBat0</td>
+<td>7.07</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>phBat1</td>
+<td>7.07</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>nQueued</td>
+<td>10</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SBDerr</td>
+<td>0</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>nTries</td>
+<td>1</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SBDsecs</td>
+<td>157</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>Vcpu</td>
+<td>7.07</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>Vpmp</td>
+<td>14.97</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>Vple</td>
+<td>14.79</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>vac50m</td>
+<td>9.35</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>vac0</td>
+<td>9.52</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>vac1</td>
+<td>9.93</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>HPavgI</td>
+<td>2808</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>HPmaxI</td>
+<td>2876</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>PumpT_Hi</td>
+<td>247</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>PumpT_Lo</td>
+<td>220</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SPRX</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SPRXL</td>
+<td>0.04</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>diagP0</td>
+<td>2022.68</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>diagT0</td>
+<td>3.463</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>diagS0</td>
+<td>34.954</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>diagP1</td>
+<td>0.72</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>diagT1</td>
+<td>27.5</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>diagS1</td>
+<td>34.778</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SBnScan</td>
+<td>14096</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>DPavg0</td>
+<td>1195.96</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>DTavg0</td>
+<td>4.551</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>DSavg0</td>
+<td>34.777</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>DPavg1</td>
+<td>1196.04</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>DTavg1</td>
+<td>4.546</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>DSavg1</td>
+<td>34.788</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>fallTm</td>
+<td>300</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>fallW</td>
+<td>251</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>ventTm</td>
+<td>3</td>
+<td>s</td>
+<td>time that air vent motor ran at 50dbar</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>ventStat</td>
+<td>5</td>
+<td>1</td>
+<td>LLD status (air present) before and after the air vent ran: 0x0001 Prior, 0x0010 Immed. After, 0x0100 10s After</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>pOffset</td>
+<td>0.2</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>seekSc</td>
+<td>81.3</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>nSent</td>
+<td>11</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>SubCycle</td>
+<td>2</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>CPUtemp</td>
+<td>3.38</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>RH</td>
+<td>47</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>phBat0</td>
+<td>7.07</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>phBat1</td>
+<td>7.03</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>Eng_ver</td>
+<td>8</td>
+<td>1</td>
+<td>Engineering Packet software version</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>nQueued</td>
+<td>10</td>
+<td>1</td>
+<td># of data blocks queued for this dive</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SBDerr</td>
+<td>0</td>
+<td>1</td>
+<td>ErrByte of the Iridium session: 0=no error, -5= Data-Carrier-Drop (lost connection)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>nTries</td>
+<td>1</td>
+<td>1</td>
+<td># of tries to get the data block receive status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>parXstat</td>
+<td>0</td>
+<td>1</td>
+<td>parse_x_reply status in the last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SBDIstat</td>
+<td>0</td>
+<td>1</td>
+<td>ATSBD return status in last surface session</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SBDsecs</td>
+<td>156</td>
+<td>s</td>
+<td>time taken in sending last SBD message</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>Vcpu</td>
+<td>7.07</td>
+<td>V</td>
+<td>CPU battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>Vpmp</td>
+<td>14.97</td>
+<td>V</td>
+<td>present Pump battery voltage</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>Vple</td>
+<td>14.79</td>
+<td>V</td>
+<td>pump battery voltage at end of last pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>vac50m</td>
+<td>9.19</td>
+<td>inHg</td>
+<td>pcase vacuum @50m descent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>vac0</td>
+<td>9.48</td>
+<td>inHg</td>
+<td>pcase vacuum before filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>vac1</td>
+<td>9.91</td>
+<td>inHg</td>
+<td>pcase vacuum after filling oil bladder at surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>ISRID</td>
+<td>0</td>
+<td>1</td>
+<td>ID of last interrupt</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>HPavgI</td>
+<td>2818</td>
+<td>mA</td>
+<td>average pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>HPmaxI</td>
+<td>2883</td>
+<td>mA</td>
+<td>max pump current at bottom</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>PumpT_Hi</td>
+<td>247</td>
+<td>s</td>
+<td>total time pumped out, up to the last surface pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>PumpT_Lo</td>
+<td>220</td>
+<td>s</td>
+<td>Surface pump time</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SPRX</td>
+<td>0.04</td>
+<td>dbar</td>
+<td>Surface pressure before reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SPRXL</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>Surface pressure after reset offset (previous dive)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>diagP0</td>
+<td>2031.72</td>
+<td>dbar</td>
+<td>Pressure scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>diagT0</td>
+<td>3.511</td>
+<td>degC</td>
+<td>Temperature scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>diagS0</td>
+<td>34.956</td>
+<td>PSU</td>
+<td>Salinity scan at start of ascent</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>diagP1</td>
+<td>0.72</td>
+<td>dbar</td>
+<td>Shallowest pressure scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>diagT1</td>
+<td>28.561</td>
+<td>degC</td>
+<td>Shallowest temperature scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>diagS1</td>
+<td>34.843</td>
+<td>PSU</td>
+<td>Shallowest salinity scan</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>nBad</td>
+<td>0</td>
+<td>1</td>
+<td># of bad SBE bins</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SBnScan</td>
+<td>13811</td>
+<td>1</td>
+<td># scans recorded by SBE</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SBEntry</td>
+<td>0</td>
+<td>1</td>
+<td>SBE attempts</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SBEstrt</td>
+<td>2</td>
+<td>1</td>
+<td>SBE start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SBEstop</td>
+<td>0</td>
+<td>1</td>
+<td>SBE stop</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>DPavg0</td>
+<td>1200.88</td>
+<td>dbar</td>
+<td>Average pressure over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>DTavg0</td>
+<td>4.548</td>
+<td>degC</td>
+<td>Average temperature over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>DSavg0</td>
+<td>34.788</td>
+<td>PSU</td>
+<td>Average salinity over 1st half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>DPavg1</td>
+<td>1205.44</td>
+<td>dbar</td>
+<td>Average pressure over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>DTavg1</td>
+<td>4.549</td>
+<td>degC</td>
+<td>Average temperature over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>DSavg1</td>
+<td>34.787</td>
+<td>PSU</td>
+<td>Average salinity over 2nd half of drift</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>fallTm</td>
+<td>200</td>
+<td>s</td>
+<td>time to fall to 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>fallW</td>
+<td>268</td>
+<td>mm/s</td>
+<td>descent speed over top 50m</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>seekT</td>
+<td>0</td>
+<td>s</td>
+<td>time of pumping in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>seekP</td>
+<td>0.0</td>
+<td>dbar</td>
+<td>pressure change in 1st seek</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>exc_stat</td>
+<td>0</td>
+<td>1</td>
+<td>exception status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>ventTm</td>
+<td>3</td>
+<td>s</td>
+<td>time that air vent motor ran at 50dbar</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>ventStat</td>
+<td>5</td>
+<td>1</td>
+<td>LLD status (air present) before and after the air vent ran: 0x0001 Prior, 0x0010 Immed. After, 0x0100 10s After</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>pOffset</td>
+<td>0.2</td>
+<td>dbar</td>
+<td>SBE pressure offset</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>seekSc</td>
+<td>81.2</td>
+<td>s</td>
+<td>time pumped to target depth</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>nSent</td>
+<td>11</td>
+<td>1</td>
+<td># of Iridium messages sent during the last surfacing</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>iceStat</td>
+<td>0</td>
+<td>1</td>
+<td>ice status</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>binMod</td>
+<td>0</td>
+<td>1</td>
+<td>CTD binning mode</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>SubCycle</td>
+<td>2</td>
+<td>1</td>
+<td>Sub-cycle of this cycle</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>CPUtemp</td>
+<td>3.5</td>
+<td>degC</td>
+<td>CPU temperature</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>RH</td>
+<td>47</td>
+<td>%</td>
+<td>Relative Humidity</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>phBat0</td>
+<td>7.07</td>
+<td>V</td>
+<td>pH bias voltage right after turning off (end of surface)</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>phBat1</td>
+<td>7.07</td>
+<td>V</td>
+<td>pH bias voltage right before turning off (mid-drift)</td>
+</tr>
+</tbody></table>
+<h2>Pump events</h2>
+<table><thead><tr>
+<th>Source file</th>
+<th>Time</th>
+<th>Pressure (dbar)</th>
+<th>Current (mA)</th>
+<th>Voltage (V)</th>
+<th>Pump time (s)</th>
+<th>Vacuum start</th>
+<th>Vacuum end</th>
+<th>Phase</th>
+<th>Description</th>
+</tr></thead><tbody>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td></td>
+<td>148.56</td>
+<td>406</td>
+<td>15.21</td>
+<td>135</td>
+<td>3</td>
+<td>3</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td></td>
+<td>114.2</td>
+<td>343</td>
+<td>15.16</td>
+<td>16</td>
+<td>3</td>
+<td>3</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td></td>
+<td>59.92</td>
+<td>282</td>
+<td>15.13</td>
+<td>16</td>
+<td>3</td>
+<td>3</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td></td>
+<td>0.64</td>
+<td>203</td>
+<td>15.08</td>
+<td>251</td>
+<td>3</td>
+<td>55</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td></td>
+<td>1059.12</td>
+<td>1619</td>
+<td>14.89</td>
+<td>11</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td></td>
+<td>1085.52</td>
+<td>1593</td>
+<td>14.68</td>
+<td>135</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td></td>
+<td>681.96</td>
+<td>1110</td>
+<td>14.79</td>
+<td>16</td>
+<td>2</td>
+<td>4</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td></td>
+<td>293.28</td>
+<td>633</td>
+<td>14.91</td>
+<td>16</td>
+<td>2</td>
+<td>5</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td></td>
+<td>40.84</td>
+<td>308</td>
+<td>14.95</td>
+<td>16</td>
+<td>2</td>
+<td>6</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td></td>
+<td>0.08</td>
+<td>244</td>
+<td>14.94</td>
+<td>243</td>
+<td>2</td>
+<td>88</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>429.2</td>
+<td>800</td>
+<td>14.95</td>
+<td>11</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>499.44</td>
+<td>890</td>
+<td>14.93</td>
+<td>11</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>565.12</td>
+<td>990</td>
+<td>14.91</td>
+<td>11</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>626.44</td>
+<td>1071</td>
+<td>14.9</td>
+<td>11</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>682.04</td>
+<td>1153</td>
+<td>14.88</td>
+<td>10</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>732.08</td>
+<td>1220</td>
+<td>14.89</td>
+<td>9</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>776.72</td>
+<td>1282</td>
+<td>14.87</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>816.28</td>
+<td>1335</td>
+<td>14.86</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>849.68</td>
+<td>1366</td>
+<td>14.85</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>877.36</td>
+<td>1408</td>
+<td>14.85</td>
+<td>5</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>898.0</td>
+<td>1453</td>
+<td>14.86</td>
+<td>4</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>910.92</td>
+<td>1484</td>
+<td>14.87</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>2016.64</td>
+<td>2763</td>
+<td>14.32</td>
+<td>136</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>1131.16</td>
+<td>1706</td>
+<td>14.61</td>
+<td>16</td>
+<td>2</td>
+<td>5</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>884.52</td>
+<td>1403</td>
+<td>14.67</td>
+<td>16</td>
+<td>2</td>
+<td>6</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>631.8</td>
+<td>1095</td>
+<td>14.73</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>245.6</td>
+<td>593</td>
+<td>14.85</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>29.48</td>
+<td>304</td>
+<td>14.88</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td></td>
+<td>0.2</td>
+<td>248</td>
+<td>14.86</td>
+<td>245</td>
+<td>2</td>
+<td>83</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>121.96</td>
+<td>395</td>
+<td>14.85</td>
+<td>45</td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>Pump 2 target</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>1000.64</td>
+<td>1571</td>
+<td>14.82</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>1041.72</td>
+<td>1654</td>
+<td>14.8</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>1077.8</td>
+<td>1694</td>
+<td>14.8</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>1109.0</td>
+<td>1735</td>
+<td>14.78</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>1134.12</td>
+<td>1765</td>
+<td>14.77</td>
+<td>5</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>1152.56</td>
+<td>1785</td>
+<td>14.78</td>
+<td>3</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>1163.24</td>
+<td>1802</td>
+<td>14.78</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>2037.68</td>
+<td>2796</td>
+<td>14.36</td>
+<td>135</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>1156.04</td>
+<td>1742</td>
+<td>14.61</td>
+<td>16</td>
+<td>2</td>
+<td>5</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>912.24</td>
+<td>1432</td>
+<td>14.66</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>666.24</td>
+<td>1135</td>
+<td>14.73</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>285.32</td>
+<td>643</td>
+<td>14.84</td>
+<td>16</td>
+<td>2</td>
+<td>9</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>42.88</td>
+<td>320</td>
+<td>14.88</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>14.32</td>
+<td>277</td>
+<td>14.89</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td></td>
+<td>0.0</td>
+<td>242</td>
+<td>14.86</td>
+<td>228</td>
+<td>2</td>
+<td>56</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>101.08</td>
+<td>378</td>
+<td>14.83</td>
+<td>45</td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>Pump 2 target</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>1005.52</td>
+<td>1609</td>
+<td>14.81</td>
+<td>9</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>1047.72</td>
+<td>1647</td>
+<td>14.8</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>1084.48</td>
+<td>1696</td>
+<td>14.77</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>1115.84</td>
+<td>1742</td>
+<td>14.75</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>1141.08</td>
+<td>1797</td>
+<td>14.75</td>
+<td>5</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>1159.92</td>
+<td>1789</td>
+<td>14.77</td>
+<td>4</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>1171.2</td>
+<td>1827</td>
+<td>14.75</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>2038.2</td>
+<td>2810</td>
+<td>14.37</td>
+<td>135</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>1172.56</td>
+<td>1767</td>
+<td>14.61</td>
+<td>16</td>
+<td>2</td>
+<td>6</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>1049.6</td>
+<td>1607</td>
+<td>14.63</td>
+<td>16</td>
+<td>2</td>
+<td>6</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>784.64</td>
+<td>1285</td>
+<td>14.7</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>386.44</td>
+<td>769</td>
+<td>14.82</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>62.68</td>
+<td>347</td>
+<td>14.89</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td></td>
+<td>0.0</td>
+<td>246</td>
+<td>14.87</td>
+<td>241</td>
+<td>2</td>
+<td>51</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>124.6</td>
+<td>410</td>
+<td>14.8</td>
+<td>45</td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>Pump 2 target</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>1021.24</td>
+<td>1600</td>
+<td>14.82</td>
+<td>9</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>1063.92</td>
+<td>1682</td>
+<td>14.79</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>1100.76</td>
+<td>1694</td>
+<td>14.77</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>1131.6</td>
+<td>1756</td>
+<td>14.74</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>1156.4</td>
+<td>1786</td>
+<td>14.75</td>
+<td>5</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>1174.72</td>
+<td>1837</td>
+<td>14.75</td>
+<td>3</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>1186.36</td>
+<td>1829</td>
+<td>14.76</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>2036.76</td>
+<td>2802</td>
+<td>14.35</td>
+<td>135</td>
+<td>2</td>
+<td>4</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>1282.04</td>
+<td>1901</td>
+<td>14.56</td>
+<td>16</td>
+<td>2</td>
+<td>5</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>1023.28</td>
+<td>1580</td>
+<td>14.64</td>
+<td>16</td>
+<td>2</td>
+<td>6</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>765.96</td>
+<td>1266</td>
+<td>14.69</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>379.4</td>
+<td>773</td>
+<td>14.8</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>65.44</td>
+<td>354</td>
+<td>14.87</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>20.2</td>
+<td>292</td>
+<td>14.88</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td></td>
+<td>0.04</td>
+<td>246</td>
+<td>14.86</td>
+<td>225</td>
+<td>2</td>
+<td>67</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>126.4</td>
+<td>412</td>
+<td>14.8</td>
+<td>45</td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>Pump 2 target</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>1026.48</td>
+<td>1613</td>
+<td>14.79</td>
+<td>9</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>1068.92</td>
+<td>1706</td>
+<td>14.79</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>1105.4</td>
+<td>1732</td>
+<td>14.76</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>1136.08</td>
+<td>1750</td>
+<td>14.75</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>1160.08</td>
+<td>1797</td>
+<td>14.76</td>
+<td>4</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>1177.76</td>
+<td>1826</td>
+<td>14.75</td>
+<td>3</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>1188.16</td>
+<td>1833</td>
+<td>14.77</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>2041.2</td>
+<td>2810</td>
+<td>14.35</td>
+<td>135</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>1281.52</td>
+<td>1899</td>
+<td>14.55</td>
+<td>16</td>
+<td>2</td>
+<td>5</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>1018.52</td>
+<td>1580</td>
+<td>14.63</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>762.72</td>
+<td>1264</td>
+<td>14.68</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>375.92</td>
+<td>774</td>
+<td>14.8</td>
+<td>16</td>
+<td>2</td>
+<td>9</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>64.48</td>
+<td>356</td>
+<td>14.87</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>29.68</td>
+<td>306</td>
+<td>14.88</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>12.12</td>
+<td>281</td>
+<td>14.87</td>
+<td>16</td>
+<td>2</td>
+<td>9</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>0.04</td>
+<td>249</td>
+<td>14.84</td>
+<td>208</td>
+<td>2</td>
+<td>54</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td></td>
+<td>-0.04</td>
+<td>229</td>
+<td>14.82</td>
+<td>12</td>
+<td>36</td>
+<td>245</td>
+<td>15</td>
+<td>Reached surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>101.76</td>
+<td>369</td>
+<td>14.81</td>
+<td>45</td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>Pump 2 target</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>1006.0</td>
+<td>1572</td>
+<td>14.8</td>
+<td>9</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>1049.6</td>
+<td>1636</td>
+<td>14.8</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>1086.92</td>
+<td>1711</td>
+<td>14.75</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>1117.8</td>
+<td>1729</td>
+<td>14.73</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>1141.64</td>
+<td>1771</td>
+<td>14.75</td>
+<td>4</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>1159.44</td>
+<td>1798</td>
+<td>14.75</td>
+<td>3</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>1170.8</td>
+<td>1817</td>
+<td>14.74</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>2027.52</td>
+<td>2795</td>
+<td>14.34</td>
+<td>135</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>1151.88</td>
+<td>1742</td>
+<td>14.59</td>
+<td>16</td>
+<td>2</td>
+<td>6</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>917.24</td>
+<td>1449</td>
+<td>14.65</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>672.08</td>
+<td>1147</td>
+<td>14.71</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>417.6</td>
+<td>823</td>
+<td>14.79</td>
+<td>16</td>
+<td>2</td>
+<td>9</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>77.28</td>
+<td>380</td>
+<td>14.86</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>34.56</td>
+<td>313</td>
+<td>14.87</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>14.52</td>
+<td>280</td>
+<td>14.87</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>0.52</td>
+<td>252</td>
+<td>14.84</td>
+<td>208</td>
+<td>2</td>
+<td>58</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td></td>
+<td>-0.16</td>
+<td>229</td>
+<td>14.82</td>
+<td>12</td>
+<td>37</td>
+<td>245</td>
+<td>15</td>
+<td>Reached surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>102.2</td>
+<td>379</td>
+<td>14.79</td>
+<td>45</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>Pump 2 target</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>1020.04</td>
+<td>1605</td>
+<td>14.79</td>
+<td>9</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>1064.0</td>
+<td>1686</td>
+<td>14.76</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>1100.68</td>
+<td>1733</td>
+<td>14.75</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>1131.24</td>
+<td>1776</td>
+<td>14.73</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>1155.28</td>
+<td>1796</td>
+<td>14.72</td>
+<td>4</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>1172.6</td>
+<td>1848</td>
+<td>14.71</td>
+<td>3</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>1183.92</td>
+<td>1834</td>
+<td>14.74</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>2023.52</td>
+<td>2798</td>
+<td>14.34</td>
+<td>135</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>1167.76</td>
+<td>1765</td>
+<td>14.59</td>
+<td>16</td>
+<td>2</td>
+<td>5</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>931.52</td>
+<td>1470</td>
+<td>14.65</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>689.64</td>
+<td>1173</td>
+<td>14.72</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>428.84</td>
+<td>843</td>
+<td>14.77</td>
+<td>16</td>
+<td>2</td>
+<td>9</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>83.68</td>
+<td>386</td>
+<td>14.86</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>41.52</td>
+<td>325</td>
+<td>14.87</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>19.92</td>
+<td>291</td>
+<td>14.86</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>0.0</td>
+<td>247</td>
+<td>14.84</td>
+<td>210</td>
+<td>2</td>
+<td>60</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td></td>
+<td>-0.04</td>
+<td>230</td>
+<td>14.81</td>
+<td>10</td>
+<td>38</td>
+<td>245</td>
+<td>15</td>
+<td>Reached surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>104.44</td>
+<td>375</td>
+<td>14.82</td>
+<td>45</td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>Pump 2 target</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>1019.32</td>
+<td>1621</td>
+<td>14.81</td>
+<td>9</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>1061.04</td>
+<td>1654</td>
+<td>14.81</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>1097.16</td>
+<td>1719</td>
+<td>14.76</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>1127.96</td>
+<td>1743</td>
+<td>14.77</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>1153.36</td>
+<td>1792</td>
+<td>14.74</td>
+<td>5</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>1172.48</td>
+<td>1813</td>
+<td>14.76</td>
+<td>4</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>1185.72</td>
+<td>1820</td>
+<td>14.75</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>2014.68</td>
+<td>2785</td>
+<td>14.34</td>
+<td>136</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>1282.04</td>
+<td>1901</td>
+<td>14.54</td>
+<td>16</td>
+<td>2</td>
+<td>5</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>1029.4</td>
+<td>1592</td>
+<td>14.61</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>768.44</td>
+<td>1273</td>
+<td>14.68</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>384.92</td>
+<td>783</td>
+<td>14.78</td>
+<td>16</td>
+<td>2</td>
+<td>9</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>70.2</td>
+<td>368</td>
+<td>14.85</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>38.52</td>
+<td>321</td>
+<td>14.86</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>18.0</td>
+<td>290</td>
+<td>14.86</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>0.0</td>
+<td>255</td>
+<td>14.83</td>
+<td>208</td>
+<td>2</td>
+<td>58</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td></td>
+<td>-0.16</td>
+<td>230</td>
+<td>14.81</td>
+<td>12</td>
+<td>37</td>
+<td>245</td>
+<td>15</td>
+<td>Reached surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>102.24</td>
+<td>384</td>
+<td>14.79</td>
+<td>45</td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>Pump 2 target</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>1009.64</td>
+<td>1595</td>
+<td>14.77</td>
+<td>9</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>1052.88</td>
+<td>1658</td>
+<td>14.77</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>1090.68</td>
+<td>1695</td>
+<td>14.72</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>1121.72</td>
+<td>1748</td>
+<td>14.74</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>1145.96</td>
+<td>1802</td>
+<td>14.72</td>
+<td>5</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>1163.36</td>
+<td>1829</td>
+<td>14.71</td>
+<td>3</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>1174.72</td>
+<td>1825</td>
+<td>14.72</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>2026.24</td>
+<td>2808</td>
+<td>14.31</td>
+<td>135</td>
+<td>2</td>
+<td>4</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>1172.52</td>
+<td>1772</td>
+<td>14.57</td>
+<td>16</td>
+<td>2</td>
+<td>6</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>1051.36</td>
+<td>1628</td>
+<td>14.59</td>
+<td>16</td>
+<td>2</td>
+<td>6</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>674.8</td>
+<td>1163</td>
+<td>14.69</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>423.16</td>
+<td>838</td>
+<td>14.76</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>84.48</td>
+<td>391</td>
+<td>14.84</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>45.32</td>
+<td>335</td>
+<td>14.84</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>35.56</td>
+<td>321</td>
+<td>14.84</td>
+<td>16</td>
+<td>2</td>
+<td>9</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>0.04</td>
+<td>257</td>
+<td>14.82</td>
+<td>206</td>
+<td>2</td>
+<td>52</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td></td>
+<td>-0.12</td>
+<td>227</td>
+<td>14.79</td>
+<td>14</td>
+<td>34</td>
+<td>245</td>
+<td>15</td>
+<td>Reached surface</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>106.2</td>
+<td>395</td>
+<td>14.78</td>
+<td>45</td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>Pump 2 target</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>1019.8</td>
+<td>1611</td>
+<td>14.76</td>
+<td>9</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>1062.56</td>
+<td>1658</td>
+<td>14.74</td>
+<td>8</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>1099.16</td>
+<td>1710</td>
+<td>14.74</td>
+<td>7</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>1129.68</td>
+<td>1764</td>
+<td>14.74</td>
+<td>6</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>1154.68</td>
+<td>1788</td>
+<td>14.71</td>
+<td>5</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>1173.08</td>
+<td>1833</td>
+<td>14.72</td>
+<td>3</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>1184.36</td>
+<td>1868</td>
+<td>14.72</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>11</td>
+<td>Sinking</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>2035.12</td>
+<td>2818</td>
+<td>14.32</td>
+<td>135</td>
+<td>2</td>
+<td>4</td>
+<td>8</td>
+<td>Profile start</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>1284.32</td>
+<td>1927</td>
+<td>14.52</td>
+<td>16</td>
+<td>2</td>
+<td>5</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>1025.08</td>
+<td>1602</td>
+<td>14.59</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>772.76</td>
+<td>1289</td>
+<td>14.66</td>
+<td>16</td>
+<td>2</td>
+<td>7</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>508.2</td>
+<td>949</td>
+<td>14.74</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>118.32</td>
+<td>445</td>
+<td>14.83</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>37.52</td>
+<td>334</td>
+<td>14.84</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>22.12</td>
+<td>304</td>
+<td>14.84</td>
+<td>16</td>
+<td>2</td>
+<td>8</td>
+<td>14</td>
+<td>Ascending</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>0.04</td>
+<td>256</td>
+<td>14.81</td>
+<td>208</td>
+<td>2</td>
+<td>51</td>
+<td>9</td>
+<td>Profile end</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td></td>
+<td>-0.08</td>
+<td>238</td>
+<td>14.79</td>
+<td>12</td>
+<td>32</td>
+<td>245</td>
+<td>15</td>
+<td>Reached surface</td>
+</tr>
+</tbody></table>
+<h2>Engineering packet summary</h2>
+<table><thead><tr>
+<th>Source file</th>
+<th>Packet ID</th>
+<th>Bytes</th>
+<th>Packets</th>
+<th>Description</th>
+</tr></thead><tbody>
+<tr>
+<td>10785_004057_L0_-001.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_-001.json</td>
+<td>040D08</td>
+<td>63</td>
+<td>1</td>
+<td>Engineering BIT OK</td>
+</tr>
+<tr>
+<td>10785_004057_L0_-001.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>040000</td>
+<td>56</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>040400</td>
+<td>51</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>040A08</td>
+<td>87</td>
+<td>1</td>
+<td>Engineering diagnostic</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0000.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>040000</td>
+<td>86</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>040001</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>040400</td>
+<td>73</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0001.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>040000</td>
+<td>226</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>040001</td>
+<td>241</td>
+<td>1</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>040400</td>
+<td>216</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0002.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>040000</td>
+<td>211</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>040001</td>
+<td>452</td>
+<td>2</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>040400</td>
+<td>183</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0003.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>040000</td>
+<td>206</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>040001</td>
+<td>447</td>
+<td>2</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>040400</td>
+<td>172</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0004.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>040000</td>
+<td>211</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>040001</td>
+<td>452</td>
+<td>2</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>040400</td>
+<td>183</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0005.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>040000</td>
+<td>211</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>040001</td>
+<td>452</td>
+<td>2</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>040400</td>
+<td>205</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0006.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>040000</td>
+<td>211</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>040001</td>
+<td>447</td>
+<td>2</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>040400</td>
+<td>205</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0007.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>040000</td>
+<td>216</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>040001</td>
+<td>447</td>
+<td>2</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>040400</td>
+<td>205</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0008.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>040000</td>
+<td>206</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>040001</td>
+<td>447</td>
+<td>2</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>040400</td>
+<td>205</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0009.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>040000</td>
+<td>211</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>040001</td>
+<td>447</td>
+<td>2</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>040400</td>
+<td>205</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0010.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>040000</td>
+<td>216</td>
+<td>1</td>
+<td>Engineering Fall</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>040001</td>
+<td>447</td>
+<td>2</td>
+<td>Engineering Rise</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>040200</td>
+<td>21</td>
+<td>1</td>
+<td>Engineering BGC Science</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>040400</td>
+<td>205</td>
+<td>1</td>
+<td>Engineering Pump</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>040B08</td>
+<td>111</td>
+<td>1</td>
+<td>Engineering parameters</td>
+</tr>
+<tr>
+<td>10785_004057_L0_0011.json</td>
+<td>05070C</td>
+<td>59</td>
+<td>1</td>
+<td>BIST Nitrate Engineering</td>
+</tr>
+</tbody></table></body></html>

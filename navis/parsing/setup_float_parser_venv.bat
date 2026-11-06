@@ -4,16 +4,16 @@ setlocal
 cd /d "%~dp0"
 
 where py >nul 2>&1
-if %errorlevel%==0 (
-    set "PYTHON_CMD=py"
-) else (
+if errorlevel 1 (
     where python >nul 2>&1
-    if not %errorlevel%==0 (
+    if errorlevel 1 (
         echo Python was not found. Install Python 3 and try again.
         pause
         exit /b 1
     )
     set "PYTHON_CMD=python"
+) else (
+    set "PYTHON_CMD=py -3"
 )
 
 if not exist ".venv\Scripts\python.exe" (
@@ -28,13 +28,16 @@ if not exist ".venv\Scripts\python.exe" (
 
 call ".venv\Scripts\activate.bat"
 
+echo Using:
+python -c "import sys; print(sys.executable)"
+
 echo.
 echo Virtual environment is ready.
 echo.
 echo To run all float summaries:
-echo     py run_float_summaries.py
+echo     python run_float_summaries.py
 echo.
 echo To run one float parser directly:
-echo     py float_log_summary.py
+echo     python float_log_summary.py
 echo.
 cmd /k
