@@ -31,6 +31,8 @@ OPEN_HTML_WINDOW = True
 SAVE_HUMIDITY_PLOT = True
 # Save one chart for every numeric engineering variable in the data.
 SAVE_PROFILE_PLOTS = True
+# Do not save the large per-float HTML table unless explicitly enabled.
+SAVE_FLOAT_HTML_TABLE = False
 # Destination folder for the generated S2BGC web pages.
 HUMIDITY_PLOT_DIR = Path(r"Z:\www\bgc\engineering\S2BGC")
 # Use one timestamp for every chart produced during this script run.
@@ -467,7 +469,7 @@ def main() -> None:
         "-o",
         "--output",
         type=Path,
-        help="Output HTML file; defaults to engineering_<serial>.html",
+        help="Output HTML table file when --save-float-html-table is enabled",
     )
     parser.add_argument(
         "--open-window",
@@ -493,9 +495,22 @@ def main() -> None:
         action="store_false",
         help="Do not save the separate humidity Plotly file",
     )
+    parser.add_argument(
+        "--save-float-html-table",
+        dest="save_float_html_table",
+        action="store_true",
+        help="Save the per-float engineering_<serial>.html table",
+    )
+    parser.add_argument(
+        "--no-save-float-html-table",
+        dest="save_float_html_table",
+        action="store_false",
+        help="Do not save the per-float HTML table",
+    )
     parser.set_defaults(
         open_window=OPEN_HTML_WINDOW,
         save_humidity_plot=SAVE_HUMIDITY_PLOT,
+        save_float_html_table=SAVE_FLOAT_HTML_TABLE,
     )
     args = parser.parse_args()
 
@@ -511,10 +526,11 @@ def main() -> None:
             records.append((json_file, json.load(handle)))
 
     markdown = extract_engineering_data(records, serial)
-    output_path = args.output or Path.cwd() / f"engineering_{serial}.html"
-    output_path.write_text(
-        markdown_to_html(markdown, records), encoding="utf-8"
-    )
+    if args.save_float_html_table:
+        output_path = args.output or Path.cwd() / f"engineering_{serial}.html"
+        output_path.write_text(
+            markdown_to_html(markdown, records), encoding="utf-8"
+        )
     if args.save_humidity_plot:
         float_plot_dir = HUMIDITY_PLOT_DIR / serial
         float_plot_dir.mkdir(parents=True, exist_ok=True)
@@ -531,9 +547,10 @@ def main() -> None:
             engineering_profile_plots_html(records, serial), encoding="utf-8"
         )
         print(f"Saved engineering profile plots to {profile_path.resolve()}")
-    if args.open_window:
-        webbrowser.open_new_tab(output_path.resolve().as_uri())
-    print(f"Saved HTML table to {output_path.resolve()}")
+    if args.save_float_html_table:
+        if args.open_window:
+            webbrowser.open_new_tab(output_path.resolve().as_uri())
+        print(f"Saved HTML table to {output_path.resolve()}")
 
 
 if __name__ == "__main__":

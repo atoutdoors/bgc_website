@@ -515,6 +515,10 @@ def main() -> None:
         else:
             command.append("--no-save-humidity-plot")
 
+        # Keep the batch output focused on plots; do not create one large
+        # engineering_<serial>.html table in the current directory per float.
+        command.append("--no-save-float-html-table")
+
         print(f"Running float {str(serial).zfill(4)}...")
         result = subprocess.run(command, check=False)
         if result.returncode != 0:
