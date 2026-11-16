@@ -30,13 +30,13 @@ python bgcwebsite_test_layouts.py
 
 ## Installation
 
-The required packages are:
+The required packages are listed in `requirements.txt`:
 
 ```bash
-pip install pandas plotly requests openpyxl kaleido
+pip install -r requirements.txt
 ```
 
-The provided `setup_bgc_environment.bat` file creates or updates a `.venv` in the directory where it is run. It installs the packages and verifies Plotly's Turbo colormap.
+The provided `setup_bgc_environment.bat` file uses whichever Python 3.8+ interpreter is available on `PATH` (or the Windows `py` launcher), creates or repairs a `.venv` in the directory where it is run, and installs versions of the packages compatible with that interpreter. It also verifies Plotly's Turbo colormap.
 
 Run the setup file from the desired project directory:
 

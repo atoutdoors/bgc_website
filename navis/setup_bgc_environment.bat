@@ -10,20 +10,44 @@ echo Target directory: %CD%
 echo Virtual environment: %ENV_DIR%
 echo.
 
-rem Prefer the Windows Python launcher when it is available.
-where py >nul 2>&1
-if %errorlevel% equ 0 (
-    set "PYTHON=py -3"
-) else (
+rem Use the Python command on PATH first. This works with Python 3.8 through
+rem newer Python 3 releases and does not assume a particular install folder.
+where python >nul 2>&1
+if not errorlevel 1 (
     set "PYTHON=python"
+) else (
+    rem Fall back to the Windows Python launcher when python.exe is not on PATH.
+    where py >nul 2>&1
+    if not errorlevel 1 (
+        set "PYTHON=py -3"
+    ) else (
+        set "PYTHON="
+    )
 )
 
-%PYTHON% --version >nul 2>&1
-if errorlevel 1 (
+if not defined PYTHON (
     echo Python was not found.
     echo Install Python 3 from https://www.python.org/downloads/ and try again.
     pause
     exit /b 1
+)
+
+%PYTHON% -c "import sys; raise SystemExit(0 if sys.version_info >= (3, 8) else 1)"
+if errorlevel 1 (
+    echo Python 3.8 or newer is required.
+    %PYTHON% --version
+    pause
+    exit /b 1
+)
+
+rem A copied or removed base Python can leave an unusable old venv behind.
+rem Recreate only this project's generated environment when that happens.
+if exist "%ENV_DIR%\Scripts\python.exe" (
+    "%ENV_DIR%\Scripts\python.exe" -c "import sys" >nul 2>&1
+    if errorlevel 1 (
+        echo Existing virtual environment is invalid; recreating it...
+        rmdir /s /q "%ENV_DIR%"
+    )
 )
 
 if not exist "%ENV_DIR%\Scripts\python.exe" (
@@ -40,7 +64,7 @@ if not exist "%ENV_DIR%\Scripts\python.exe" (
 
 echo Installing Python packages...
 "%ENV_DIR%\Scripts\python.exe" -m pip install --upgrade pip setuptools wheel
-"%ENV_DIR%\Scripts\python.exe" -m pip install --upgrade pandas plotly requests openpyxl kaleido
+"%ENV_DIR%\Scripts\python.exe" -m pip install --upgrade -r "%~dp0requirements.txt"
 if errorlevel 1 (
     echo Package installation failed.
     pause

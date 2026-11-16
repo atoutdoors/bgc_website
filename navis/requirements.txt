@@ -1,0 +1,7 @@
+# No exact versions are pinned here. pip chooses the newest releases that
+# support the Python version used to create the virtual environment.
+pandas
+plotly
+requests
+openpyxl
+kaleido
