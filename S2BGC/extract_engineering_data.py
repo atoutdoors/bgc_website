@@ -23,22 +23,24 @@ from pathlib import Path
 from typing import Any
 import webbrowser
 
-# Set the float serial number here when running the script without arguments.
+# Default float to process when no serial number is supplied on the command line.
 SERIAL_NUMBER = "4056"
-# Set to False to save the combined report without opening a browser window.
+# Open the generated HTML report automatically when the script finishes.
 OPEN_HTML_WINDOW = True
-# Set to True to save a separate <serial>_humidity.html Plotly report.
+# Save a separate humidity-only Plotly page for this float.
 SAVE_HUMIDITY_PLOT = True
-# Set to True to save one profile plot for every numeric Engineering_Data field.
+# Save one chart for every numeric engineering variable in the data.
 SAVE_PROFILE_PLOTS = True
-# Folder for the separate humidity Plotly reports.
+# Destination folder for the generated S2BGC web pages.
 HUMIDITY_PLOT_DIR = Path(r"Z:\www\bgc\engineering\S2BGC")
+# Use one timestamp for every chart produced during this script run.
 PLOT_GENERATED_AT = datetime.now().astimezone().strftime(
     "%B %d, %Y at %I:%M %p %Z"
 )
 
 
 def parse_time(value: object) -> datetime | None:
+    """Convert an ISO timestamp from the JSON file into a datetime object."""
     if not value:
         return None
     try:
@@ -73,6 +75,7 @@ def relative_humidity_plot_html(records: list[tuple[Path, dict[str, Any]]]) -> s
     """Create a Plotly humidity-versus-profile chart for the loaded files."""
     points = []
     for source, data in records:
+        # RH is stored inside Engineering_Data with its value and unit metadata.
         rh_record = data.get("Engineering_Data", {}).get("RH")
         if not isinstance(rh_record, dict):
             continue
@@ -133,6 +136,7 @@ def engineering_profile_plots_html(
     records: list[tuple[Path, dict[str, Any]]], serial: str
 ) -> str:
     """Create one Plotly chart per numeric Engineering_Data parameter."""
+    # Group measurements by variable name so each variable gets its own chart.
     parameters: dict[str, list[dict[str, Any]]] = {}
     descriptions: dict[str, str] = {}
     for source, data in records:
@@ -152,6 +156,7 @@ def engineering_profile_plots_html(
             )
 
     chart_data = []
+    # Sort points by profile number so the lines are drawn in chronological order.
     for name, points in sorted(parameters.items()):
         points.sort(key=lambda point: (point["profile"], point["file"]))
         unit = next(
@@ -169,6 +174,7 @@ def engineering_profile_plots_html(
             "points": points,
         })
 
+    # Pass the collected data to JavaScript, which creates the charts in the browser.
     chart_data_json = json.dumps(chart_data)
     generated_at_json = json.dumps(PLOT_GENERATED_AT)
     return f"""<!doctype html>
@@ -219,6 +225,8 @@ def vertical_velocity_plot_html(
     records: list[tuple[Path, dict[str, Any]]]
 ) -> str:
     """Create a Plotly pressure-rate plot from Fall and Rise records."""
+    # Vertical velocity is calculated from the pressure difference between
+    # consecutive measurements divided by the elapsed time.
     points: list[dict[str, Any]] = []
     for source, data in records:
         profile_events = []
@@ -289,6 +297,7 @@ def markdown_to_html(
     markdown: str, records: list[tuple[Path, dict[str, Any]]]
 ) -> str:
     """Convert the limited Markdown produced by this script into standalone HTML."""
+    # Convert the small Markdown subset used by this report into HTML.
     output: list[str] = []
     in_table = False
     for line in markdown.splitlines():
@@ -334,6 +343,7 @@ tr:nth-child(even) { background: #f8fbfd; }
 
 
 def extract_engineering_data(records: list[tuple[Path, dict[str, Any]]], serial: str) -> str:
+    """Build the tables and report sections for one float."""
     metadata_rows: list[list[Any]] = []
     engineering_rows: list[list[Any]] = []
     pump_rows: list[list[Any]] = []
