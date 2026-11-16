@@ -28,18 +28,22 @@ if not exist ".venv\Scripts\python.exe" (
 
 call ".venv\Scripts\activate.bat"
 
-rem Use the existing mapped network drive by default. Override these before
-rem running if your workstation uses a different drive letter or folder.
-if not defined BGC_DATA_ROOT set "BGC_DATA_ROOT=Z:\bgc\data"
-if not defined BGC_ENGINEERING_ROOT set "BGC_ENGINEERING_ROOT=\\argus\data1\www\bgc\engineering"
+rem Prefer the mapped network drive when it is available. If it is not
+rem available, leave BGC_DATA_ROOT unset so the Python launcher can try its
+rem configured UNC fallback. Override this before running for another share.
+if not defined BGC_DATA_ROOT if exist "Z:\bgc\data\" set "BGC_DATA_ROOT=Z:\bgc\data"
+if not defined BGC_ENGINEERING_ROOT set "BGC_ENGINEERING_ROOT=Z:\bgc\data\www\bgc\engineering"
 
 echo.
 echo Data root:       %BGC_DATA_ROOT%
 echo Engineering root: %BGC_ENGINEERING_ROOT%
-if not exist "%BGC_DATA_ROOT%" (
+if defined BGC_DATA_ROOT if not exist "%BGC_DATA_ROOT%" (
     echo.
-    echo WARNING: The mapped data drive is not available.
-    echo Verify that the network drive is mapped as Z: and contains bgc\data.
+    echo WARNING: The configured data path is not available.
+    echo Verify the share is connected, or override BGC_DATA_ROOT with the UNC path.
+)
+if not defined BGC_DATA_ROOT (
+    echo No mapped Z: data drive detected; the launcher will try its UNC fallback.
 )
 
 echo.

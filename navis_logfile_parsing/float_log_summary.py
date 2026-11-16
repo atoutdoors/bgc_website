@@ -28,7 +28,7 @@ MISSION_ONLY = True
 # Set True to save each float's plots in its matching engineering folder.
 SAVE_PLOTS_TO_FLOAT_FOLDER = True
 ENGINEERING_ROOT = Path(
-    os.environ.get("BGC_ENGINEERING_ROOT", r"\\argus\data1\www\bgc\engineering")
+    os.environ.get("BGC_ENGINEERING_ROOT", r"Z:\bgc\data\www\bgc\engineering")
 )
 # Set False to generate files without opening browser windows.
 OPEN_WINDOWS = False
