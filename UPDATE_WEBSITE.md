@@ -81,7 +81,7 @@ cd /d C:\Users\athay\Documents\bgc_website\navis_logfile_parsing
 .venv\Scripts\python.exe run_float_summaries.py
 ```
 
-This reads from `Z:\bgc\data` and writes engineering outputs below `Z:\bgc\data\www\bgc\engineering`.
+This reads from `Z:\bgc\data` and writes engineering outputs below `Z:\www\bgc\engineering\<floatnumber>\`.
 
 ## 6. Verify the result
 

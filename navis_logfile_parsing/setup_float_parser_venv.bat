@@ -32,7 +32,7 @@ rem Prefer the mapped network drive when it is available. If it is not
 rem available, leave BGC_DATA_ROOT unset so the Python launcher can try its
 rem configured UNC fallback. Override this before running for another share.
 if not defined BGC_DATA_ROOT if exist "Z:\bgc\data\" set "BGC_DATA_ROOT=Z:\bgc\data"
-if not defined BGC_ENGINEERING_ROOT set "BGC_ENGINEERING_ROOT=Z:\bgc\data\www\bgc\engineering"
+if not defined BGC_ENGINEERING_ROOT set "BGC_ENGINEERING_ROOT=Z:\www\bgc\engineering"
 
 echo.
 echo Data root:       %BGC_DATA_ROOT%

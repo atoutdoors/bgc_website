@@ -23,12 +23,12 @@ PARK_OVERLAY_OUTPUT = Path("park_pressure_overlay.html")
 VELOCITY_OVERLAY_OUTPUT = Path("vertical_velocity_overlay.html")
 MISSION_JSON_OUTPUT = Path("mission.json")
 # Set True to skip log parsing and generate only mission.json.
-MISSION_ONLY = True
+MISSION_ONLY = False
 
 # Set True to save each float's plots in its matching engineering folder.
 SAVE_PLOTS_TO_FLOAT_FOLDER = True
 ENGINEERING_ROOT = Path(
-    os.environ.get("BGC_ENGINEERING_ROOT", r"Z:\bgc\data\www\bgc\engineering")
+    os.environ.get("BGC_ENGINEERING_ROOT", r"Z:\www\bgc\engineering")
 )
 # Set False to generate files without opening browser windows.
 OPEN_WINDOWS = False
