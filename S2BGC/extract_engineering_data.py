@@ -33,6 +33,9 @@ SAVE_HUMIDITY_PLOT = True
 SAVE_PROFILE_PLOTS = True
 # Folder for the separate humidity Plotly reports.
 HUMIDITY_PLOT_DIR = Path(r"Z:\www\bgc\engineering\S2BGC")
+PLOT_GENERATED_AT = datetime.now().astimezone().strftime(
+    "%B %d, %Y at %I:%M %p %Z"
+)
 
 
 def parse_time(value: object) -> datetime | None:
@@ -84,12 +87,15 @@ def relative_humidity_plot_html(records: list[tuple[Path, dict[str, Any]]]) -> s
         )
 
     points_json = json.dumps(points)
+    generated_at_json = json.dumps(PLOT_GENERATED_AT)
     return f"""
 <h2>Relative Humidity vs Profile</h2>
+<p class="plot-description">Relative humidity (RH) is the percentage of moisture inside the float's housing.</p>
 <div id="relative-humidity-plot" style="width:100%;height:520px;"></div>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script>
 const humidityPoints = {points_json};
+const plotGeneratedAt = {generated_at_json};
 const humidityTrace = {{
   x: humidityPoints.map(point => point.profile),
   y: humidityPoints.map(point => point.humidity),
@@ -100,7 +106,7 @@ const humidityTrace = {{
   hovertemplate: 'Profile: %{{x}}<br>Relative humidity: %{{y}}%<br>%{{text}}<extra></extra>'
 }};
 Plotly.newPlot('relative-humidity-plot', [humidityTrace], {{
-  title: 'Relative Humidity vs Profile',
+  title: 'Relative Humidity vs Profile<br><sup>Generated: ' + plotGeneratedAt + '</sup>',
   xaxis: {{title: 'Profile / cycle number', dtick: 1}},
   yaxis: {{title: 'Relative humidity (%)'}},
   hovermode: 'closest',
@@ -128,6 +134,7 @@ def engineering_profile_plots_html(
 ) -> str:
     """Create one Plotly chart per numeric Engineering_Data parameter."""
     parameters: dict[str, list[dict[str, Any]]] = {}
+    descriptions: dict[str, str] = {}
     for source, data in records:
         cycle = data.get("CYCLE_NUMBER")
         engineering = data.get("Engineering_Data", {})
@@ -139,6 +146,7 @@ def engineering_profile_plots_html(
             value = record.get("value")
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 continue
+            descriptions[name] = str(record.get("description", "")).strip()
             parameters.setdefault(name, []).append(
                 {"profile": cycle, "value": value, "file": source.name}
             )
@@ -154,21 +162,28 @@ def engineering_profile_plots_html(
                 if parameter == name and isinstance(record, dict)
             ),
         )
-        chart_data.append({"name": name, "unit": unit, "points": points})
+        chart_data.append({
+            "name": name,
+            "unit": unit,
+            "description": descriptions.get(name, ""),
+            "points": points,
+        })
 
     chart_data_json = json.dumps(chart_data)
+    generated_at_json = json.dumps(PLOT_GENERATED_AT)
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>S2BGC Float {serial} Engineering Profiles</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-<style>body {{ background:#f6f8fa; }} .plot-card {{ background:white; margin-bottom:24px; }}</style>
+<style>body {{ background:#f6f8fa; }} .plot-card {{ background:white; margin-bottom:24px; padding:16px; overflow:visible; }} .plot-description {{ color:#5f6b76; display:block; line-height:1.4; min-height:2.8em; margin:0 0 12px; overflow-wrap:anywhere; }}</style>
 </head><body><main class="container py-4">
 <h1 class="h3 mb-4">Float {serial} Engineering Data Across Profiles</h1>
 <div id="plots"></div>
 <script>
 const chartData = {chart_data_json};
+const plotGeneratedAt = {generated_at_json};
 const plots = document.getElementById('plots');
 chartData.forEach((chart, index) => {{
   const card = document.createElement('div');
@@ -176,6 +191,10 @@ chartData.forEach((chart, index) => {{
   const plot = document.createElement('div');
   plot.id = 'plot-' + index;
   plot.style.height = '420px';
+  const description = document.createElement('p');
+  description.className = 'plot-description';
+  description.textContent = chart.name + (chart.description ? ': ' + chart.description : '');
+  card.appendChild(description);
   card.appendChild(plot);
   plots.appendChild(card);
   Plotly.newPlot(plot, [{{
@@ -187,7 +206,7 @@ chartData.forEach((chart, index) => {{
     marker: {{size: 7}},
     hovertemplate: 'Profile: %{{x}}<br>Value: %{{y}}<br>%{{text}}<extra></extra>'
   }}], {{
-    title: chart.name,
+    title: chart.name + '<br><sup>Generated: ' + plotGeneratedAt + '</sup>',
     xaxis: {{title: 'Profile / cycle number', dtick: 1}},
     yaxis: {{title: chart.unit ? chart.name + ' (' + chart.unit + ')' : chart.name}},
     margin: {{t: 60, r: 25, b: 65, l: 80}}
@@ -224,12 +243,15 @@ def vertical_velocity_plot_html(
             )
 
     points_json = json.dumps(points)
+    generated_at_json = json.dumps(PLOT_GENERATED_AT)
     return f"""
 <h2>Vertical Velocity</h2>
+<p class="plot-description">Vertical velocity is the rate of pressure change over time, expressed in dbar/s. It indicates how quickly the float is moving vertically.</p>
 <div id="vertical-velocity-plot" style="width:100%;height:520px;"></div>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script>
 const velocityPoints = {points_json};
+const plotGeneratedAt = {generated_at_json};
 const velocityTrace = {{
   x: velocityPoints.map(point => point.time),
   y: velocityPoints.map(point => point.velocity),
@@ -240,7 +262,7 @@ const velocityTrace = {{
   hovertemplate: 'Time: %{{x}}<br>Vertical velocity: %{{y:.4f}} dbar/s<br>%{{text}}<extra></extra>'
 }};
 Plotly.newPlot('vertical-velocity-plot', [velocityTrace], {{
-  title: 'Vertical Velocity',
+  title: 'Vertical Velocity<br><sup>Generated: ' + plotGeneratedAt + '</sup>',
   xaxis: {{title: 'Time', type: 'date'}},
   yaxis: {{title: 'Vertical velocity (dbar/s)'}},
   hovermode: 'closest',

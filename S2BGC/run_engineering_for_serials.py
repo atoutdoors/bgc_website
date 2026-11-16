@@ -23,6 +23,9 @@ OPEN_WINDOWS = False
 SAVE_HUMIDITY_PLOTS = True
 OPEN_COMBINED_WINDOW = False
 HUMIDITY_PLOT_DIR = Path(r"Z:\www\bgc\engineering\S2BGC")
+PLOT_GENERATED_AT = datetime.now().astimezone().strftime(
+    "%B %d, %Y at %I:%M %p %Z"
+)
 
 
 def remove_old_vertical_velocity_plots() -> None:
@@ -77,15 +80,18 @@ def make_combined_humidity_plot() -> Path:
         )
 
     traces_json = json.dumps(traces)
+    generated_at_json = json.dumps(PLOT_GENERATED_AT)
     html = f"""<!doctype html>
 <html><head><meta charset="utf-8">
 <title>All S2BGC Floats Relative Humidity</title>
-<style>body {{ font-family: Arial, sans-serif; margin: 24px; }}</style>
+<style>body {{ font-family: Arial, sans-serif; margin: 24px; }} .plot-description {{ color:#5f6b76; margin:12px 0 18px; }}</style>
 </head><body>
 <div id="all-floats-humidity" style="width:100%;height:650px;"></div>
+<p class="plot-description">Relative humidity (RH) is the percentage of moisture inside the float's housing.</p>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script>
 const floatData = {traces_json};
+const plotGeneratedAt = {generated_at_json};
 const traces = floatData.map(float => ({{
   name: float.serial,
   x: float.points.map(point => point.profile),
@@ -97,7 +103,7 @@ const traces = floatData.map(float => ({{
   hovertemplate: 'Float: %{{fullData.name}}<br>Profile: %{{x}}<br>Relative humidity: %{{y}}%<br>%{{text}}<extra></extra>'
 }}));
 Plotly.newPlot('all-floats-humidity', traces, {{
-  title: 'Relative Humidity vs Profile — All S2BGC Floats',
+  title: 'Relative Humidity vs Profile — All S2BGC Floats<br><sup>Generated: ' + plotGeneratedAt + '</sup>',
   xaxis: {{title: 'Profile / cycle number', dtick: 1}},
   yaxis: {{title: 'Relative humidity (%)'}},
   hovermode: 'closest',
@@ -151,15 +157,18 @@ def make_combined_vertical_velocity_plot() -> Path:
         traces.append({"serial": serial, "points": points})
 
     traces_json = json.dumps(traces)
+    generated_at_json = json.dumps(PLOT_GENERATED_AT)
     html = f"""<!doctype html>
 <html><head><meta charset="utf-8">
 <title>All S2BGC Floats Vertical Velocity</title>
 <style>body {{ font-family: Arial, sans-serif; margin: 24px; }}</style>
 </head><body>
 <div id="all-floats-velocity" style="width:100%;height:650px;"></div>
+<p class="plot-description">Vertical velocity is the rate of pressure change over time, expressed in dbar/s. It indicates how quickly the float is moving vertically.</p>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script>
 const floatData = {traces_json};
+const plotGeneratedAt = {generated_at_json};
 const traces = floatData.map(float => ({{
   name: float.serial,
   x: float.points.map(point => point.time),
@@ -170,7 +179,7 @@ const traces = floatData.map(float => ({{
   hovertemplate: 'Float: %{{fullData.name}}<br>Time: %{{x}}<br>Vertical velocity: %{{y:.4f}} dbar/s<br>%{{text}}<extra></extra>'
 }}));
 Plotly.newPlot('all-floats-velocity', traces, {{
-  title: 'Vertical Velocity — All S2BGC Floats',
+  title: 'Vertical Velocity — All S2BGC Floats<br><sup>Generated: ' + plotGeneratedAt + '</sup>',
   xaxis: {{title: 'Time', type: 'date'}},
   yaxis: {{title: 'Vertical velocity (dbar/s)'}},
   hovermode: 'closest',
@@ -364,6 +373,7 @@ def make_all_floats_engineering_profile_plots() -> Path:
     """Create one Turbo-colored trace per float for every engineering parameter."""
     parameters: dict[str, dict[str, dict[str, object]]] = {}
     units: dict[str, str] = {}
+    descriptions: dict[str, str] = {}
 
     for serial_value in SERIAL_NUMBERS:
         serial = str(serial_value).zfill(4)
@@ -387,6 +397,7 @@ def make_all_floats_engineering_profile_plots() -> Path:
                 if isinstance(value, bool) or not isinstance(value, (int, float)):
                     continue
                 units[name] = str(record.get("unit", ""))
+                descriptions[name] = str(record.get("description", "")).strip()
                 parameters.setdefault(name, {}).setdefault(serial, {"points": []})
                 parameters[name][serial]["points"].append(
                     {"profile": cycle, "value": value, "file": json_file.name}
@@ -399,21 +410,28 @@ def make_all_floats_engineering_profile_plots() -> Path:
             points = trace_data["points"]
             points.sort(key=lambda point: (point["profile"], point["file"]))
             traces.append({"serial": serial, "points": points})
-        chart_data.append({"name": name, "unit": units.get(name, ""), "traces": traces})
+        chart_data.append({
+            "name": name,
+            "unit": units.get(name, ""),
+            "description": descriptions.get(name, ""),
+            "traces": traces,
+        })
 
     chart_data_json = json.dumps(chart_data)
+    generated_at_json = json.dumps(PLOT_GENERATED_AT)
     html = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>All S2BGC Floats Engineering Profiles</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-<style>body {{ background:#f6f8fa; }} .plot-card {{ background:white; margin-bottom:24px; }}</style>
+<style>body {{ background:#f6f8fa; }} .plot-card {{ background:white; margin-bottom:24px; padding:16px; overflow:visible; }} .plot-description {{ color:#5f6b76; display:block; line-height:1.4; min-height:2.8em; margin:0 0 12px; overflow-wrap:anywhere; }}</style>
 </head><body><main class="container py-4">
 <h1 class="h3 mb-4">All S2BGC Floats — Engineering Data Across Profiles</h1>
 <div id="plots"></div>
 <script>
 const chartData = {chart_data_json};
+const plotGeneratedAt = {generated_at_json};
 const plots = document.getElementById('plots');
 const turboPalette = [
   '#30123b', '#4145ab', '#2a78b9', '#22a7a4', '#57c665',
@@ -426,6 +444,10 @@ chartData.forEach((chart, chartIndex) => {{
   const plot = document.createElement('div');
   plot.id = 'plot-' + chartIndex;
   plot.style.height = '460px';
+  const description = document.createElement('p');
+  description.className = 'plot-description';
+  description.textContent = chart.name + (chart.description ? ': ' + chart.description : '');
+  card.appendChild(description);
   card.appendChild(plot);
   plots.appendChild(card);
   const traces = chart.traces.map((float, floatIndex) => ({{
@@ -440,7 +462,7 @@ chartData.forEach((chart, chartIndex) => {{
     hovertemplate: 'Float: %{{fullData.name}}<br>Profile: %{{x}}<br>Value: %{{y}}<br>%{{text}}<extra></extra>'
   }}));
   Plotly.newPlot(plot, traces, {{
-    title: chart.name,
+    title: chart.name + '<br><sup>Generated: ' + plotGeneratedAt + '</sup>',
     xaxis: {{title: 'Profile / cycle number', dtick: 1}},
     yaxis: {{title: chart.unit ? chart.name + ' (' + chart.unit + ')' : chart.name}},
     hovermode: 'closest',
