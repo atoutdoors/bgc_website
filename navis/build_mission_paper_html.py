@@ -1,17 +1,82 @@
 from pathlib import Path
-import base64, csv, html, os, re, struct, zlib
+import argparse, base64, csv, html, os, re, struct, zlib
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
 ROOT=Path(__file__).resolve().parent
 OUT=ROOT/'analysis_output'/'mission_analysis'
 FIG=OUT/'figures_filtered'
 PAPER_NAME = 'navis_mission_changes_paper.html'
+MISSION_PARAMETER_ALIASES = {
+    'activaterecoverymode': 'ActivateRecoveryMode',
+    'airbladdermax': 'AirBladderMax',
+    'ascenttimeout': 'AscentTimeOut',
+    'atdialcmd': 'AtDialCmd',
+    'altdialcmd': 'AltDialCmd',
+    'buoyancynudge': 'BuoyancyNudge',
+    'connecttimeout': 'ConnectTimeOut',
+    'cpactivationp': 'CpActivationP',
+    'deepprofiledescenttime': 'DeepProfileDescentTime',
+    'deepprofilebuoyancypos': 'DeepProfileBuoyancyPos',
+    'deepprofilebuoyancyposition': 'DeepProfileBuoyancyPos',
+    'deepprofilepressure': 'DeepProfilePressure',
+    'downtime': 'DownTime',
+    'flasherase': 'FlashErase',
+    'flashcreate': 'FlashCreate',
+    'floatid': 'FloatId',
+    'isusinit': 'IsusInit',
+    'maxlogkb': 'MaxLogKb',
+    'parkdescenttime': 'ParkDescentTime',
+    'parkbuoyancypos': 'ParkBuoyancyPos',
+    'parkbuoyancyposition': 'ParkBuoyancyPos',
+    'parkpressure': 'ParkPressure',
+    'pnpcyclelen': 'PnPCycleLen',
+    'pwd': 'Pwd',
+    'telemetryretry': 'TelemetryRetry',
+    'timeofday': 'TimeOfDay',
+    'uptime': 'UpTime',
+    'user': 'User',
+    'verbosity': 'Verbosity',
+}
+
+parser = argparse.ArgumentParser(description='Build the Navis mission changes paper.')
+parser.add_argument('data_root', nargs='?', help='Folder containing float .msg files.')
+overwrite_group = parser.add_mutually_exclusive_group()
+overwrite_group.add_argument('--overwrite', dest='overwrite', action='store_true', help='Replace an existing paper in the output folder.')
+overwrite_group.add_argument('--no-overwrite', dest='overwrite', action='store_false', help='Keep an existing paper in the output folder unchanged.')
+parser.set_defaults(overwrite=True)
+ARGS = parser.parse_args()
+if ARGS.data_root:
+    os.environ['MISSION_DATA_ROOT'] = ARGS.data_root
 PAPER_OUTPUT_DIR = Path(os.environ.get('MISSION_PAPER_OUTPUT_DIR', r'Z:\www\bgc\engineering'))
 
 
 def _write_png(path, bars, title):
-    """Write a small dependency-free bar chart so the builder needs no packages."""
+    """Write a labeled bar chart, with a dependency-free fallback."""
+    try:
+        import plotly.graph_objects as go
+        figure = go.Figure(go.Bar(
+            x=list(bars.keys()),
+            y=list(bars.values()),
+            text=list(bars.values()),
+            textposition='outside',
+            marker_color='#2c7598',
+        ))
+        figure.update_layout(
+            title=title,
+            xaxis_title='Float / profile / parameter',
+            yaxis_title='Number of qualifying changes',
+            template='plotly_white',
+            width=900,
+            height=360,
+            margin=dict(l=70, r=30, t=65, b=90),
+        )
+        figure.write_image(str(path))
+        return
+    except Exception as error:
+        print(f'[analysis] Plotly image export unavailable; using basic fallback ({error})', flush=True)
+
     width, height = 900, 360
     pixels = bytearray([255, 255, 255] * width * height)
     if bars:
@@ -50,8 +115,13 @@ def _generate_inputs():
 
     print(f'[analysis] Searching for .msg files under {data_root}...', flush=True)
     snapshots = defaultdict(dict)
-    profile_re = re.compile(r'\b(?:Profile|PrfId)\s*[:.]?\s*(\d+)\b', re.I)
-    value_re = re.compile(r'\b([A-Za-z][A-Za-z0-9_]*)\s*[:=]\s*(-?\d+(?:\.\d+)?)')
+    prf_id_re = re.compile(r'\bPrfId\s*[:=]?\s*(\d+)\b', re.I)
+    profile_re = re.compile(r'\bProfile\s*[:.]?\s*(\d+)\b', re.I)
+    parameter_names = '|'.join(re.escape(name) for name in MISSION_PARAMETER_ALIASES)
+    value_re = re.compile(
+        rf'\b({parameter_names})\s*(?:\(\s*([^)]*)\)|(?::|=)\s*([^\s,;]+)|\s+(-?\d+(?:\.\d+)?))',
+        re.I,
+    )
     print('[analysis] Counting input files (this may take a moment)...', flush=True)
     message_files = list(data_root.rglob('*.msg'))
     total_files = len(message_files)
@@ -59,31 +129,62 @@ def _generate_inputs():
     scanned = 0
     parsed = 0
     next_report = 0
-    for message_file in message_files:
-        scanned += 1
-        text = message_file.read_text(encoding='utf-8', errors='ignore')
-        progress = scanned * 100 // max(total_files, 1)
-        if progress >= next_report or scanned == total_files:
-            print(f'[analysis] Scanned {scanned:,}/{total_files:,} files ({progress}%); parsed {parsed:,} snapshots...', flush=True)
-            next_report = progress + 5
-        profile_match = profile_re.search(text)
-        if not profile_match:
-            continue
-        profile = int(profile_match.group(1))
+    def parse_message_file(message_file):
+        try:
+            text = message_file.read_text(encoding='utf-8', errors='ignore')
+        except OSError:
+            return None
         float_match = re.search(r'(?<!\d)(\d{3,5})(?!\d)', str(message_file.parent))
         if not float_match:
-            continue
+            return None
         float_id = float_match.group(1)
-        values = {key: value for key, value in value_re.findall(text)}
-        if values:
-            snapshots[float_id][profile] = values
-            parsed += 1
+        # Some exports put the profile number in the filename; prefer that
+        # when available because message headers can repeat the float number.
+        # PrfId and Profile headers are fallbacks.
+        prf_match = prf_id_re.search(text)
+        profile_match = profile_re.search(text)
+        filename_numbers = [int(value) for value in re.findall(r'(?<!\d)(\d{1,5})(?!\d)', message_file.stem)]
+        filename_profiles = [value for value in filename_numbers if str(value) != float_id]
+        if filename_profiles:
+            profile = filename_profiles[-1]
+        elif prf_match:
+            profile = int(prf_match.group(1))
+        elif profile_match:
+            profile = int(profile_match.group(1))
+        else:
+            return None
+        values = {}
+        for key, call_value, separated_value, numeric_value in value_re.findall(text):
+            value = call_value or separated_value or numeric_value or 'present'
+            values[MISSION_PARAMETER_ALIASES[key.lower()]] = value.strip()
+        return (message_file, float_id, profile, values) if values else None
+
+    worker_count = min(32, max(4, (os.cpu_count() or 4) * 4))
+    print(f'[analysis] Reading files with {worker_count} workers...', flush=True)
+    parsed_results = []
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        futures = [executor.submit(parse_message_file, message_file) for message_file in message_files]
+        for future in as_completed(futures):
+            scanned += 1
+            result = future.result()
+            if result is not None:
+                parsed_results.append(result)
+                parsed += 1
+            progress = scanned * 100 // max(total_files, 1)
+            if progress >= next_report or scanned == total_files:
+                print(f'[analysis] Scanned {scanned:,}/{total_files:,} files ({progress}%); parsed {parsed:,} snapshots...', flush=True)
+                next_report = progress + 5
+
+    # Sort before assigning so duplicate profile files resolve consistently.
+    for message_file, float_id, profile, values in sorted(parsed_results, key=lambda item: str(item[0])):
+        snapshots[float_id][profile] = values
     print(f'[analysis] Finished scan: {scanned:,} files, {parsed:,} snapshots, {len(snapshots):,} floats.', flush=True)
     if not snapshots:
         raise RuntimeError(f'No parseable .msg mission snapshots found below {data_root}.')
 
     events = []
     summaries = []
+    changed_counts = defaultdict(int)
     print('[analysis] Comparing profile snapshots...', flush=True)
     sorted_snapshots = sorted(snapshots.items(), key=lambda item: int(item[0]))
     total_floats = len(sorted_snapshots)
@@ -105,9 +206,10 @@ def _generate_inputs():
                     if parameter in {'DeepProfileBuoyancyPos', 'ParkBuoyancyPos'} and difference <= 16:
                         continue
                     events.append({'FloatId': float_id, 'ProfileId': str(profile), 'Parameter': parameter, 'OldValue': old, 'NewValue': new})
+                    changed_counts[float_id] += 1
                     changed_profiles.add(profile)
             previous = current
-        summaries.append({'FloatId': float_id, 'Profiles': str(len(profile_ids)), 'FirstProfile': str(profile_ids[0]), 'LastProfile': str(profile_ids[-1]), 'ChangeProfiles': str(len(changed_profiles)), 'ChangedParameters': str(len([e for e in events if e['FloatId'] == float_id]))})
+        summaries.append({'FloatId': float_id, 'Profiles': str(len(profile_ids)), 'FirstProfile': str(profile_ids[0]), 'LastProfile': str(profile_ids[-1]), 'ChangeProfiles': str(len(changed_profiles)), 'ChangedParameters': str(changed_counts[float_id])})
         if float_index == 1 or float_index == total_floats or float_index % max(1, total_floats // 20) == 0:
             print(f'[analysis] Compared {float_index}/{total_floats} floats ({float_index * 100 // max(total_floats, 1)}%)...', flush=True)
 
@@ -230,8 +332,11 @@ print(f'Wrote local backup: {local_paper} ({len(document):,} characters)', flush
 try:
     PAPER_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     network_paper = PAPER_OUTPUT_DIR / PAPER_NAME
-    network_paper.write_text(document, encoding='utf-8')
-    print(f'Wrote requested output: {network_paper}', flush=True)
+    if network_paper.exists() and not ARGS.overwrite:
+        print(f'Kept existing requested output (--no-overwrite): {network_paper}', flush=True)
+    else:
+        network_paper.write_text(document, encoding='utf-8')
+        print(f'Wrote requested output: {network_paper}', flush=True)
 except OSError as error:
     print(f'[report] Could not write requested output {PAPER_OUTPUT_DIR}: {error}', flush=True)
     raise

@@ -1,6 +1,11 @@
 @echo off
 setlocal
 
+rem Usage:
+rem   build_mission_paper_html.bat --overwrite
+rem   build_mission_paper_html.bat --no-overwrite
+rem   build_mission_paper_html.bat "D:\BGC\data" --no-overwrite
+
 echo.
 echo ========================================
 echo   Navis mission paper builder
@@ -10,9 +15,6 @@ echo.
 rem Run this file from any directory; all paths are relative to this file.
 set "SCRIPT_DIR=%~dp0"
 set "SCRIPT=%SCRIPT_DIR%build_mission_paper_html.py"
-
-rem Optionally pass the folder containing the float .msg files as argument 1.
-if not "%~1"=="" set "MISSION_DATA_ROOT=%~1"
 
 if defined MISSION_DATA_ROOT (
     echo [1/4] Mission data folder: %MISSION_DATA_ROOT%
@@ -24,6 +26,9 @@ if defined MISSION_PAPER_OUTPUT_DIR (
 ) else (
     echo [1/4] Paper output folder: Z:\www\bgc\engineering
 )
+echo [1/4] Overwrite mode: ON (use --no-overwrite to preserve the server copy)
+echo %* | findstr /i /c:"--no-overwrite" >nul
+if not errorlevel 1 echo [1/4] Overwrite mode: OFF (--no-overwrite)
 
 rem Prefer a project-local environment, then Python on PATH, then the
 rem Windows Python launcher. The local environment is optional.
@@ -63,7 +68,7 @@ if errorlevel 1 (
 
 pushd "%SCRIPT_DIR%"
 echo [3/4] Generating mission-analysis CSV files and figures...
-%PYTHON% -u "%SCRIPT%"
+%PYTHON% -u "%SCRIPT%" %*
 set "EXIT_CODE=%ERRORLEVEL%"
 if "%EXIT_CODE%"=="0" echo [4/4] HTML report generated successfully.
 popd
