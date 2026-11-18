@@ -68,16 +68,16 @@ def _write_png(path, bars, title):
             xaxis_title='Float / profile / parameter',
             yaxis_title='Number of qualifying changes',
             template='plotly_white',
-            width=900,
-            height=360,
-            margin=dict(l=70, r=30, t=65, b=90),
+            width=1600,
+            height=700,
+            margin=dict(l=100, r=45, t=90, b=130),
         )
-        figure.write_image(str(path))
+        figure.write_image(str(path), scale=2)
         return
     except Exception as error:
         print(f'[analysis] Plotly image export unavailable; using basic fallback ({error})', flush=True)
 
-    width, height = 900, 360
+    width, height = 1600, 700
     pixels = bytearray([255, 255, 255] * width * height)
     if bars:
         maximum = max(bars.values()) or 1
@@ -103,7 +103,6 @@ def _generate_inputs():
     required_figures = [
         FIG / 'mission_changes_by_float.png',
         FIG / 'mission_parameter_counts.png',
-        FIG / 'mission_change_timeline.png',
     ]
 
     data_root = Path(os.environ.get('MISSION_DATA_ROOT', r'Z:\bgc\data'))
@@ -228,7 +227,6 @@ def _generate_inputs():
         by_parameter[event['Parameter']] += 1
     _write_png(required_figures[0], by_float, 'Changes by float')
     _write_png(required_figures[1], by_parameter, 'Changes by parameter')
-    _write_png(required_figures[2], {event['ProfileId']: 1 for event in events}, 'Change timeline')
     print(f'[analysis] Wrote {len(summaries):,} summaries and {len(events):,} change events.', flush=True)
     print(f'[analysis] Generated mission analysis inputs in {OUT}', flush=True)
 
@@ -269,7 +267,6 @@ generated_at = datetime.now().astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
 figures = ''.join([
     img('mission_changes_by_float.png', 'Qualifying mission changes by float'),
     img('mission_parameter_counts.png', 'Counts of qualifying changes by parameter'),
-    img('mission_change_timeline.png', 'Timeline of qualifying mission changes by profile'),
 ])
 
 document = f'''<!doctype html>
