@@ -10,8 +10,9 @@ FIG=OUT/'figures_filtered'
 PAPER_NAME = 'navis_mission_changes_paper.html'
 # Set to True to replace an existing paper on the server; False preserves it.
 OVERWRITE_EXISTING_PAPER = True
-# Parameters listed here are parsed but excluded from the reported changes.
-IGNORED_MISSION_PARAMETERS = {'AltDialCmd', 'DeepProfileDescentTime', 'ParkDescentTime'}
+# These parameters are parsed but excluded because the float changes them
+# itself during normal operation rather than because of a mission update.
+IGNORED_MISSION_PARAMETERS = {'AltDialCmd', 'AtDialCmd', 'AscentTimeOut', 'DeepProfileDescentTime', 'ParkDescentTime'}
 MISSION_PARAMETER_ALIASES = {
     'activaterecoverymode': 'ActivateRecoveryMode',
     'airbladdermax': 'AirBladderMax',
@@ -202,7 +203,7 @@ def _generate_inputs():
                         continue
                     if parameter == 'IsusInit':
                         try:
-                            if float(old) == -1 and float(new) == 1:
+                            if {float(old), float(new)} == {-1, 1}:
                                 continue
                         except ValueError:
                             pass

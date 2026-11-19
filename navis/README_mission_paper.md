@@ -99,6 +99,8 @@ Z:\bgc\data
 
 The input folder should contain float folders with `.msg` files below them. The builder searches all subfolders recursively.
 
+The report intentionally ignores `AltDialCmd`, `AtDialCmd`, `AscentTimeOut`, `DeepProfileDescentTime`, and `ParkDescentTime` because these are parameters the float changes itself during normal operation, rather than mission updates to be counted in this analysis. It also ignores `IsusInit` transitions between `-1` and `1` for the same reason.
+
 Python 3.8 or newer is required. The launcher uses the local `navis\.venv` first, then `python` on `PATH`, and finally the Windows `py -3` launcher.
 
 The labeled PNG plots use Plotly and Kaleido when those packages are installed. They include chart titles, axis labels, tick values, and bar-value annotations. If they are unavailable, the builder uses a basic unlabeled fallback and prints a warning; install the packages with `python -m pip install -r requirements.txt` for fully labeled plots.
