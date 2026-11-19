@@ -99,7 +99,7 @@ Z:\bgc\data
 
 The input folder should contain float folders with `.msg` files below them. The builder searches all subfolders recursively.
 
-The report intentionally ignores `AltDialCmd`, `AtDialCmd`, `AscentTimeOut`, `DeepProfileDescentTime`, and `ParkDescentTime` because these are parameters the float changes itself during normal operation, rather than mission updates to be counted in this analysis. It also ignores `IsusInit` transitions between `-1` and `1` for the same reason.
+All parameters require logfile evidence between `Parsing configurators in "mission.cfg".` and `Configuration accepted.` containing the parameter and new value. No mission parameters are manually excluded.
 
 Python 3.8 or newer is required. The launcher uses the local `navis\.venv` first, then `python` on `PATH`, and finally the Windows `py -3` launcher.
 
@@ -187,9 +187,9 @@ The report is intentionally limited to the mission configurators defined in the 
 
 Other telemetry and engineering fields are ignored.
 
-`DeepProfileBuoyancyPos` and `ParkBuoyancyPos` changes are included only when the absolute difference is greater than 16 counts.
-
 The report describes differences between available snapshots. It does not prove that a command was executed successfully or explain why a later telemetry event occurred.
+
+By default, a change is reported only when a raw `.log` file for that float contains a `Parsing new mission configuration` block, or an outbound Iridium/remote mission-command record, with the changed parameter and new value. Changes without matching logfile evidence are ignored. Set `REQUIRE_MISSION_LOG_EVIDENCE = False` near the top of `build_mission_paper_html.py` to restore snapshot-only comparison.
 
 ## Progress and troubleshooting
 

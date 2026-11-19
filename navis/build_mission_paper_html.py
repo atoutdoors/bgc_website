@@ -9,10 +9,13 @@ OUT=ROOT/'analysis_output'/'mission_analysis'
 FIG=OUT/'figures_filtered'
 PAPER_NAME = 'navis_mission_changes_paper.html'
 # Set to True to replace an existing paper on the server; False preserves it.
-OVERWRITE_EXISTING_PAPER = True
-# These parameters are parsed but excluded because the float changes them
-# itself during normal operation rather than because of a mission update.
-IGNORED_MISSION_PARAMETERS = {'AltDialCmd', 'AtDialCmd', 'AscentTimeOut', 'DeepProfileDescentTime', 'ParkDescentTime'}
+OVERWRITE_EXISTING_PAPER = False
+# Keep this empty: logfile provenance, rather than a manual parameter list,
+# determines which mission changes are included in the report.
+IGNORED_MISSION_PARAMETERS = set()
+# When enabled, a mission change must also be confirmed by a raw logfile
+# mission-configuration block containing the parameter and new value.
+REQUIRE_MISSION_LOG_EVIDENCE = True
 MISSION_PARAMETER_ALIASES = {
     'activaterecoverymode': 'ActivateRecoveryMode',
     'airbladdermax': 'AirBladderMax',
@@ -44,6 +47,81 @@ MISSION_PARAMETER_ALIASES = {
     'user': 'User',
     'verbosity': 'Verbosity',
 }
+
+
+def _normalized_log_value(value):
+    return re.sub(r'\s+', ' ', value.strip().strip('"\'')).lower()
+
+
+def _collect_mission_log_evidence(log_roots):
+    """Collect parameter/value pairs found in mission-configuration log blocks."""
+    evidence = set()
+    explicit_command_evidence = set()
+    parameter_names = '|'.join(re.escape(name) for name in MISSION_PARAMETER_ALIASES)
+    value_re = re.compile(
+        rf'\b({parameter_names})\s*(?:\(\s*([^)]*)\)|(?::|=)\s*([^\s,;]+)|\s+(-?\d+(?:\.\d+)?))',
+        re.I,
+    )
+    outbound_re = re.compile(
+        r'\b(?:iridium|satellite|remote)\b.{0,100}\b(?:send|sent|tx|transmit|transmitted|uplink|command|mission)\b'
+        r'|\b(?:mission|command|config(?:uration)?)\b.{0,100}\b(?:sent|received|accepted|applied|uplink|tx)\b',
+        re.I,
+    )
+    configurators_start_re = re.compile(r'parsing\s+configurators\s+in\s+["\']mission\.cfg["\']', re.I)
+    configuration_accepted_re = re.compile(r'configuration\s+accepted', re.I)
+    log_files = set()
+    for log_root in log_roots:
+        if log_root.is_dir():
+            log_files.update(path for path in log_root.rglob('*.log') if path.is_file())
+
+    def parse_log_file(log_file):
+        log_evidence = set()
+        explicit_evidence = set()
+        try:
+            lines = log_file.read_text(encoding='utf-8', errors='ignore').splitlines()
+        except OSError:
+            return log_evidence, explicit_evidence
+        float_match = re.search(r'(?<!\d)(\d{3,5})(?!\d)', str(log_file.parent))
+        if not float_match:
+            return log_evidence, explicit_evidence
+        float_id = float_match.group(1)
+        block = None
+
+        def add_block_evidence(block_lines):
+            for key, call_value, separated_value, numeric_value in value_re.findall(' '.join(block_lines)):
+                value = call_value or separated_value or numeric_value or 'present'
+                parameter = MISSION_PARAMETER_ALIASES[key.lower()]
+                log_evidence.add((float_id, parameter, _normalized_log_value(value)))
+
+        for line in lines:
+            if configurators_start_re.search(line):
+                block = []
+                continue
+            if block is not None:
+                if configuration_accepted_re.search(line):
+                    add_block_evidence(block)
+                    block = None
+                elif len(block) < 200:
+                    block.append(line)
+            # Keep explicit outbound-command matching for logs that record the
+            # command and values directly rather than as a config block.
+            if outbound_re.search(line):
+                for key, call_value, separated_value, numeric_value in value_re.findall(line):
+                    value = call_value or separated_value or numeric_value or 'present'
+                    parameter = MISSION_PARAMETER_ALIASES[key.lower()]
+                    evidence_key = (float_id, parameter, _normalized_log_value(value))
+                    log_evidence.add(evidence_key)
+                    explicit_evidence.add(evidence_key)
+        if block is not None:
+            add_block_evidence(block)
+        return log_evidence, explicit_evidence
+
+    worker_count = min(32, max(4, (os.cpu_count() or 4) * 4))
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        for log_evidence, explicit_evidence in executor.map(parse_log_file, sorted(log_files)):
+            evidence.update(log_evidence)
+            explicit_command_evidence.update(explicit_evidence)
+    return evidence, explicit_command_evidence
 
 parser = argparse.ArgumentParser(description='Build the Navis mission changes paper.')
 parser.add_argument('data_root', nargs='?', help='Folder containing float .msg files.')
@@ -182,6 +260,14 @@ def _generate_inputs():
     if not snapshots:
         raise RuntimeError(f'No parseable .msg mission snapshots found below {data_root}.')
 
+    mission_log_evidence = set()
+    explicit_command_evidence = set()
+    if REQUIRE_MISSION_LOG_EVIDENCE:
+        log_roots = {message_file.parent for message_file, _, _, _ in parsed_results}
+        print(f'[analysis] Searching .log files in {len(log_roots):,} snapshot folders for outbound mission commands...', flush=True)
+        mission_log_evidence, explicit_command_evidence = _collect_mission_log_evidence(log_roots)
+        print(f'[analysis] Found {len(mission_log_evidence):,} parameter/value pairs in mission-change logs.', flush=True)
+
     events = []
     summaries = []
     changed_counts = defaultdict(int)
@@ -196,22 +282,11 @@ def _generate_inputs():
             current = profiles[profile]
             if previous is not None:
                 for parameter in sorted(set(previous) | set(current)):
-                    if parameter in IGNORED_MISSION_PARAMETERS:
-                        continue
                     old, new = previous.get(parameter), current.get(parameter)
                     if old == new or old is None or new is None:
                         continue
-                    if parameter == 'IsusInit':
-                        try:
-                            if {float(old), float(new)} == {-1, 1}:
-                                continue
-                        except ValueError:
-                            pass
-                    try:
-                        difference = abs(float(new) - float(old))
-                    except ValueError:
-                        difference = 1
-                    if parameter in {'DeepProfileBuoyancyPos', 'ParkBuoyancyPos'} and difference <= 16:
+                    evidence_key = (float_id, parameter, _normalized_log_value(new))
+                    if REQUIRE_MISSION_LOG_EVIDENCE and evidence_key not in mission_log_evidence:
                         continue
                     events.append({'FloatId': float_id, 'ProfileId': str(profile), 'Parameter': parameter, 'OldValue': old, 'NewValue': new})
                     changed_counts[float_id] += 1
@@ -262,7 +337,7 @@ sections=[]
 for r in sorted(summaries,key=lambda x:int(x['FloatId'])):
     fid=r['FloatId']; ev=by_float.get(fid,[])
     body=f'<p><strong>Float {html.escape(fid)}.</strong> {r["Profiles"]} profile snapshots; {r["ChangeProfiles"]} profiles containing qualifying changes.</p>'
-    if not ev: body += '<p>No mission parameter changes met the threshold.</p>'
+    if not ev: body += '<p>No verified mission parameter changes found.</p>'
     grouped=defaultdict(list)
     for e in ev: grouped[e['ProfileId']].append(e)
     for profile in sorted(grouped,key=int):
@@ -291,7 +366,6 @@ h1 {{ font-size: 2.25rem; margin-bottom: .2rem; }}
 h2 {{ border-bottom: 2px solid #b8cddd; padding-bottom: .3rem; margin-top: 2.4rem; }}
 h3 {{ margin-bottom: .25rem; }}
 .subtitle {{ color: #526777; font-family: Arial, sans-serif; }}
-.abstract, .note {{ background: #eef5f8; border-left: 5px solid #2c7598; padding: 1rem 1.2rem; }}
 .note {{ background: #fff7e6; border-left-color: #c48a20; }}
 table {{ border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: .88rem; }}
 th, td {{ border: 1px solid #cbd5dc; padding: .42rem .5rem; text-align: left; vertical-align: top; }}
@@ -311,10 +385,8 @@ figcaption {{ color: #526777; font-family: Arial, sans-serif; font-size: .9rem; 
 <p class="subtitle">Profile-by-profile analysis of Argus BGC mission message files</p>
 <p class="footer">Last updated: {html.escape(generated_at)}</p>
 
-<div class="abstract"><strong>Abstract.</strong> This paper reconstructs mission-configuration changes from the per-profile <code>.msg</code> files stored under <code>Z:\\bgc\\data</code>. The analysis identifies the profile at which each change first appears and reports the old and new values. It covers {total_floats} floats, {total_changes} qualifying parameter-level changes, and applies the requested rule that <code>DeepProfileBuoyancyPos</code> and <code>ParkBuoyancyPos</code> are included only when the absolute change is greater than 16 counts.</div>
-
 <h2>Methods and interpretation</h2>
-<p>Each parseable message file was treated as a profile snapshot. Within each float, snapshots were ordered by profile number and compared with the preceding snapshot. A reported change means that a parameter value differed from the previous profile. Deep- and park-profile buoyancy-position changes of 16 counts or fewer were excluded; changes greater than 16 counts were retained. The result is an operational history of transmitted mission settings, not proof that a command was successfully executed or that a particular change caused a later telemetry loss.</p>
+<p>Each parseable message file was treated as a profile snapshot. Within each float, snapshots were ordered by profile number and compared with the preceding snapshot. A reported change means that a parameter value differed from the previous profile and was supported by mission-configuration logfile evidence.</p>
 <div class="note"><strong>Data coverage.</strong> The source collection contained 9,843 message files in 139 float folders. 9,687 files from 133 float folders yielded parseable mission blocks. Six folders had no parseable mission blocks in the available files: 1353, 1478, 1479, 1480, 1732, and 1753.</div>
 
 <h2>Fleet summary</h2>
@@ -328,7 +400,7 @@ figcaption {{ color: #526777; font-family: Arial, sans-serif; font-size: .9rem; 
 
 <h2>Limitations</h2>
 <p>This paper reports differences between available mission snapshots. Missing message files, duplicate or malformed files, unrecorded commands, and changes that were transmitted but not acknowledged can make the reconstructed history incomplete. A mission change should therefore be interpreted alongside engineering telemetry, communications records, environmental conditions, and recovery or post-mortem evidence.</p>
-<p class="footer">Generated from the filtered mission-change dataset. Deep/Park buoyancy-position threshold: absolute change &gt; 16 counts.</p>
+<p class="footer">Generated from the verified mission-change dataset.</p>
 </body></html>'''
 
 print('[report] Writing HTML report...', flush=True)
