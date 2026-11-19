@@ -44,22 +44,22 @@ To use a different mission-data folder, pass it as the first argument:
 build_mission_paper_html.bat "C:\path\to\mission\data"
 ```
 
-By default, an existing paper in `Z:\www\bgc\engineering` is overwritten. To rebuild the analysis while preserving the existing server copy, use:
+Set `OVERWRITE_EXISTING_PAPER` near the top of `build_mission_paper_html.py` to control whether an existing paper in `Z:\www\bgc\engineering` is replaced:
 
-```bat
-build_mission_paper_html.bat --no-overwrite
+```python
+OVERWRITE_EXISTING_PAPER = False  # preserve the existing server copy
 ```
 
-The explicit overwrite form is also available:
+Set it to `True` when the server copy should be replaced:
 
-```bat
-build_mission_paper_html.bat --overwrite
+```python
+OVERWRITE_EXISTING_PAPER = True
 ```
 
-The data-folder argument and overwrite flag can be combined:
+The data-folder argument remains available:
 
 ```bat
-build_mission_paper_html.bat "D:\BGC\data" --no-overwrite
+build_mission_paper_html.bat "D:\BGC\data"
 ```
 
 For example:
@@ -201,5 +201,5 @@ Common errors:
 
 ## Updating the paper
 
-Run the BAT file again whenever new messages arrive. The builder rescans all available `.msg` files on every run, replaces the CSVs and figures, and updates the `Last updated` timestamp in the HTML. By default it overwrites the report in the configured output folder; use `--no-overwrite` to preserve the existing server copy. It does not run continuously in the background.
+Run the BAT file again whenever new messages arrive. The builder rescans all available `.msg` files on every run, replaces the CSVs and figures, and updates the `Last updated` timestamp in the HTML. The `OVERWRITE_EXISTING_PAPER` setting controls whether it replaces the report in the configured output folder. It does not run continuously in the background.
 

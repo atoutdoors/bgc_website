@@ -2,9 +2,8 @@
 setlocal
 
 rem Usage:
-rem   build_mission_paper_html.bat --overwrite
-rem   build_mission_paper_html.bat --no-overwrite
-rem   build_mission_paper_html.bat "D:\BGC\data" --no-overwrite
+rem   build_mission_paper_html.bat
+rem   build_mission_paper_html.bat "D:\BGC\data"
 
 echo.
 echo ========================================
@@ -26,10 +25,6 @@ if defined MISSION_PAPER_OUTPUT_DIR (
 ) else (
     echo [1/4] Paper output folder: Z:\www\bgc\engineering
 )
-echo [1/4] Overwrite mode: ON (use --no-overwrite to preserve the server copy)
-echo %* | findstr /i /c:"--no-overwrite" >nul
-if not errorlevel 1 echo [1/4] Overwrite mode: OFF (--no-overwrite)
-
 rem Prefer a project-local environment, then Python on PATH, then the
 rem Windows Python launcher. The local environment is optional.
 if exist "%SCRIPT_DIR%.venv\Scripts\python.exe" (

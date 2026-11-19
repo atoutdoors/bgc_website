@@ -8,6 +8,10 @@ ROOT=Path(__file__).resolve().parent
 OUT=ROOT/'analysis_output'/'mission_analysis'
 FIG=OUT/'figures_filtered'
 PAPER_NAME = 'navis_mission_changes_paper.html'
+# Set to True to replace an existing paper on the server; False preserves it.
+OVERWRITE_EXISTING_PAPER = True
+# Parameters listed here are parsed but excluded from the reported changes.
+IGNORED_MISSION_PARAMETERS = {'AltDialCmd', 'DeepProfileDescentTime', 'ParkDescentTime'}
 MISSION_PARAMETER_ALIASES = {
     'activaterecoverymode': 'ActivateRecoveryMode',
     'airbladdermax': 'AirBladderMax',
@@ -42,10 +46,6 @@ MISSION_PARAMETER_ALIASES = {
 
 parser = argparse.ArgumentParser(description='Build the Navis mission changes paper.')
 parser.add_argument('data_root', nargs='?', help='Folder containing float .msg files.')
-overwrite_group = parser.add_mutually_exclusive_group()
-overwrite_group.add_argument('--overwrite', dest='overwrite', action='store_true', help='Replace an existing paper in the output folder.')
-overwrite_group.add_argument('--no-overwrite', dest='overwrite', action='store_false', help='Keep an existing paper in the output folder unchanged.')
-parser.set_defaults(overwrite=True)
 ARGS = parser.parse_args()
 if ARGS.data_root:
     os.environ['MISSION_DATA_ROOT'] = ARGS.data_root
@@ -195,9 +195,17 @@ def _generate_inputs():
             current = profiles[profile]
             if previous is not None:
                 for parameter in sorted(set(previous) | set(current)):
+                    if parameter in IGNORED_MISSION_PARAMETERS:
+                        continue
                     old, new = previous.get(parameter), current.get(parameter)
                     if old == new or old is None or new is None:
                         continue
+                    if parameter == 'IsusInit':
+                        try:
+                            if float(old) == -1 and float(new) == 1:
+                                continue
+                        except ValueError:
+                            pass
                     try:
                         difference = abs(float(new) - float(old))
                     except ValueError:
@@ -329,8 +337,8 @@ print(f'Wrote local backup: {local_paper} ({len(document):,} characters)', flush
 try:
     PAPER_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     network_paper = PAPER_OUTPUT_DIR / PAPER_NAME
-    if network_paper.exists() and not ARGS.overwrite:
-        print(f'Kept existing requested output (--no-overwrite): {network_paper}', flush=True)
+    if network_paper.exists() and not OVERWRITE_EXISTING_PAPER:
+        print(f'Kept existing requested output (OVERWRITE_EXISTING_PAPER=False): {network_paper}', flush=True)
     else:
         network_paper.write_text(document, encoding='utf-8')
         print(f'Wrote requested output: {network_paper}', flush=True)
