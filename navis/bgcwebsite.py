@@ -764,7 +764,6 @@ htmltab = generate_html(tab)
 
 with open(Path(filedir, 'engineeringtable.html'), 'w', encoding='utf-8') as html_file:
     html_file.write(htmltab)
-webbrowser.open(filedir+'engineeringtable.html')
 progress_stage('Writing engineering table', 1, 1, overall_start=40, overall_end=43)
 #filename = str(date.today())+'_engineering'#update to day you run it
 #data = pd.read_excel('G://Shared drives/WHOI Argo/BGC/Float Tracking/engineering_data' '/' +  filename + ".xlsx")
