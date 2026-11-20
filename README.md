@@ -103,7 +103,10 @@ It writes the S2BGC website files to:
 Z:\www\bgc\engineering\S2BGC\
 ```
 
-Edit `S2BGC\run_engineering_for_serials.py` and update `SERIAL_NUMBERS` to control which floats are processed. Then run:
+The legacy `Z:` paths are used when available. On another computer, set
+`S2BGC_DATA_ROOT` and `S2BGC_OUTPUT_DIR`, or pass `--data-root` and
+`--output-dir` to the runner. Edit `S2BGC\run_engineering_for_serials.py` and
+update `SERIAL_NUMBERS` to control which floats are processed. Then run:
 
 ```bat
 cd /d C:\Users\athay\Documents\bgc_website\S2BGC
@@ -115,7 +118,7 @@ The setup file creates the local `.venv`, installs/upgrades pip, and runs the ba
 ```bat
 cd /d C:\Users\athay\Documents\bgc_website\S2BGC
 .venv\Scripts\activate.bat
-python run_engineering_for_serials.py
+    .venv\Scripts\python.exe run_engineering_for_serials.py
 ```
 
 The batch generator calls `extract_engineering_data.py` for each configured serial and then creates the combined pages. Expected outputs include:

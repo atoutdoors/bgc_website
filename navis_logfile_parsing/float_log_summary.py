@@ -115,6 +115,17 @@ def metric_values(match: re.Match[str]) -> list[float]:
     return [float(value) for value in re.findall(r"-?[\d.]+", match["values"])]
 
 
+def parse_log_timestamp(value: str) -> datetime:
+    """Parse normal log dates and dates with an extra opening parenthesis."""
+    normalized = value.strip().strip("()").strip()
+    for date_format in ("%b %d %Y %H:%M:%S", "%b %d %Y %H:%M:%S.%f"):
+        try:
+            return datetime.strptime(normalized, date_format).replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+    raise ValueError(f"unsupported log timestamp: {value!r}")
+
+
 def scalar_value(value: str) -> object:
     value = value.strip()
     if value.lower() in {"true", "false"}:
@@ -208,10 +219,13 @@ def parse_log(path: Path, summary: dict[str, object]) -> None:
         if not match:
             continue
 
+        try:
+            timestamp = parse_log_timestamp(match["date"])
+        except ValueError as exc:
+            print(f"Skipping malformed timestamp in {path.name}: {exc}")
+            continue
+
         summary["log_records"] += 1
-        timestamp = datetime.strptime(
-            match["date"], "%b %d %Y %H:%M:%S"
-        ).replace(tzinfo=timezone.utc)
         iso = timestamp.isoformat()
         if not summary["first_seen_utc"] or iso < summary["first_seen_utc"]:
             summary["first_seen_utc"] = iso

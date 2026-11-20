@@ -6,6 +6,8 @@ from __future__ import annotations
 import subprocess
 import sys
 import json
+import argparse
+import os
 import traceback
 import webbrowser
 from datetime import date, datetime, timezone
@@ -16,14 +18,32 @@ from pathlib import Path
 # Add or remove float serial numbers here to control the batch run.
 SERIAL_NUMBERS = ["4056", "4057","4058","4059","4007","4008","4009","4027","4028","4029"]
 
-# Root folder containing one data folder per S2BGC float.
-DATA_ROOT = Path(r"Z:\S2BGC\data")
+# Root folder containing one data folder per S2BGC float. Legacy Z: paths are
+# supported when present; portable runs can use environment variables or CLI options.
+LEGACY_DATA_ROOT = Path(r"Z:\S2BGC\data")
+LEGACY_OUTPUT_DIR = Path(r"Z:\www\bgc\engineering\S2BGC")
+LOCAL_DATA_ROOT = Path(__file__).with_name("data")
+LOCAL_OUTPUT_DIR = Path(__file__).with_name("output")
+
+
+def configured_path(environment_name: str, legacy_path: Path, local_path: Path) -> Path:
+    configured = os.environ.get(environment_name)
+    if configured:
+        return Path(configured)
+    if legacy_path.exists():
+        return legacy_path
+    return local_path
+
+
+DATA_ROOT = configured_path("S2BGC_DATA_ROOT", LEGACY_DATA_ROOT, LOCAL_DATA_ROOT)
 
 # Batch defaults. Set OPEN_WINDOWS to True to open each combined report.
 OPEN_WINDOWS = False
 SAVE_HUMIDITY_PLOTS = True
 OPEN_COMBINED_WINDOW = False
-HUMIDITY_PLOT_DIR = Path(r"Z:\www\bgc\engineering\S2BGC")
+HUMIDITY_PLOT_DIR = configured_path(
+    "S2BGC_OUTPUT_DIR", LEGACY_OUTPUT_DIR, LOCAL_OUTPUT_DIR
+)
 # One timestamp is shared by all charts made in this batch run.
 PLOT_GENERATED_AT = datetime.now().astimezone().strftime(
     "%B %d, %Y at %I:%M %p %Z"
@@ -509,6 +529,32 @@ chartData.forEach((chart, chartIndex) => {{
 
 def main() -> None:
     """Run the per-float reports, then create the combined S2BGC pages."""
+    global DATA_ROOT, HUMIDITY_PLOT_DIR, SERIAL_NUMBERS
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--data-root",
+        type=Path,
+        default=DATA_ROOT,
+        help="Root containing <serial>/json/L0/*.json files.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=HUMIDITY_PLOT_DIR,
+        help="Directory where generated S2BGC pages are written.",
+    )
+    parser.add_argument(
+        "--serial",
+        dest="serial_numbers",
+        action="append",
+        help="Float serial to process; repeat for multiple floats.",
+    )
+    args = parser.parse_args()
+    DATA_ROOT = args.data_root
+    HUMIDITY_PLOT_DIR = args.output_dir
+    if args.serial_numbers:
+        SERIAL_NUMBERS = args.serial_numbers
+
     RUN_LOG_PATH.write_text(
         f"S2BGC engineering run started {datetime.now().astimezone().isoformat()}\n",
         encoding="utf-8",

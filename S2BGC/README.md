@@ -18,6 +18,22 @@ Z:\www\bgc\engineering\S2BGC\
 
 ## Configuration
 
+The legacy `Z:` locations are used automatically when they exist. On another
+computer, set these environment variables or pass the command-line options:
+
+```powershell
+$env:S2BGC_DATA_ROOT = 'D:\data\S2BGC'
+$env:S2BGC_OUTPUT_DIR = 'D:\www\engineering\S2BGC'
+```
+
+Or:
+
+```powershell
+.venv\Scripts\python.exe run_engineering_for_serials.py `
+  --data-root 'D:\data\S2BGC' `
+  --output-dir 'D:\www\engineering\S2BGC'
+```
+
 Edit `run_engineering_for_serials.py` and set the serial numbers to process:
 
 ```python
@@ -38,13 +54,20 @@ The script generates:
 From the `S2BGC` folder:
 
 ```powershell
-py run_engineering_for_serials.py
+.venv\Scripts\python.exe run_engineering_for_serials.py
 ```
 
 The batch runner calls `extract_engineering_data.py` for each configured serial number and then creates the combined reports and engineering table.
 
 ## Virtual environment
 
-Run `setup_s2bgc_venv.bat` to create or activate a local `.venv` and run the report generator.
+Run `setup_s2bgc_venv.bat` to discover an installed Python, create a local
+`.venv`, and run the report generator. It does not depend on a specific Python
+installation path or version. For scheduled builds, call the stable local
+interpreter directly:
+
+```bat
+S2BGC\.venv\Scripts\python.exe S2BGC\run_engineering_for_serials.py
+```
 
 The HTML pages load Plotly, Bootstrap, and DataTables from CDNs, so a browser needs internet access to display the styling and interactive charts.
