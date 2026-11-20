@@ -61,6 +61,14 @@ def log(message: str) -> None:
         print(f"WARNING: could not write diagnostic log {RUN_LOG_PATH}: {exc}", flush=True)
 
 
+def report_progress(percent: int, message: str) -> None:
+    """Print a compact progress bar for the hourly wrapper and terminal runs."""
+    percent = max(0, min(100, percent))
+    filled = percent // 2
+    bar = "#" * filled + "-" * (50 - filled)
+    log(f"[{bar}] {percent:3d}% - {message}")
+
+
 def validate_paths() -> None:
     """Fail early with an actionable message for missing or inaccessible paths."""
     try:
@@ -582,6 +590,7 @@ def main() -> None:
         f"S2BGC engineering run started {datetime.now().astimezone().isoformat()}\n",
         encoding="utf-8",
     )
+    report_progress(5, "S2BGC engineering pages started")
     log(f"Python: {sys.executable}")
     log(f"Data root: {DATA_ROOT}")
     log(f"Output directory: {HUMIDITY_PLOT_DIR}")
@@ -596,7 +605,8 @@ def main() -> None:
     script_path = Path(__file__).with_name("extract_engineering_data.py")
     failed_serials: list[str] = []
 
-    for serial in SERIAL_NUMBERS:
+    total_serials = len(SERIAL_NUMBERS)
+    for serial_index, serial in enumerate(SERIAL_NUMBERS, start=1):
         command = [
             sys.executable,
             str(script_path),
@@ -629,6 +639,8 @@ def main() -> None:
         if result.returncode != 0:
             failed_serials.append(serial_text)
             log(f"ERROR: float {serial_text} failed with exit code {result.returncode}")
+        progress = 5 + int(20 * serial_index / max(total_serials, 1))
+        report_progress(progress, f"S2BGC float {serial_text} complete")
 
     if failed_serials:
         raise RuntimeError(
@@ -645,9 +657,11 @@ def main() -> None:
 
         table_path = make_engineering_table()
         log(f"Saved engineering table to {table_path.resolve()}")
+        report_progress(24, "S2BGC engineering table complete")
         make_float_index_pages()
         profiles_path = make_all_floats_engineering_profile_plots()
         log(f"Saved all-floats engineering profiles to {profiles_path.resolve()}")
+        report_progress(25, "S2BGC engineering pages complete")
     except Exception:
         log("ERROR during combined S2BGC page generation:")
         log(traceback.format_exc())
