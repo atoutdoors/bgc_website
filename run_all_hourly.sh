@@ -12,10 +12,18 @@ SUCCESS_STATE="$LOG_DIR/hourly-build-success-streak.txt"
 LOCK_DIR="${TMPDIR:-/tmp}/bgc_website_hourly_build.lock"
 BUILD_OK=1
 
-: "${S2BGC_DATA_ROOT:=/mnt/z/S2BGC/data}"
-: "${S2BGC_OUTPUT_DIR:=/mnt/z/www/bgc/engineering/S2BGC}"
-: "${BGC_DATA_ROOT:=/mnt/z/bgc/data}"
-: "${BGC_ENGINEERING_ROOT:=/mnt/z/www/bgc/engineering}"
+if [[ -d /mnt/z ]]; then
+    Z_ROOT=/mnt/z
+elif [[ -d /z ]]; then
+    Z_ROOT=/z
+else
+    # Git Bash can usually resolve this Windows-style path if the Z: drive is mounted.
+    Z_ROOT='Z:'
+fi
+: "${S2BGC_DATA_ROOT:=$Z_ROOT/S2BGC/data}"
+: "${S2BGC_OUTPUT_DIR:=$Z_ROOT/www/bgc/engineering/S2BGC}"
+: "${BGC_DATA_ROOT:=$Z_ROOT/bgc/data}"
+: "${BGC_ENGINEERING_ROOT:=$Z_ROOT/www/bgc/engineering}"
 export S2BGC_DATA_ROOT S2BGC_OUTPUT_DIR BGC_DATA_ROOT BGC_ENGINEERING_ROOT
 
 mkdir -p -- "$LOG_DIR"
@@ -29,26 +37,39 @@ cleanup() {
 }
 trap cleanup EXIT
 
-S2BGC_PYTHON="$S2BGC/.venv_runtime/bin/python"
-PARSER_PYTHON="$PARSER/.venv/bin/python"
-NAVIS_PYTHON="$NAVIS/.venv/bin/python"
-
-if [[ ! -x "$S2BGC_PYTHON" ]]; then
-    echo "ERROR: Run S2BGC/setup_s2bgc_venv.sh first."
-    BUILD_OK=0
-fi
-if [[ ! -x "$PARSER_PYTHON" ]]; then
-    echo "ERROR: Run navis_logfile_parsing/setup_float_parser_venv.sh first."
-    BUILD_OK=0
-fi
-if [[ ! -x "$NAVIS_PYTHON" ]]; then
-    echo "ERROR: Run navis/setup_bgc_environment.sh first."
-    BUILD_OK=0
-fi
-
 timestamp() {
     date '+%Y-%m-%d %H:%M:%S'
 }
+
+find_python() {
+    local venv_dir="$1"
+    if [[ -x "$venv_dir/bin/python" ]]; then
+        printf '%s\n' "$venv_dir/bin/python"
+    elif [[ -x "$venv_dir/Scripts/python.exe" ]]; then
+        printf '%s\n' "$venv_dir/Scripts/python.exe"
+    else
+        return 1
+    fi
+}
+
+S2BGC_PYTHON="$(find_python "$S2BGC/.venv_runtime" 2>/dev/null || true)"
+PARSER_PYTHON="$(find_python "$PARSER/.venv" 2>/dev/null || true)"
+NAVIS_PYTHON="$(find_python "$NAVIS/.venv" 2>/dev/null || true)"
+
+echo "==== Build started $(timestamp) ====" >> "$LOG"
+
+if [[ -z "$S2BGC_PYTHON" ]]; then
+    echo "ERROR: S2BGC Python environment not found. Run S2BGC/setup_s2bgc_venv.bat or .sh first." | tee -a "$LOG"
+    BUILD_OK=0
+fi
+if [[ -z "$PARSER_PYTHON" ]]; then
+    echo "ERROR: Parser Python environment not found. Run navis_logfile_parsing/setup_float_parser_venv.bat or .sh first." | tee -a "$LOG"
+    BUILD_OK=0
+fi
+if [[ -z "$NAVIS_PYTHON" ]]; then
+    echo "ERROR: Navis Python environment not found. Run navis/setup_bgc_environment.bat or .sh first." | tee -a "$LOG"
+    BUILD_OK=0
+fi
 
 progress() {
     local percent="$1"
@@ -78,7 +99,6 @@ run_stage() {
     fi
 }
 
-echo "==== Build started $(timestamp) ====" >> "$LOG"
 echo "================================================"
 echo "       BGC WEBSITE HOURLY BUILD"
 echo "================================================"
