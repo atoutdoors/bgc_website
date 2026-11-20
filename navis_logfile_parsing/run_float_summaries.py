@@ -17,7 +17,15 @@ if os.name == "nt":
 else:
     DEFAULT_DATA_ROOTS = (Path("/data1/bgc/data"), Path("/mnt/z/bgc/data"), Path("/z/bgc/data"))
 SUMMARY_SCRIPT = Path(__file__).with_name("float_log_summary.py")
-BATCH_OUTPUT_ROOT = Path("batch_outputs")
+DEFAULT_OUTPUT_ROOT = (
+    "Z:/www/bgc/engineering" if os.name == "nt" else "/data1/www/bgc/engineering"
+)
+BATCH_OUTPUT_ROOT = Path(
+    os.environ.get(
+        "BGC_SUMMARY_OUTPUT_ROOT",
+        os.environ.get("BGC_ENGINEERING_ROOT", DEFAULT_OUTPUT_ROOT),
+    )
+)
 CACHE_PATH = BATCH_OUTPUT_ROOT / ".summary_cache.json"
 
 
