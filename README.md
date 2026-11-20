@@ -2,16 +2,47 @@
 
 ## Merging branch: run the complete hourly build
 
-The highlighted entry point for the `merging` branch is [`run_all_hourly.bat`](run_all_hourly.bat). Run it from the repository root to execute, in order:
+The highlighted entry point for the `merging` branch is [`run_all_hourly.bat`](run_all_hourly.bat). It is the one command that runs the complete website update. Run it from the repository root:
+
+```bat
+cd /d C:\Users\athay\Documents\bgc_website
+run_all_hourly.bat
+```
+
+You can also double-click `run_all_hourly.bat` in File Explorer. Running it from the repository root is recommended because the batch file resolves source and log paths relative to its own location. The build runs these stages in order:
 
 1. S2BGC engineering pages
 2. Navis float summaries
 3. The main BGC website
 4. Mission-paper HTML
 
-Before the first run on a workstation, create the three local Python environments using the setup scripts described below. The runner writes live output and diagnostics to `logs\hourly-build.log`, prevents overlapping runs, and clears the log after three consecutive successful builds.
+Before the first run on a workstation, create the local Python environments using the setup scripts described below. The runner checks that the environments exist, writes live output and diagnostics to `logs\hourly-build.log`, prevents overlapping runs, and clears the log after three consecutive successful builds. A failed stage causes the batch file to return a failure exit code.
 
-For a scheduled task or another computer, set `S2BGC_DATA_ROOT`, `S2BGC_OUTPUT_DIR`, `BGC_DATA_ROOT`, and `BGC_ENGINEERING_ROOT` to accessible local or UNC paths before launching the batch file. Mapped drives such as `Z:` may not be available to scheduled tasks.
+For a scheduled task or another computer, set `S2BGC_DATA_ROOT`, `S2BGC_OUTPUT_DIR`, `BGC_DATA_ROOT`, and `BGC_ENGINEERING_ROOT` to accessible local or UNC paths before launching the batch file. Mapped drives such as `Z:` may not be available to scheduled tasks; use UNC paths such as `\\server\share\folder` instead. In Task Scheduler, use the full path to `run_all_hourly.bat` and set **Start in** to the repository folder.
+
+### First-time setup
+
+Run each setup file once from the repository root on a new computer:
+
+```bat
+S2BGC\setup_s2bgc_venv.bat
+navis_logfile_parsing\setup_float_parser_venv.bat
+navis\setup_bgc_environment.bat
+```
+
+Then run the complete build with:
+
+```bat
+run_all_hourly.bat
+```
+
+### Build output and troubleshooting
+
+- Live output and the most recent details are in `logs\hourly-build.log`.
+- S2BGC diagnostics are in `S2BGC\s2bgc_engineering_run.log`.
+- Navis float-summary diagnostics are in `navis_logfile_parsing\float_summary_run.log`.
+- A lock in `%TEMP%\bgc_website_hourly_build.lock` prevents two hourly builds from running at once. If no build is running and the lock remains, remove that exact lock folder before retrying.
+- The script uses the configured data paths and does not open engineering tables or browser windows automatically.
 
 ## 1. Prepare the workstation
 
@@ -20,7 +51,7 @@ Open Command Prompt or PowerShell and run:
 ```bat
 cd /d C:\Users\athay\Documents\bgc_website
 git status
-git pull origin main
+git pull origin merging
 ```
 
 Resolve any existing changes or pull conflicts before continuing. Confirm that the `Z:` drive is connected:
