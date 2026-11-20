@@ -26,7 +26,7 @@ import webbrowser
 # Default float to process when no serial number is supplied on the command line.
 SERIAL_NUMBER = "4056"
 # Open the generated HTML report automatically when the script finishes.
-OPEN_HTML_WINDOW = True
+OPEN_HTML_WINDOW = False
 # Save a separate humidity-only Plotly page for this float.
 SAVE_HUMIDITY_PLOT = True
 # Save one chart for every numeric engineering variable in the data.
