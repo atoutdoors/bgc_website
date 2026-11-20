@@ -6,6 +6,7 @@ from __future__ import annotations
 import subprocess
 import sys
 import json
+import traceback
 import webbrowser
 from datetime import date, datetime, timezone
 from html import escape
@@ -27,6 +28,17 @@ HUMIDITY_PLOT_DIR = Path(r"Z:\www\bgc\engineering\S2BGC")
 PLOT_GENERATED_AT = datetime.now().astimezone().strftime(
     "%B %d, %Y at %I:%M %p %Z"
 )
+RUN_LOG_PATH = Path(__file__).with_name("s2bgc_engineering_run.log")
+
+
+def log(message: str) -> None:
+    """Print and persist diagnostic messages for scheduled runs."""
+    print(message, flush=True)
+    try:
+        with RUN_LOG_PATH.open("a", encoding="utf-8") as handle:
+            handle.write(message + "\n")
+    except OSError as exc:
+        print(f"WARNING: could not write diagnostic log {RUN_LOG_PATH}: {exc}", flush=True)
 
 
 def remove_old_vertical_velocity_plots() -> None:
@@ -301,7 +313,7 @@ def make_engineering_table() -> Path:
     body_rows = []
     for row in sorted(rows, key=lambda item: str(item["serial"])):
         serial = escape(str(row["serial"]))
-        serial_link = f'<a href="S2BGC/{serial}/{serial}_engineering_profiles.html" target="_blank">{serial}</a>'
+        serial_link = f'<a href="{serial}/{serial}_engineering_profiles.html" target="_blank">{serial}</a>'
         wmo = escape(str(row["wmo"]))
         wmo_link = (
             f'<a href="../../wmo/{wmo}/index.html" target="_blank" '
@@ -497,9 +509,23 @@ chartData.forEach((chart, chartIndex) => {{
 
 def main() -> None:
     """Run the per-float reports, then create the combined S2BGC pages."""
+    RUN_LOG_PATH.write_text(
+        f"S2BGC engineering run started {datetime.now().astimezone().isoformat()}\n",
+        encoding="utf-8",
+    )
+    log(f"Python: {sys.executable}")
+    log(f"Data root: {DATA_ROOT}")
+    log(f"Output directory: {HUMIDITY_PLOT_DIR}")
+    log(f"Diagnostic log: {RUN_LOG_PATH}")
     # Remove stale output, process each float, and build fleet-wide summaries.
-    remove_old_vertical_velocity_plots()
+    try:
+        remove_old_vertical_velocity_plots()
+    except Exception:
+        log("ERROR during stale-file cleanup:")
+        log(traceback.format_exc())
+        raise
     script_path = Path(__file__).with_name("extract_engineering_data.py")
+    failed_serials: list[str] = []
 
     for serial in SERIAL_NUMBERS:
         command = [
@@ -524,22 +550,39 @@ def main() -> None:
         # engineering_<serial>.html table in the current directory per float.
         command.append("--no-save-float-html-table")
 
-        print(f"Running float {str(serial).zfill(4)}...")
-        result = subprocess.run(command, check=False)
+        serial_text = str(serial).zfill(4)
+        log(f"Running float {serial_text}: {' '.join(command)}")
+        result = subprocess.run(command, check=False, capture_output=True, text=True)
+        if result.stdout:
+            log(result.stdout.rstrip())
+        if result.stderr:
+            log(f"[stderr for {serial_text}]\n{result.stderr.rstrip()}")
         if result.returncode != 0:
-            print(f"Float {str(serial).zfill(4)} failed with exit code {result.returncode}")
+            failed_serials.append(serial_text)
+            log(f"ERROR: float {serial_text} failed with exit code {result.returncode}")
 
-    combined_path = make_combined_humidity_plot()
-    print(f"Saved combined humidity plot to {combined_path.resolve()}")
-    if OPEN_COMBINED_WINDOW:
-        webbrowser.open_new_tab(combined_path.resolve().as_uri())
+    if failed_serials:
+        raise RuntimeError(
+            "S2BGC float generation failed for: "
+            + ", ".join(failed_serials)
+            + f". See {RUN_LOG_PATH} for stdout/stderr."
+        )
 
+    try:
+        combined_path = make_combined_humidity_plot()
+        log(f"Saved combined humidity plot to {combined_path.resolve()}")
+        if OPEN_COMBINED_WINDOW:
+            webbrowser.open_new_tab(combined_path.resolve().as_uri())
 
-    table_path = make_engineering_table()
-    print(f"Saved engineering table to {table_path.resolve()}")
-    make_float_index_pages()
-    profiles_path = make_all_floats_engineering_profile_plots()
-    print(f"Saved all-floats engineering profiles to {profiles_path.resolve()}")
+        table_path = make_engineering_table()
+        log(f"Saved engineering table to {table_path.resolve()}")
+        make_float_index_pages()
+        profiles_path = make_all_floats_engineering_profile_plots()
+        log(f"Saved all-floats engineering profiles to {profiles_path.resolve()}")
+    except Exception:
+        log("ERROR during combined S2BGC page generation:")
+        log(traceback.format_exc())
+        raise
 
 
 if __name__ == "__main__":
