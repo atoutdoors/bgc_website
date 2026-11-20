@@ -45,7 +45,7 @@ find_python() {
     local venv_dir="$1"
     if [[ -x "$venv_dir/bin/python" ]]; then
         printf '%s\n' "$venv_dir/bin/python"
-    elif [[ -x "$venv_dir/Scripts/python.exe" ]]; then
+    elif [[ -f "$venv_dir/Scripts/python.exe" ]]; then
         printf '%s\n' "$venv_dir/Scripts/python.exe"
     else
         return 1
@@ -59,15 +59,15 @@ NAVIS_PYTHON="$(find_python "$NAVIS/.venv" 2>/dev/null || true)"
 echo "==== Build started $(timestamp) ====" >> "$LOG"
 
 if [[ -z "$S2BGC_PYTHON" ]]; then
-    echo "ERROR: S2BGC Python environment not found. Run S2BGC/setup_s2bgc_venv.bat or .sh first." | tee -a "$LOG"
+    echo "ERROR: S2BGC Python environment not found. Checked: $S2BGC/.venv_runtime/bin/python and $S2BGC/.venv_runtime/Scripts/python.exe" | tee -a "$LOG"
     BUILD_OK=0
 fi
 if [[ -z "$PARSER_PYTHON" ]]; then
-    echo "ERROR: Parser Python environment not found. Run navis_logfile_parsing/setup_float_parser_venv.bat or .sh first." | tee -a "$LOG"
+    echo "ERROR: Parser Python environment not found. Checked: $PARSER/.venv/bin/python and $PARSER/.venv/Scripts/python.exe" | tee -a "$LOG"
     BUILD_OK=0
 fi
 if [[ -z "$NAVIS_PYTHON" ]]; then
-    echo "ERROR: Navis Python environment not found. Run navis/setup_bgc_environment.bat or .sh first." | tee -a "$LOG"
+    echo "ERROR: Navis Python environment not found. Checked: $NAVIS/.venv/bin/python and $NAVIS/.venv/Scripts/python.exe" | tee -a "$LOG"
     BUILD_OK=0
 fi
 
