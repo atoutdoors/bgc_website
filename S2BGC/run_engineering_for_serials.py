@@ -16,7 +16,7 @@ from pathlib import Path
 
 
 # Add or remove float serial numbers here to control the batch run.
-SERIAL_NUMBERS = ["4056", "4057","4058","4059","4007","4008","4009","4027","4028","4029"]
+SERIAL_NUMBERS = ["4056", "4057","4058","4059","4007","4008","4027","4028","4029"]
 
 # Root folder containing one data folder per S2BGC float. Legacy Z: paths are
 # supported when present; portable runs can use environment variables or CLI options.
