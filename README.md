@@ -1,5 +1,18 @@
 # Complete Website Update Instructions
 
+## Merging branch: run the complete hourly build
+
+The highlighted entry point for the `merging` branch is [`run_all_hourly.bat`](run_all_hourly.bat). Run it from the repository root to execute, in order:
+
+1. S2BGC engineering pages
+2. Navis float summaries
+3. The main BGC website
+4. Mission-paper HTML
+
+Before the first run on a workstation, create the three local Python environments using the setup scripts described below. The runner writes live output and diagnostics to `logs\hourly-build.log`, prevents overlapping runs, and clears the log after three consecutive successful builds.
+
+For a scheduled task or another computer, set `S2BGC_DATA_ROOT`, `S2BGC_OUTPUT_DIR`, `BGC_DATA_ROOT`, and `BGC_ENGINEERING_ROOT` to accessible local or UNC paths before launching the batch file. Mapped drives such as `Z:` may not be available to scheduled tasks.
+
 ## 1. Prepare the workstation
 
 Open Command Prompt or PowerShell and run:
