@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -34,7 +35,12 @@ SAVE_PROFILE_PLOTS = True
 # Do not save the large per-float HTML table unless explicitly enabled.
 SAVE_FLOAT_HTML_TABLE = False
 # Destination folder for the generated S2BGC web pages.
-HUMIDITY_PLOT_DIR = Path(r"Z:\www\bgc\engineering\S2BGC")
+DEFAULT_OUTPUT_DIR = (
+    Path("Z:/www/bgc/engineering/S2BGC")
+    if os.name == "nt"
+    else Path("/data1/www/bgc/engineering/S2BGC")
+)
+HUMIDITY_PLOT_DIR = Path(os.environ.get("S2BGC_OUTPUT_DIR", str(DEFAULT_OUTPUT_DIR)))
 # Use one timestamp for every chart produced during this script run.
 PLOT_GENERATED_AT = datetime.now().astimezone().strftime(
     "%B %d, %Y at %I:%M %p %Z"
@@ -462,8 +468,13 @@ def main() -> None:
     parser.add_argument(
         "--root",
         type=Path,
-        default=Path(r"Z:\S2BGC\data"),
-        help=r"Data root containing <serial>\json\L0 (default: Z:\S2BGC\data)",
+        default=Path(
+            os.environ.get(
+                "S2BGC_DATA_ROOT",
+                "Z:/S2BGC/data" if os.name == "nt" else "/data1/S2BGC/data",
+            )
+        ),
+        help="Data root containing <serial>/json/L0",
     )
     parser.add_argument(
         "-o",

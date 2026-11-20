@@ -18,10 +18,21 @@ from pathlib import Path
 # Add or remove float serial numbers here to control the batch run.
 SERIAL_NUMBERS = ["4056", "4057","4058","4059","4007","4008","4027","4028","4029"]
 
-# Root folder containing one data folder per S2BGC float. Legacy Z: paths are
-# supported when present; portable runs can use environment variables or CLI options.
-LEGACY_DATA_ROOT = Path(r"Z:\S2BGC\data")
-LEGACY_OUTPUT_DIR = Path(r"Z:\www\bgc\engineering\S2BGC")
+def server_path(*parts: str) -> Path:
+    """Return the platform's shared data path, preferring mounted locations."""
+    if os.name == "nt":
+        return Path("Z:/").joinpath(*parts)
+    for base in (Path("/data1"), Path("/mnt/z"), Path("/z")):
+        candidate = base.joinpath(*parts)
+        if candidate.exists():
+            return candidate
+    return Path("/data1").joinpath(*parts)
+
+
+# Root folder containing one data folder per S2BGC float. Environment variables
+# remain the authoritative override for scheduled or alternate deployments.
+LEGACY_DATA_ROOT = server_path("S2BGC", "data")
+LEGACY_OUTPUT_DIR = server_path("www", "bgc", "engineering", "S2BGC")
 LOCAL_DATA_ROOT = Path(__file__).with_name("data")
 LOCAL_OUTPUT_DIR = Path(__file__).with_name("output")
 

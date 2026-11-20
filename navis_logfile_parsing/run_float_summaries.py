@@ -12,10 +12,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 
-DEFAULT_DATA_ROOTS = (
-    Path(r"Z:\bgc\data"),
-    Path(r"\\argus\data1\bgc\data"),
-)
+if os.name == "nt":
+    DEFAULT_DATA_ROOTS = (Path("Z:/bgc/data"), Path(r"\\argus\data1\bgc\data"))
+else:
+    DEFAULT_DATA_ROOTS = (Path("/data1/bgc/data"), Path("/mnt/z/bgc/data"), Path("/z/bgc/data"))
 SUMMARY_SCRIPT = Path(__file__).with_name("float_log_summary.py")
 BATCH_OUTPUT_ROOT = Path("batch_outputs")
 CACHE_PATH = BATCH_OUTPUT_ROOT / ".summary_cache.json"
@@ -95,9 +95,7 @@ def resolve_data_root(requested: str | None) -> Path:
     raise SystemExit(
         "Float data folder is unavailable or access was denied. Searched: "
         f"{searched}\n"
-        "Connect the Argus share in this Windows session, or run with "
-        "BGC_DATA_ROOT=\\\\server\\share\\bgc\\data "
-        "(or pass --data-root)."
+        "Set BGC_DATA_ROOT to the mounted data directory or pass --data-root."
     )
 
 

@@ -276,7 +276,12 @@ parser.add_argument('data_root', nargs='?', help='Folder containing float .log f
 ARGS = parser.parse_args()
 if ARGS.data_root:
     os.environ['MISSION_DATA_ROOT'] = ARGS.data_root
-PAPER_OUTPUT_DIR = Path(os.environ.get('MISSION_PAPER_OUTPUT_DIR', r'Z:\www\bgc\engineering'))
+PAPER_OUTPUT_DIR = Path(
+    os.environ.get(
+        'MISSION_PAPER_OUTPUT_DIR',
+        'Z:/www/bgc/engineering' if os.name == 'nt' else '/data1/www/bgc/engineering',
+    )
+)
 
 
 def _write_png(path, bars, title):
@@ -332,7 +337,12 @@ def _generate_inputs():
         FIG / 'mission_parameter_counts.png',
     ]
 
-    data_root = Path(os.environ.get('MISSION_DATA_ROOT', r'Z:\bgc\data'))
+    data_root = Path(
+        os.environ.get(
+            'MISSION_DATA_ROOT',
+            'Z:/bgc/data' if os.name == 'nt' else '/data1/bgc/data',
+        )
+    )
     if not data_root.is_dir():
         raise FileNotFoundError(
             f'No mission input data found at {data_root}. '

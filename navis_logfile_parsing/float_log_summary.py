@@ -14,7 +14,8 @@ from pathlib import Path
 
 
 # Folder containing the log files. All *.log files below this folder are read.
-_configured_data_root = os.environ.get("BGC_DATA_ROOT", r"Z:\bgc\data")
+_default_data_root = "Z:/bgc/data" if os.name == "nt" else "/data1/bgc/data"
+_configured_data_root = os.environ.get("BGC_DATA_ROOT", _default_data_root)
 LOG_PATH = Path(os.environ.get("FLOAT_LOG_PATH", str(Path(_configured_data_root) / "wn1665")))
 HTML_OUTPUT = Path("float_health_report.html")
 PARK_PLOT_OUTPUT = Path("park_pressure_plot.html")
@@ -28,7 +29,10 @@ MISSION_ONLY = False
 # Set True to save each float's plots in its matching engineering folder.
 SAVE_PLOTS_TO_FLOAT_FOLDER = True
 ENGINEERING_ROOT = Path(
-    os.environ.get("BGC_ENGINEERING_ROOT", r"Z:\www\bgc\engineering")
+    os.environ.get(
+        "BGC_ENGINEERING_ROOT",
+        "Z:/www/bgc/engineering" if os.name == "nt" else "/data1/www/bgc/engineering",
+    )
 )
 # Set False to generate files without opening browser windows.
 OPEN_WINDOWS = False

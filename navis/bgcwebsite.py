@@ -577,14 +577,14 @@ def progress_stage(label, current, total, overall_start=0, overall_end=100):
 
 
 
-name = 'Aidan' # WHAT IS YOUR NAME
+name = 'Aidan' # Legacy label retained for report metadata.
 
-if name == 'Aidan':
-    filedir = Path('Z://www/bgc/engineering/')
-elif name == 'Kat':
-    filedir = Path('/Volumes/data1/www/bgc/engineering/')
-else:
-    raise ValueError('Set name to Aidan or Kat, or configure filedir explicitly.')
+filedir = Path(
+    os.environ.get(
+        'BGC_ENGINEERING_ROOT',
+        'Z:/www/bgc/engineering/' if os.name == 'nt' else '/data1/www/bgc/engineering/',
+    )
+)
 # Normalize once because the plotting code builds several legacy paths by
 # concatenating strings (for example: filedir + str(serial_number)).
 filedir = str(filedir).rstrip('/\\') + '/'
@@ -604,12 +604,15 @@ UPLOAD_ATTEMPTS,UPLOADS,CONNECTIONS,CONNECTION_ATTEMPTS,TimeStartTelemetry,Sbe41
 data = pd.DataFrame(data)
 engineering_data = data.copy()
 
-if name == 'Aidan':
-    export_path = Path('G://Shared drives/WHOI Argo/BGC/Float Tracking/engineering_data') / f'{filename}.xlsx'
-elif name == 'Kat':
-    export_path = Path('/Users/katherineparise/Library/CloudStorage/GoogleDrive-katherine.parise@whoi.edu/Shared drives/WHOI Argo/BGC/Float Tracking/engineering_data') / f'{filename}.xlsx'
+export_root = os.environ.get('BGC_ENGINEERING_EXPORT_DIR')
+if export_root:
+    export_path = Path(export_root) / f'{filename}.xlsx'
+elif os.name == 'nt':
+    export_path = Path('G:/Shared drives/WHOI Argo/BGC/Float Tracking/engineering_data') / f'{filename}.xlsx'
 else:
-    raise ValueError('Configure an engineering-data export path.')
+    export_path = Path(
+        os.environ.get('BGC_ENGINEERING_ROOT', '/data1/www/bgc/engineering')
+    ) / 'engineering_data' / f'{filename}.xlsx'
 export_path.parent.mkdir(parents=True, exist_ok=True)
 data.to_excel(export_path, index=False)
 progress_stage(f'Loaded {len(data):,} engineering records for {data["FloatId"].nunique()} floats', 1, 1, overall_start=2, overall_end=12)
