@@ -94,7 +94,7 @@ set "MESSAGE=%~2"
 set /a FILLED=PERCENT/2
 set "BAR="
 for /L %%N in (1,1,50) do if %%N LEQ !FILLED! (set "BAR=!BAR!#") else (set "BAR=!BAR!-" )
-echo [!BAR!] !PERCENT!%% - !MESSAGE! - %time%
+powershell -NoProfile -Command "$s='[!BAR!] !PERCENT!%% - !MESSAGE! - %time%'; [Console]::Write(('`r' + $s.PadRight(120)))"
 exit /b 0
 
 :failed

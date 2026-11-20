@@ -66,7 +66,13 @@ def report_progress(percent: int, message: str) -> None:
     percent = max(0, min(100, percent))
     filled = percent // 2
     bar = "#" * filled + "-" * (50 - filled)
-    log(f"[{bar}] {percent:3d}% - {message}")
+    line = f"[{bar}] {percent:3d}% - {message}"
+    print(line, end="\r", flush=True)
+    try:
+        with RUN_LOG_PATH.open("a", encoding="utf-8") as handle:
+            handle.write(line + "\n")
+    except OSError as exc:
+        print(f"WARNING: could not write diagnostic log {RUN_LOG_PATH}: {exc}", flush=True)
 
 
 def validate_paths() -> None:
