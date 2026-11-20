@@ -11,9 +11,10 @@ import json
 import base64
 import requests
 import html
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ---------------------------------------------------------------------------
 # Database/API helpers
@@ -22,10 +23,12 @@ from concurrent.futures import ThreadPoolExecutor
 BASE_URL = "https://db.whoifloatgroup.org"
 PLATFORMTYPE = "&PLATFORM_TYPE=NAVIS_EBR"
 REQUEST_HEADERS = {"Content-Type": "application/json"}
-MAX_API_WORKERS = 8
-WRITE_PNG = False  # Set to True when PNG copies are needed.
-INTERACTIVE_PLOT_MENU = True  # Click a plot name to view only that figure.
-SAVE_PLOTS = False             # Set to True to save HTML files as well.
+MAX_API_WORKERS = int(os.environ.get('BGC_MAX_API_WORKERS', '16'))
+# PNG rendering is much slower than HTML generation. Enable it explicitly with
+# BGC_WRITE_PNG=1 when image copies are required.
+WRITE_PNG = os.environ.get('BGC_WRITE_PNG', '0') == '1'
+INTERACTIVE_PLOT_MENU = False  # Click a plot name to view only that figure.
+SAVE_PLOTS = True             # Set to True to save HTML files as well.
 # Set to True to skip plot output and run the health-report section only.
 HEALTH_REPORTS_ONLY = False
 GENERATE_FLOAT_TRACK_MAPS = True
@@ -39,6 +42,7 @@ PNG_HEIGHT = 700
 PNG_SCALE = 1
 FILTER_PLOT_OUTLIERS = True
 OUTLIER_IQR_FACTOR = 9.0  # Larger values keep more extreme observations.
+RH_REFERENCE_TEMPERATURE_C = 20.0
 
 PLOT_COLORS = [
     '#0072B2', '#D55E00', '#009E73', '#CC79A7',
@@ -193,8 +197,21 @@ def get_discrete_profile_stats(platform_number):
 
 def get_profile_stats_parallel(profile_ids):
     """Fetch profile statistics concurrently while preserving profile order."""
+    profile_ids = list(profile_ids)
+    if not profile_ids:
+        return pd.DataFrame()
+    frames = [None] * len(profile_ids)
     with ThreadPoolExecutor(max_workers=MAX_API_WORKERS) as executor:
-        frames = list(executor.map(get_discrete_profile_stats, profile_ids))
+        futures = {
+            executor.submit(get_discrete_profile_stats, profile_id): index
+            for index, profile_id in enumerate(profile_ids)
+        }
+        for completed_index, future in enumerate(as_completed(futures), start=1):
+            frames[futures[future]] = future.result()
+            progress_stage(
+                'Maximum-pressure API requests', completed_index, len(profile_ids),
+                overall_start=25, overall_end=40,
+            )
     return pd.concat(frames, ignore_index=True)
 
 
@@ -225,6 +242,23 @@ def multi_trace_gradient_color(index, total):
     """Return a high-variance sequential Turbo color for a trace."""
     position = index / max(total - 1, 1)
     return sample_colorscale('Turbo', [position])[0]
+
+
+def temperature_corrected_relative_humidity(humidity, temperature_c,
+                                            reference_temperature_c=RH_REFERENCE_TEMPERATURE_C):
+    """Convert RH to a common reference temperature using saturation vapor pressure.
+
+    The correction assumes the measured water-vapor partial pressure is unchanged
+    while temperature varies. Invalid or non-positive readings remain NaN.
+    """
+    rh = pd.to_numeric(humidity, errors='coerce')
+    temperature = pd.to_numeric(temperature_c, errors='coerce')
+
+    def saturation_vapor_pressure(temp_c):
+        return 6.112 * (2.718281828459045 ** ((17.67 * temp_c) / (temp_c + 243.5)))
+
+    corrected = rh * saturation_vapor_pressure(reference_temperature_c) / saturation_vapor_pressure(temperature)
+    return corrected.where(rh.notna() & temperature.notna() & (rh >= 0) & (temperature > -243.5))
 
 
 def style_figure(figure):
@@ -304,9 +338,11 @@ def style_figure(figure):
                     '%{x}: %{y}<extra></extra>'
                 )
         if hasattr(trace, 'line') and trace.line is not None:
-            trace.line.width = 2
+            trace.line.width = 1.2
+            trace.opacity = 0.82
         if getattr(trace, 'mode', None) and 'markers' in trace.mode:
-            trace.marker.size = 7
+            trace.marker.size = 4
+            trace.marker.opacity = 0.72
     return figure
 
 
@@ -360,7 +396,8 @@ def write_registered_pngs():
             scale=PNG_SCALE,
         )
     except AttributeError:
-        for figure, png_path in PNG_REGISTRY:
+        for png_index, (figure, png_path) in enumerate(PNG_REGISTRY, start=1):
+            progress_stage('PNG rendering', png_index, len(PNG_REGISTRY), overall_start=92, overall_end=99)
             figure.write_image(
                 png_path,
                 format='png',
@@ -524,6 +561,21 @@ def progress(message):
     print(f"[{datetime.now():%H:%M:%S}] {message}", flush=True)
 
 
+def progress_stage(label, current, total, overall_start=0, overall_end=100):
+    """Print an updating overall/stage percentage for long-running work."""
+    stage_percent = 100 if total <= 0 else int(current / total * 100)
+    fraction = min(max(current / max(total, 1), 0), 1)
+    overall_percent = overall_start + int((overall_end - overall_start) * fraction)
+    bar_width = 24
+    filled = int(bar_width * overall_percent / 100)
+    bar = '#' * filled + '-' * (bar_width - filled)
+    print(
+        f"[{datetime.now():%H:%M:%S}] [{bar}] {overall_percent:3d}% "
+        f"{label}: {current}/{total} ({stage_percent}%)",
+        flush=True,
+    )
+
+
 
 name = 'Aidan' # WHAT IS YOUR NAME
 
@@ -537,12 +589,12 @@ else:
 # concatenating strings (for example: filedir + str(serial_number)).
 filedir = str(filedir).rstrip('/\\') + '/'
 
-progress('Starting engineering report')
+progress_stage('Starting engineering report', 0, 1, overall_start=0, overall_end=2)
 
 
 filename = f'{date.today()}_engineering'
 
-progress('Downloading engineering data')
+progress_stage('Downloading engineering data', 0, 1, overall_start=2, overall_end=12)
 # Pull one engineering-data table for all floats. The selected fields below
 # are the source data for the plots, index table, and health reports.
 data = get_engineering_all("PROFILE_ID,GPS_DURATION,TRANS_DURATION,SurfacePressure,Sbe63Volts,Vacuum,ParkBuoyancyPosition,GpsFixTime,FloatId,BuoyancyPumpOnTime,ActiveBallastAdjustments,\
@@ -560,7 +612,7 @@ else:
     raise ValueError('Configure an engineering-data export path.')
 export_path.parent.mkdir(parents=True, exist_ok=True)
 data.to_excel(export_path, index=False)
-progress(f'Loaded {len(data):,} engineering records for {data["FloatId"].nunique()} floats')
+progress_stage(f'Loaded {len(data):,} engineering records for {data["FloatId"].nunique()} floats', 1, 1, overall_start=2, overall_end=12)
 
 # Sort serial numbers numerically and build one DataFrame per float. Keeping
 # this order makes plot legends and report links consistent.
@@ -600,7 +652,7 @@ parkpressure = [pd.to_numeric(pd.Series([value]).astype(str).str.extract(r'(\d+(
 
 # Calculate values used by the engineering index, including report age,
 # float age, and the interval between recent cycles.
-progress('Calculating report dates, float ages, and cycle lengths')
+progress_stage('Calculating report dates, float ages, and cycle lengths', 0, 1, overall_start=12, overall_end=25)
 lastreport = []
 deploydate=[]
 for i,k in enumerate(SNs):
@@ -654,9 +706,11 @@ cyclenum = []
 for i, d in enumerate(SNs):
     cyclenum.append(indfloat[i]['ProfileId'].iloc[-1])
 
+progress_stage('Calculating report dates, float ages, and cycle lengths', 1, 1, overall_start=12, overall_end=25)
+
 
 # GET THE MAX PRESSURE FOR EVERY PROFILE AND ADD TO THIS DATAFRAME
-progress('Downloading maximum pressure statistics')
+progress_stage('Downloading maximum pressure statistics', 0, 1, overall_start=25, overall_end=40)
 
 mo = pd.unique(
     dat['PROFILE_ID'].astype(str).str.extract(r'(\d{7})', expand=False).dropna()
@@ -691,7 +745,9 @@ for i, j in enumerate(d3):
 
 tab = pd.DataFrame()
 tab['Serial Number'] = SNs
-tab['WMO ID'] = wmo
+tab['WMO ID'] = [
+    make_named_link(wmo_id, f'../../wmo/{wmo_id}/index.html') for wmo_id in wmo
+]
 tab['Last Park Pressure (dbars)'] = parkpressure
 tab['Last Deep Profile Pressure (dbars)'] = deepp
 tab['First Report'] = firstreport
@@ -709,10 +765,16 @@ htmltab = generate_html(tab)
 with open(Path(filedir, 'engineeringtable.html'), 'w', encoding='utf-8') as html_file:
     html_file.write(htmltab)
 webbrowser.open(filedir+'engineeringtable.html')
+progress_stage('Writing engineering table', 1, 1, overall_start=40, overall_end=43)
 #filename = str(date.today())+'_engineering'#update to day you run it
 #data = pd.read_excel('G://Shared drives/WHOI Argo/BGC/Float Tracking/engineering_data' '/' +  filename + ".xlsx")
 # Split it by each float you can call each float by indfloat[0:NumFloats]
 data['BuoyancyPumpEnergy']=data['BuoyancyPumpOnTime']*data['BuoyancyPumpVolts']*data['BuoyancyPumpAmps']
+# Normalize the RH readings to a common temperature so floats can be compared
+# without conflating sensor temperature changes with moisture changes.
+data['TemperatureCorrectedRH'] = temperature_corrected_relative_humidity(
+    data['Sbe41cpHumidity'], data['Sbe41cpHumidityTemp']
+)
 groups = data.groupby('FloatId', sort=False)
 indfloat = [groups.get_group(sn).sort_values('ProfileId').reset_index(drop=True) for sn in SNs]
 dat = data.sort_values('ProfileId').copy()
@@ -735,7 +797,7 @@ groups = data.groupby('FloatId', sort=False)
 indfloat = [groups.get_group(sn).sort_values('ProfileId').reset_index(drop=True) for sn in SNs]
 for frame in indfloat:
     frame['Park Pressure (dbars)'] = pd.to_numeric(frame['ParkObs'].astype(str).str.extract(r'(\d+(?:\.\d+)?)', expand=False), errors='coerce')
-progress('Generating per-float sample and pump-energy plots')
+progress_stage('Generating per-float sample and pump-energy plots', 0, 1, overall_start=43, overall_end=52)
 # Per-float plots show measurements for one float across its profile history.
 #park descent pressure and number of pressure measurements
 for j,k in enumerate(vars):
@@ -754,6 +816,7 @@ for j,k in enumerate(vars):
             yaxis_title = units[j]
         )
         save_figure(fig, filedir+str(SNs[i])+'/'+vars[j]+".html", filedir+str(SNs[i])+'/'+vars[j]+".png")
+        progress_stage(f'Per-float plots: {vars[j]}', i + 1, len(SNs), overall_start=43, overall_end=52)
 #Energy Of Buoyancy Pump
 for i,d in enumerate(SNs):
     progress(f'Plotting buoyancy-pump energy for float {SNs[i]}')
@@ -891,7 +954,7 @@ for i,d in enumerate(indfloat2):
 for i, d in enumerate(indfloat3):
     indfloat3[i] = indfloat3[i].sort_values(by=['ProfileId'])
     indfloat3[i] = indfloat3[i].reset_index()
-progress('Generating parameter plots across all floats')
+progress_stage('Generating parameter plots across all floats', 0, 1, overall_start=62, overall_end=72)
 # Across-float plots place every float on the same axes for comparison.
 param = [
 'GpsFixTime', 'BuoyancyPumpOnTime', 'ActiveBallastAdjustments','ParkBuoyancyPosition','Vacuum','GpsNsat','IsusPowerCycleCounter',\
@@ -899,22 +962,24 @@ param = [
 ]
 params = [
 'GpsFixTime', 'BuoyancyPumpOnTime', 'ActiveBallastAdjustments','ParkBuoyancyPosition','IsusPowerCycleCounter',\
-'SurfacePressure','AirBladderPressure','SurfaceBuoyancyPosition','DeepProfileBuoyancyPosition','BatteryCounts','BuoyancyPumpEnergy','Sbe41cpHumidity'
+'SurfacePressure','AirBladderPressure','SurfaceBuoyancyPosition','DeepProfileBuoyancyPosition','BatteryCounts','BuoyancyPumpEnergy','Sbe41cpHumidity','TemperatureCorrectedRH'
 ]
 j=0
 dat=dat.sort_values(by = ['ProfileId'])
 
 #Plot of Parameters across floats
 for j, k in enumerate(params):
-    progress(f'Plotting all floats: {params[j]} ({j + 1}/{len(params)})')
+    progress_stage(f'All-float plot: {params[j]}', j + 1, len(params), overall_start=62, overall_end=72)
     fig=px.line(dat, x='ProfileId', y=params[j], color='FloatId', render_mode='webgl', category_orders={'FloatId': SNs}, labels={'AirBladderPressure':'Air Bladder Pressure (counts)', 'ProfileId':'Profile Number', 'BuoyancyPumpOnTime':'Buoyancy Pump Run Time (s)',\
         'ActiveBallastAdjustments':'Number of Active Ballast Adjustments','GpsFixTime':'Time for GPS Fix (s)', 'IsusPowerCycleCounter':'Number of Isus Power Cycles', 'ParkBuoyancyPosition':'Buoyancy Position of Park (counts)',\
-        'SurfacePressure':'Surface Pressure (dbar)','DeepProfileBuoyancyPosition':'Deep Profile Buoyancy Position (counts)','SurfaceBuoyancyPosition':'Surface Buoyancy Position (counts)','BatteryCounts':'Battery Counts','BuoyancyPumpEnergy':'Buoyancy Pump Energy (J)', 'Sbe41cpHumidity':'Internal Humidity (%)'}, title = params[j])
+        'SurfacePressure':'Surface Pressure (dbar)','DeepProfileBuoyancyPosition':'Deep Profile Buoyancy Position (counts)','SurfaceBuoyancyPosition':'Surface Buoyancy Position (counts)','BatteryCounts':'Battery Counts','BuoyancyPumpEnergy':'Buoyancy Pump Energy (J)', 'Sbe41cpHumidity':'Internal Humidity (%)', 'TemperatureCorrectedRH':'Temperature-corrected RH (%)'}, title = ('Temperature-corrected RH (20 °C)' if params[j] == 'TemperatureCorrectedRH' else params[j]))
     save_figure(fig, filedir+'by_parameter/'+str(params[j])+'.html', filedir+'by_parameter/'+str(params[j])+'.png')
 
 # Plot of Parameters for Each Float
 i=0
 j=0
+float_plot_index = 0
+float_plot_total = len(param) * len(SNs)
 for j, k in enumerate(param):
     i=0
     while i < len(SNs):
@@ -925,6 +990,8 @@ for j, k in enumerate(param):
         'SurfacePressure':'Surface Pressure (dbar)', 'Vacuum':'Vacuum (counts)','DeepProfileBuoyancyPosition':'Deep Profile Buoyancy Position (counts)','SurfaceBuoyancyPosition':'Surface Buoyancy Position (counts)','BatteryCounts':'Battery Counts',\
         'Sbe41cpHumidity':'Humidity (%)', 'Sbe41cpHumidityTemp':'Int. Temp (C)'}, title = param[j])
         save_figure(fig, filedir+str(SNs[i])+'/'+str(param[j])+'.html', filedir+str(SNs[i])+'/'+str(param[j])+'.png')
+        float_plot_index += 1
+        progress_stage(f'Per-float parameter plots: {param[j]}', float_plot_index, float_plot_total, overall_start=72, overall_end=82)
         i=i+1
     
 # Mapping plots are retained only in the regular script and are skipped when
@@ -1400,7 +1467,10 @@ fleet_runtime_average = pd.Series(fleet_runtime_values, dtype='float64').dropna(
 for health_index, serial_number in enumerate(SNs, start=1):
     # Build the report one float at a time so a problem in one float's data
     # does not require manually assembling reports for the other floats.
-    progress(f'Writing health report for float {serial_number} ({health_index}/{len(SNs)})')
+    progress_stage(
+        f'Writing health report for float {serial_number}',
+        health_index, len(SNs), overall_start=90, overall_end=100,
+    )
     float_frame = diagnostic.loc[diagnostic['FloatId'].eq(str(serial_number))].copy()
     metrics = []
     scores = []

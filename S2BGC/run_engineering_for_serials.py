@@ -302,16 +302,21 @@ def make_engineering_table() -> Path:
     for row in sorted(rows, key=lambda item: str(item["serial"])):
         serial = escape(str(row["serial"]))
         serial_link = f'<a href="S2BGC/{serial}/{serial}_engineering_profiles.html" target="_blank">{serial}</a>'
+        wmo = escape(str(row["wmo"]))
+        wmo_link = (
+            f'<a href="../../wmo/{wmo}/index.html" target="_blank" '
+            f'rel="noopener noreferrer">{wmo}</a>'
+            if wmo and wmo.lower() != "none"
+            else ""
+        )
         body_rows.append(
             "<tr>"
             + f"<td>{serial_link}</td>"
-            + "".join(
-                f"<td>{escape(str(row[field]))}</td>"
-                for field in [
-                    "wmo", "park", "deep", "first", "latest", "age",
-                    "length", "cycle", "since",
-                ]
-            )
+            + f"<td>{wmo_link}</td>"
+            + "".join(f"<td>{escape(str(row[field]))}</td>" for field in [
+                "park", "deep", "first", "latest", "age",
+                "length", "cycle", "since",
+            ])
             + "</tr>"
         )
 

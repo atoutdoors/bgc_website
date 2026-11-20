@@ -645,7 +645,9 @@ for i, j in enumerate(d3):
 
 tab = pd.DataFrame()
 tab['Serial Number'] = SNs
-tab['WMO ID'] = wmo
+tab['WMO ID'] = [
+    make_named_link(wmo_id, f'../../wmo/{wmo_id}/index.html') for wmo_id in wmo
+]
 tab['Last Park Pressure (dbars)'] = parkpressure
 tab['Last Deep Profile Pressure (dbars)'] = deepp
 tab['First Report'] = firstreport

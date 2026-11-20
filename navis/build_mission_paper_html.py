@@ -9,7 +9,7 @@ OUT=ROOT/'analysis_output'/'mission_analysis'
 FIG=OUT/'figures_filtered'
 PAPER_NAME = 'navis_mission_changes_paper.html'
 # Set to True to replace an existing paper on the server; False preserves it.
-OVERWRITE_EXISTING_PAPER = False
+OVERWRITE_EXISTING_PAPER = True
 WORKER_COUNT = min(64, max(8, (os.cpu_count() or 4) * 8))
 MISSION_PARAMETER_ALIASES = {
     'activaterecoverymode': 'ActivateRecoveryMode',
