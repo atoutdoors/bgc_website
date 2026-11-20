@@ -24,14 +24,16 @@ if [[ ! -x "$VENV_PYTHON" ]]; then
 fi
 
 if [[ -z "${BGC_DATA_ROOT:-}" ]]; then
-    for candidate in /mnt/z/bgc/data /z/bgc/data 'Z:/bgc/data'; do
+    for candidate in /data1/bgc/data /mnt/z/bgc/data /z/bgc/data 'Z:/bgc/data'; do
         if [[ -d "$candidate" ]]; then
             export BGC_DATA_ROOT="$candidate"
             break
         fi
     done
 fi
-if [[ -d /mnt/z ]]; then
+if [[ -d /data1 ]]; then
+    Z_ROOT=/data1
+elif [[ -d /mnt/z ]]; then
     Z_ROOT=/mnt/z
 elif [[ -d /z ]]; then
     Z_ROOT=/z

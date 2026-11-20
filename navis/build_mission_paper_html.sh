@@ -5,14 +5,24 @@ set -u
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT="$SCRIPT_DIR/build_mission_paper_html.py"
 
+if [[ -d /data1 ]]; then
+    DATA_ROOT=/data1
+elif [[ -d /mnt/z ]]; then
+    DATA_ROOT=/mnt/z
+elif [[ -d /z ]]; then
+    DATA_ROOT=/z
+else
+    DATA_ROOT='Z:'
+fi
+
 echo
 echo "========================================"
 echo "  Navis mission paper builder"
 echo "========================================"
 echo
 
-echo "[1/4] Mission data folder: ${MISSION_DATA_ROOT:-/mnt/z/bgc/data}"
-echo "[1/4] Paper output folder: ${MISSION_PAPER_OUTPUT_DIR:-/mnt/z/www/bgc/engineering}"
+echo "[1/4] Mission data folder: ${MISSION_DATA_ROOT:-$DATA_ROOT/bgc/data}"
+echo "[1/4] Paper output folder: ${MISSION_PAPER_OUTPUT_DIR:-$DATA_ROOT/www/bgc/engineering}"
 
 if [[ -x "$SCRIPT_DIR/.venv/bin/python" ]]; then
     PYTHON="$SCRIPT_DIR/.venv/bin/python"

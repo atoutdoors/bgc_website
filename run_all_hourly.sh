@@ -12,7 +12,9 @@ SUCCESS_STATE="$LOG_DIR/hourly-build-success-streak.txt"
 LOCK_DIR="${TMPDIR:-/tmp}/bgc_website_hourly_build.lock"
 BUILD_OK=1
 
-if [[ -d /mnt/z ]]; then
+if [[ -d /data1 ]]; then
+    Z_ROOT=/data1
+elif [[ -d /mnt/z ]]; then
     Z_ROOT=/mnt/z
 elif [[ -d /z ]]; then
     Z_ROOT=/z
