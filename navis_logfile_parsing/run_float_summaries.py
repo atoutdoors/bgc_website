@@ -103,10 +103,17 @@ def resolve_data_root(requested: str | None) -> Path:
 
 def available_float_folders(data_root: Path) -> list[Path]:
     """Find every folder named wn followed by a serial number."""
-    return sorted(
+    folders = sorted(
         folder for folder in data_root.iterdir()
         if folder.is_dir() and re.fullmatch(r"wn\d+", folder.name, re.IGNORECASE)
     )
+    usable = []
+    for folder in folders:
+        if any(folder.rglob("*.log")):
+            usable.append(folder)
+        else:
+            print(f"Skipping {folder.name[2:]}: no .log files found", flush=True)
+    return usable
 
 
 def main() -> int:
