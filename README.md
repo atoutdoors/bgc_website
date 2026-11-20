@@ -113,12 +113,12 @@ cd /d C:\Users\athay\Documents\bgc_website\S2BGC
 setup_s2bgc_venv.bat
 ```
 
-The setup file creates the local `.venv`, installs/upgrades pip, and runs the batch generator. To run it later without setup:
+The setup file creates the local `.venv_runtime`, installs/upgrades pip, and runs the batch generator. To run it later without setup:
 
 ```bat
 cd /d C:\Users\athay\Documents\bgc_website\S2BGC
-.venv\Scripts\activate.bat
-    .venv\Scripts\python.exe run_engineering_for_serials.py
+.venv_runtime\Scripts\activate.bat
+    .venv_runtime\Scripts\python.exe run_engineering_for_serials.py
 ```
 
 The batch generator calls `extract_engineering_data.py` for each configured serial and then creates the combined pages. Expected outputs include:

@@ -3,9 +3,12 @@ setlocal
 
 cd /d "%~dp0"
 
-set "PYTHON_EXE="
-if exist ".venv\Scripts\python.exe" set "PYTHON_EXE=.venv\Scripts\python.exe"
+rem The repository's old .venv may point at a removed Python installation.
+rem Keep runtime state separate so scheduled builds can self-heal safely.
+set "VENV_DIR=%~dp0.venv_runtime"
+set "VENV_PYTHON=%VENV_DIR%\Scripts\python.exe"
 
+set "PYTHON_EXE="
 if not defined PYTHON_EXE if defined S2BGC_PYTHON if exist "%S2BGC_PYTHON%" set "PYTHON_EXE=%S2BGC_PYTHON%"
 
 if not defined PYTHON_EXE (
@@ -24,25 +27,24 @@ if not defined PYTHON_EXE (
     exit /b 1
 )
 
-if not exist ".venv\Scripts\python.exe" (
+if not exist "%VENV_PYTHON%" (
     echo Creating S2BGC Python virtual environment with %PYTHON_EXE%...
-    %PYTHON_EXE% -m venv .venv
+    %PYTHON_EXE% -m venv "%VENV_DIR%"
     if errorlevel 1 (
         echo ERROR: Failed to create the virtual environment.
         exit /b 1
     )
 )
 
-set "VENV_PYTHON=%~dp0.venv\Scripts\python.exe"
 "%VENV_PYTHON%" -m pip install --upgrade pip
 
 echo.
 echo Virtual environment is ready.
 echo To activate it later, run:
-echo     .venv\Scripts\activate.bat
+echo     .venv_runtime\Scripts\activate.bat
 echo.
 echo To run the S2BGC batch script:
-echo     .venv\Scripts\python.exe run_engineering_for_serials.py
+echo     .venv_runtime\Scripts\python.exe run_engineering_for_serials.py
 echo.
 echo Running the S2BGC engineering report generator...
 "%VENV_PYTHON%" run_engineering_for_serials.py
