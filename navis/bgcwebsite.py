@@ -215,7 +215,7 @@ def get_profile_stats_parallel(profile_ids):
         for completed_index, future in enumerate(as_completed(futures), start=1):
             frames[futures[future]] = future.result()
             progress_stage(
-                'Maximum-pressure API requests', completed_index, len(profile_ids),
+                'Fetching pressure statistics', completed_index, len(profile_ids),
                 overall_start=25, overall_end=40,
             )
     return pd.concat(frames, ignore_index=True)
