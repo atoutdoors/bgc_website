@@ -478,9 +478,15 @@ by_float=defaultdict(list)
 for e in events: by_float[e['FloatId']].append(e)
 for v in by_float.values(): v.sort(key=lambda x:(int(x['ProfileId']),x['Parameter']))
 
-def img(name, alt):
+def img(name, alt, x_label, y_label):
     data=base64.b64encode((FIG/name).read_bytes()).decode('ascii')
-    return f'<figure><img src="data:image/png;base64,{data}" alt="{html.escape(alt)}"><figcaption>{html.escape(alt)}</figcaption></figure>'
+    return (
+        f'<figure><div class="chart-with-axis-labels">'
+        f'<div class="y-axis-label">{html.escape(y_label)}</div>'
+        f'<img src="data:image/png;base64,{data}" alt="{html.escape(alt)}"></div>'
+        f'<div class="x-axis-label">{html.escape(x_label)}</div>'
+        f'<figcaption>{html.escape(alt)}</figcaption></figure>'
+    )
 
 rows=[]
 for r in sorted(summaries,key=lambda x:int(x['FloatId'])):
@@ -502,8 +508,8 @@ total_changes = len(events)
 total_floats = len(summaries)
 generated_at = datetime.now().astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
 figures = ''.join([
-    img('mission_changes_by_float.png', 'Qualifying mission changes by float'),
-    img('mission_parameter_counts.png', 'Counts of qualifying changes by parameter'),
+    img('mission_changes_by_float.png', 'Qualifying mission changes by float', 'Float', 'Number of qualifying changes'),
+    img('mission_parameter_counts.png', 'Counts of qualifying changes by parameter', 'Mission parameter', 'Number of qualifying changes'),
 ])
 
 document = f'''<!doctype html>
@@ -524,8 +530,11 @@ table {{ border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;
 th, td {{ border: 1px solid #cbd5dc; padding: .42rem .5rem; text-align: left; vertical-align: top; }}
 th {{ background: #dceaf1; }}
 tr:nth-child(even) {{ background: #f7fafb; }}
+.chart-with-axis-labels {{ display: grid; grid-template-columns: 2.4rem 1fr; align-items: center; }}
+.chart-with-axis-labels img {{ display: block; width: 100%; height: auto; border: 1px solid #ccd7de; }}
+.y-axis-label {{ writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-family: Arial, sans-serif; font-size: .85rem; color: #30485f; }}
+.x-axis-label {{ text-align: center; font-family: Arial, sans-serif; font-size: .85rem; color: #30485f; margin-top: .25rem; }}
 figure {{ margin: 1.4rem 0 2rem; page-break-inside: avoid; }}
-figure img {{ display: block; width: 100%; height: auto; border: 1px solid #ccd7de; }}
 figcaption {{ color: #526777; font-family: Arial, sans-serif; font-size: .9rem; margin-top: .35rem; }}
 .float {{ border-top: 1px solid #cbd5dc; padding-top: .7rem; margin-top: 1rem; page-break-inside: avoid; }}
 .change {{ margin: .35rem 0; font-family: 'Segoe UI', Arial, sans-serif; font-size: .92rem; }}
