@@ -333,8 +333,11 @@ def _write_png(path, bars, title):
     # Keep the fallback genuinely labeled as well.  This is used on the
     # report server when Kaleido is unavailable, so it must not silently
     # produce a different (unlabeled) figure.
-    width, height = 1600, 700
-    left, right, top, bottom = 145, 25, 85, 155
+    # Leave enough room for readable category ticks in the PNG itself.  This
+    # fallback is used deliberately in production, so the labels cannot rely
+    # on Plotly/Kaleido or on the surrounding HTML.
+    width, height = 2000, 850
+    left, right, top, bottom = 180, 35, 100, 230
     pixels = bytearray([255, 255, 255] * width * height)
 
     font = {
@@ -401,7 +404,7 @@ def _write_png(path, bars, title):
             for y in range(max(20, y0), y1):
                 start = (y * width + x0) * 3
                 pixels[start:start + (x1 - x0) * 3] = bytes([44, 117, 152]) * (x1 - x0)
-            draw_vertical_text(str(list(bars.keys())[index]), max(2, x0 - 2), y1 + 10, 1)
+            draw_vertical_text(str(list(bars.keys())[index]), max(2, x0 - 2), y1 + 15, 2)
             draw_text(str(value), x0, max(top, y0 - 18), 2)
     draw_text('FLOAT / PROFILE / PARAMETER', left + 300, height - 38, 3)
     draw_vertical_text('NUMBER OF QUALIFYING CHANGES', 20, 220, 2)
