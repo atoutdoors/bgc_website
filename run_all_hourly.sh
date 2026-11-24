@@ -102,6 +102,21 @@ run_stage() {
     fi
 }
 
+verify_mission_paper_labels() {
+    local paper="$NAVIS/analysis_output/mission_analysis/navis_mission_changes_paper.html"
+    if [[ ! -f "$paper" ]]; then
+        failed "Mission paper HTML was not created: $paper"
+        return
+    fi
+    if ! grep -Fq 'chart-with-axis-labels' "$paper" || \
+       ! grep -Fq 'x-axis-label' "$paper" || \
+       ! grep -Fq 'y-axis-label' "$paper"; then
+        failed "Mission paper HTML is missing axis-label markup: $paper"
+        return
+    fi
+    echo "Verified mission paper axis labels: $paper" | tee -a "$LOG"
+}
+
 echo "================================================"
 echo "       BGC WEBSITE HOURLY BUILD"
 echo "================================================"
@@ -120,6 +135,9 @@ if (( BUILD_OK == 1 )); then
 
     progress 80 "Mission paper HTML"
     run_stage "Mission paper HTML" "$NAVIS_PYTHON" -u "$NAVIS/build_mission_paper_html.py" "$BGC_DATA_ROOT"
+    if (( BUILD_OK == 1 )); then
+        verify_mission_paper_labels
+    fi
 
     progress 100 "Build stages complete"
     printf '\n'

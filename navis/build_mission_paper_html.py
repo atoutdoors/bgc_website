@@ -567,7 +567,24 @@ figcaption {{ color: #526777; font-family: Arial, sans-serif; font-size: .9rem; 
 
 print('[report] Writing HTML report...', flush=True)
 local_paper = OUT / PAPER_NAME
-local_paper.write_text(document, encoding='utf-8')
+required_label_markers = (
+    'chart-with-axis-labels',
+    'x-axis-label',
+    'y-axis-label',
+)
+
+
+def _write_verified_paper(path):
+    """Write a report and fail loudly if the axis-label markup is missing."""
+    path.write_text(document, encoding='utf-8')
+    missing = [marker for marker in required_label_markers if marker not in document]
+    if missing:
+        raise RuntimeError(
+            f'Generated report is missing required axis-label markup: {", ".join(missing)}'
+        )
+
+
+_write_verified_paper(local_paper)
 print(f'Wrote local backup: {local_paper} ({len(document):,} characters)', flush=True)
 try:
     PAPER_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -575,7 +592,7 @@ try:
     if network_paper.exists() and not OVERWRITE_EXISTING_PAPER:
         print(f'Kept existing requested output (OVERWRITE_EXISTING_PAPER=False): {network_paper}', flush=True)
     else:
-        network_paper.write_text(document, encoding='utf-8')
+        _write_verified_paper(network_paper)
         print(f'Wrote requested output: {network_paper}', flush=True)
 except OSError as error:
     print(f'[report] Could not write requested output {PAPER_OUTPUT_DIR}: {error}', flush=True)
