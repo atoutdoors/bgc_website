@@ -23,7 +23,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 BASE_URL = "https://db.whoifloatgroup.org"
 PLATFORMTYPE = "&PLATFORM_TYPE=NAVIS_EBR"
 REQUEST_HEADERS = {"Content-Type": "application/json"}
-MAX_API_WORKERS = int(os.environ.get('BGC_MAX_API_WORKERS', '16'))
+# Keep database/API concurrency deliberately low.  This endpoint can return a
+# large profile payload, so a high worker count creates avoidable load on the
+# database server during the hourly build.  Operators may lower the value with
+# BGC_MAX_API_WORKERS, but the production default is capped at four workers.
+MAX_API_WORKERS = min(4, max(1, int(os.environ.get('BGC_MAX_API_WORKERS', '4'))))
 # The production hourly workflow publishes HTML and must not require
 # Kaleido/Chrome. Keep PNG export disabled here; HTML Plotly charts remain
 # enabled. Static mission-paper figures use their own dependency-free renderer.
@@ -370,6 +374,16 @@ def save_figure(figure, html_path, png_path=None):
     if FILTER_PLOT_OUTLIERS:
         filter_plot_outliers(figure)
     style_figure(figure)
+    # Pressure is a depth-like quantity in these plots: larger values belong
+    # lower on the chart. Apply this centrally so newly added pressure plots
+    # keep the same orientation as the explicit pressure plots below.
+    yaxis_title = getattr(getattr(figure.layout, 'yaxis', None), 'title', None)
+    yaxis_title_text = getattr(yaxis_title, 'text', '') or ''
+    figure_title = getattr(getattr(figure.layout, 'title', None), 'text', '') or ''
+    pressure_markers = ('pressure', 'pres_max', 'surfacepressure', 'parkpressure')
+    pressure_text = ' '.join((str(yaxis_title_text), str(figure_title), str(html_path))).lower()
+    if any(marker in pressure_text for marker in pressure_markers):
+        figure.update_yaxes(autorange='reversed')
     if INTERACTIVE_PLOT_MENU:
         label = Path(html_path).stem.replace('_', ' ')
         PLOT_REGISTRY.append((label, figure))
@@ -1143,7 +1157,8 @@ for j,k in enumerate(indfloat):
 fig.update_layout(
     title = 'Park Pressure by Profile',
     xaxis_title = 'Profile Number',
-    yaxis_title = 'Pressure (dbars)'
+    yaxis_title = 'Pressure (dbars)',
+    yaxis = dict(autorange='reversed')
 )
 save_figure(fig, filedir+'by_parameter/ParkPressure.html', filedir+'by_parameter/ParkPressure.png')
 
@@ -1157,6 +1172,7 @@ for j,d in enumerate(indfloat):
     indfloat[j] = indfloat[j].sort_values(by=['ProfileId'])
     #indfloat[j] = indfloat[j].reset_index()
     fig = px.line(indfloat[j]['Park Pressure (dbars)'], title= 'Park Pressure by Profile')
+    fig.update_yaxes(autorange='reversed', title_text='Pressure (dbars)')
     save_figure(fig, filedir+str(fn)+'/ParkPressure.html', filedir+str(fn)+'/ParkPressure.png')
 
 #Park Pressure vs Buoyancy Position
@@ -1173,7 +1189,8 @@ for j,k in enumerate(indfloat):
 fig.update_layout(
     title = 'Park Pressure vs. Buoyancy Position',
     xaxis_title = 'Park Buoyancy Position',
-    yaxis_title = 'Pressure (dbars)'
+    yaxis_title = 'Pressure (dbars)',
+    yaxis = dict(autorange='reversed')
 )
 save_figure(fig, filedir+'by_parameter/ParkPressurevsBP.html', filedir+'by_parameter/ParkPressurevsBP.png')
 progress('Generating pressure-versus-buoyancy plots')
@@ -1200,7 +1217,8 @@ for j,k in enumerate(indfloat):
 fig.update_layout(
     title = 'Pressure vs. Buoyancy Position',
     xaxis_title = 'Buoyancy Position',
-    yaxis_title = 'Pressure (dbars)'
+    yaxis_title = 'Pressure (dbars)',
+    yaxis = dict(autorange='reversed')
 )
 save_figure(fig, filedir+'by_parameter/PVBP.html', filedir+'by_parameter/PVBP.png')
 
@@ -1241,12 +1259,14 @@ for i, j in enumerate(SNs):
     ))
 fig.update_layout(
     xaxis_title = 'Profile Number',
-    yaxis_title = 'Maximum Pressure (dbars)'
+    yaxis_title = 'Maximum Pressure (dbars)',
+    yaxis = dict(autorange='reversed')
 )
 save_figure(fig, filedir+'by_parameter/MAXP.html', filedir+'by_parameter/MAXP.png')
 
 for i, j in enumerate(SNs):
     fig = px.scatter(d3[i],x = 'DeepProfileBuoyancyPosition', y = 'PRES_MAX', color = 'ProfileId')
+    fig.update_yaxes(autorange='reversed', title_text='Maximum Pressure (dbars)')
     save_figure(fig, filedir+str(SNs[i])+'/MPBP.html', filedir+str(SNs[i])+'/MPBP.png')
 fig
 
@@ -1292,6 +1312,7 @@ fig.update_layout(
     title = 'Pressure vs. Buoyancy Position',
     xaxis_title = 'Buoyancy Position',
     yaxis_title = 'Pressure (dbars)',
+    yaxis = dict(autorange='reversed'),
     showlegend = False
 )
 save_figure(fig, filedir+'by_parameter/PVBP.html', filedir+'by_parameter/PVBP.png')
@@ -1321,6 +1342,7 @@ for i, j in enumerate(SNs):
             title = 'Pressure vs. Buoyancy Position at Park',
             xaxis_title = 'Buoyancy Position',
             yaxis_title = 'Pressure (dbars)',
+            yaxis = dict(autorange='reversed'),
             
             )
         save_figure(fig, filedir+str(SNs[i])+'/PBPvsPP.html', filedir+str(SNs[i])+'/PBPvsPP.png')

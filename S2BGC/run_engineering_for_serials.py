@@ -529,6 +529,7 @@ const turboPalette = [
   '#b8df50', '#f5e948', '#fcae3a', '#e94f2b', '#7a0403'
 ];
 const traceColor = index => turboPalette[index % turboPalette.length];
+const isPressureChart = chart => /pressure|^pres(?:sure)?$|pres(?:sure)?_?max/i.test(chart.name);
 chartData.forEach((chart, chartIndex) => {{
   const card = document.createElement('div');
   card.className = 'card shadow-sm plot-card';
@@ -555,7 +556,10 @@ chartData.forEach((chart, chartIndex) => {{
   Plotly.newPlot(plot, traces, {{
     title: chart.name + '<br><sup>Generated: ' + plotGeneratedAt + '</sup>',
     xaxis: {{title: 'Profile / cycle number', dtick: 1}},
-    yaxis: {{title: chart.unit ? chart.name + ' (' + chart.unit + ')' : chart.name}},
+    yaxis: {{
+      title: chart.unit ? chart.name + ' (' + chart.unit + ')' : chart.name,
+      autorange: isPressureChart(chart) ? 'reversed' : undefined
+    }},
     hovermode: 'closest',
     legend: {{title: {{text: 'Float'}}}},
     margin: {{t: 60, r: 30, b: 65, l: 85}}

@@ -199,6 +199,7 @@ def engineering_profile_plots_html(
 const chartData = {chart_data_json};
 const plotGeneratedAt = {generated_at_json};
 const plots = document.getElementById('plots');
+const isPressureChart = chart => /pressure|^pres(?:sure)?$|pres(?:sure)?_?max/i.test(chart.name);
 chartData.forEach((chart, index) => {{
   const card = document.createElement('div');
   card.className = 'card shadow-sm plot-card';
@@ -222,7 +223,10 @@ chartData.forEach((chart, index) => {{
   }}], {{
     title: chart.name + '<br><sup>Generated: ' + plotGeneratedAt + '</sup>',
     xaxis: {{title: 'Profile / cycle number', dtick: 1}},
-    yaxis: {{title: chart.unit ? chart.name + ' (' + chart.unit + ')' : chart.name}},
+    yaxis: {{
+      title: chart.unit ? chart.name + ' (' + chart.unit + ')' : chart.name,
+      autorange: isPressureChart(chart) ? 'reversed' : undefined
+    }},
     margin: {{t: 60, r: 25, b: 65, l: 80}}
   }}, {{responsive: true}});
 }});
