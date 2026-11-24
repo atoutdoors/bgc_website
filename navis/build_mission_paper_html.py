@@ -309,19 +309,81 @@ def _write_png(path, bars, title):
     except Exception as error:
         print(f'[analysis] Plotly image export unavailable; using basic fallback ({error})', flush=True)
 
+    # Keep the fallback genuinely labeled as well.  This is used on the
+    # report server when Kaleido is unavailable, so it must not silently
+    # produce a different (unlabeled) figure.
     width, height = 1600, 700
+    left, right, top, bottom = 145, 25, 85, 155
     pixels = bytearray([255, 255, 255] * width * height)
+
+    font = {
+        'A': '01110 10001 10001 11111 10001 10001 10001', 'B': '11110 10001 10001 11110 10001 10001 11110',
+        'C': '01111 10000 10000 10000 10000 10000 01111', 'D': '11110 10001 10001 10001 10001 10001 11110',
+        'E': '11111 10000 10000 11110 10000 10000 11111', 'F': '11111 10000 10000 11110 10000 10000 10000',
+        'G': '01111 10000 10000 10111 10001 10001 01111', 'H': '10001 10001 10001 11111 10001 10001 10001',
+        'I': '11111 00100 00100 00100 00100 00100 11111', 'J': '00111 00010 00010 00010 10010 10010 01100',
+        'K': '10001 10010 10100 11000 10100 10010 10001', 'L': '10000 10000 10000 10000 10000 10000 11111',
+        'M': '10001 11011 10101 10101 10001 10001 10001', 'N': '10001 11001 10101 10011 10001 10001 10001',
+        'O': '01110 10001 10001 10001 10001 10001 01110', 'P': '11110 10001 10001 11110 10000 10000 10000',
+        'Q': '01110 10001 10001 10001 10101 10010 01101', 'R': '11110 10001 10001 11110 10100 10010 10001',
+        'S': '01111 10000 10000 01110 00001 00001 11110', 'T': '11111 00100 00100 00100 00100 00100 00100',
+        'U': '10001 10001 10001 10001 10001 10001 01110', 'V': '10001 10001 10001 10001 10001 01010 00100',
+        'W': '10001 10001 10001 10101 10101 11011 10001', 'X': '10001 10001 01010 00100 01010 10001 10001',
+        'Y': '10001 10001 01010 00100 00100 00100 00100', 'Z': '11111 00001 00010 00100 01000 10000 11111',
+        '0': '01110 10001 10011 10101 11001 10001 01110', '1': '00100 01100 00100 00100 00100 00100 01110',
+        '2': '01110 10001 00001 00010 00100 01000 11111', '3': '11110 00001 00001 01110 00001 00001 11110',
+        '4': '00010 00110 01010 10010 11111 00010 00010', '5': '11111 10000 10000 11110 00001 00001 11110',
+        '6': '01110 10000 10000 11110 10001 10001 01110', '7': '11111 00001 00010 00100 01000 01000 01000',
+        '8': '01110 10001 10001 01110 10001 10001 01110', '9': '01110 10001 10001 01111 00001 00001 01110',
+        '/': '00001 00010 00100 00100 01000 10000 00000', '-': '00000 00000 00000 11111 00000 00000 00000',
+        ':': '00000 00100 00100 00000 00100 00100 00000', '.': '00000 00000 00000 00000 00000 00110 00110',
+        ' ': '00000 00000 00000 00000 00000 00000 00000',
+    }
+    font = {key: [list(row) for row in value.split()] for key, value in font.items()}
+    ink = bytes([44, 70, 105])
+
+    def draw_text(text, x, y, scale=3):
+        for char in str(text).upper():
+            glyph = font.get(char, font[' '])
+            for row, bits in enumerate(glyph):
+                for col, bit in enumerate(bits):
+                    if bit == '1':
+                        for dy in range(scale):
+                            start = ((y + row * scale + dy) * width + x + col * scale) * 3
+                            pixels[start:start + scale * 3] = ink * scale
+            x += 6 * scale
+
+    def draw_vertical_text(text, x, y, scale=3):
+        for char in str(text).upper():
+            glyph = font.get(char, font[' '])
+            for row, bits in enumerate(glyph):
+                for col, bit in enumerate(bits):
+                    if bit == '1':
+                        for dy in range(scale):
+                            px = x + (6 - row) * scale + dy
+                            py = y + col * scale
+                            start = (py * width + px) * 3
+                            pixels[start:start + scale * 3] = ink * scale
+            y += 6 * scale
+
+    draw_text(title, left, 25, 4)
     if bars:
         maximum = max(bars.values()) or 1
-        bar_width = max(1, (width - 80) // len(bars))
+        plot_width = width - left - right
+        plot_height = height - top - bottom
+        bar_width = max(1, plot_width // len(bars))
         for index, value in enumerate(bars.values()):
-            x0 = 40 + index * bar_width
-            x1 = min(width - 20, x0 + max(1, bar_width - 8))
-            y1 = height - 35
-            y0 = y1 - int((height - 80) * value / maximum)
+            x0 = left + index * bar_width
+            x1 = min(width - right, x0 + max(1, bar_width - 8))
+            y1 = height - bottom
+            y0 = y1 - int(plot_height * value / maximum)
             for y in range(max(20, y0), y1):
                 start = (y * width + x0) * 3
                 pixels[start:start + (x1 - x0) * 3] = bytes([44, 117, 152]) * (x1 - x0)
+            draw_vertical_text(str(list(bars.keys())[index]), max(2, x0 - 2), y1 + 10, 1)
+            draw_text(str(value), x0, max(top, y0 - 18), 2)
+    draw_text('FLOAT / PROFILE / PARAMETER', left + 300, height - 38, 3)
+    draw_vertical_text('NUMBER OF QUALIFYING CHANGES', 20, 220, 2)
     raw = b''.join(b'\x00' + pixels[y * width * 3:(y + 1) * width * 3] for y in range(height))
     def chunk(kind, data):
         return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data) & 0xffffffff)

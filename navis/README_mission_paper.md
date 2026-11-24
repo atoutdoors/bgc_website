@@ -1,6 +1,6 @@
 # Mission Paper Builder
 
-This tool scans float `.msg` mission files, reconstructs mission-parameter changes between profiles, and builds an HTML paper with embedded figures.
+This tool uses each float's full profile-0 `.msg` mission as a baseline, then reconstructs mission-parameter changes from accepted `.log` configuration blocks and builds an HTML paper with embedded figures.
 
 ## Quick start
 
@@ -97,17 +97,17 @@ The default input folder is:
 Z:\bgc\data
 ```
 
-The input folder should contain float folders with `.msg` files below them. The builder searches all subfolders recursively.
+The input folder should contain float folders with `.log` files below them. The builder searches all subfolders recursively.
 
 All parameters require logfile evidence between `Parsing configurators in "mission.cfg".` and `Configuration accepted.` containing the parameter and new value. No mission parameters are manually excluded.
 
 Python 3.8 or newer is required. The launcher uses the local `navis\.venv` first, then `python` on `PATH`, and finally the Windows `py -3` launcher.
 
-The labeled PNG plots use Plotly and Kaleido when those packages are installed. They include chart titles, axis labels, tick values, and bar-value annotations. If they are unavailable, the builder uses a basic unlabeled fallback and prints a warning; install the packages with `python -m pip install -r requirements.txt` for fully labeled plots.
+The PNG plots use Plotly and Kaleido when those packages are installed. They include chart titles, axis labels, tick values, and bar-value annotations. If image export is unavailable, the builder prints a warning and uses a dependency-free fallback that still includes the chart title and x/y axis labels.
 
 ## What it generates
 
-Each run rescans the `.msg` files and regenerates the analysis files. The HTML paper is written to:
+Each run rescans the `.log` files and regenerates the analysis files. The HTML paper is written to:
 
 ```text
 Z:\www\bgc\engineering\navis_mission_changes_paper.html
@@ -153,7 +153,7 @@ build_mission_paper_html.bat
 
 ## How changes are detected
 
-The builder groups message snapshots by float and profile, orders profiles numerically, and compares each profile with the preceding profile. Profile numbers are read from message filenames when available, then from `PrfId` or `Profile` headers.
+The builder uses the full profile-0 `.msg` mission as the initial state, then groups accepted `mission.cfg` blocks by float, orders them chronologically, carries forward omitted parameters, and compares each block with the preceding state. This captures parameters that are absent from later `.msg` files.
 
 The report is intentionally limited to the mission configurators defined in the Navis Float Mission Control Manual:
 
@@ -189,7 +189,7 @@ Other telemetry and engineering fields are ignored.
 
 The report describes differences between available snapshots. It does not prove that a command was executed successfully or explain why a later telemetry event occurred.
 
-By default, a change is reported only when a raw `.log` file for that float contains a `Parsing new mission configuration` block, or an outbound Iridium/remote mission-command record, with the changed parameter and new value. Changes without matching logfile evidence are ignored. Set `REQUIRE_MISSION_LOG_EVIDENCE = False` near the top of `build_mission_paper_html.py` to restore snapshot-only comparison.
+Only parameter values found between `Parsing configurators in "mission.cfg".` and `Configuration accepted.` are compared. Parameters outside accepted configuration blocks are ignored.
 
 ## Progress and troubleshooting
 
@@ -198,10 +198,10 @@ The console shows file-counting, scan percentage, snapshot counts, float-compari
 Common errors:
 
 - **No mission input data found:** confirm that `Z:\bgc\data` is available or pass the correct folder as the first BAT argument.
-- **No parseable mission snapshots:** confirm the folder contains `.msg` files with a profile number in the filename or message contents.
+- **No accepted mission configuration blocks:** confirm the folder contains `.log` files with `Parsing configurators in "mission.cfg".` followed by `Configuration accepted.`.
 - **Could not write requested output:** confirm that `Z:\www\bgc\engineering` is mounted and writable, or set `MISSION_PAPER_OUTPUT_DIR` to a writable folder.
 
 ## Updating the paper
 
-Run the BAT file again whenever new messages arrive. The builder rescans all available `.msg` files on every run, replaces the CSVs and figures, and updates the `Last updated` timestamp in the HTML. The `OVERWRITE_EXISTING_PAPER` setting controls whether it replaces the report in the configured output folder. It does not run continuously in the background.
+Run the BAT file again whenever new logs arrive. The builder rescans all available `.log` files on every run, replaces the CSVs and figures, and updates the `Last updated` timestamp in the HTML. The `OVERWRITE_EXISTING_PAPER` setting controls whether it replaces the report in the configured output folder. It does not run continuously in the background.
 
