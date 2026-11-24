@@ -15,6 +15,8 @@ if not defined S2BGC_DATA_ROOT set "S2BGC_DATA_ROOT=Z:\S2BGC\data"
 if not defined S2BGC_OUTPUT_DIR set "S2BGC_OUTPUT_DIR=Z:\www\bgc\engineering\S2BGC"
 if not defined BGC_DATA_ROOT set "BGC_DATA_ROOT=Z:\bgc\data"
 if not defined BGC_ENGINEERING_ROOT set "BGC_ENGINEERING_ROOT=Z:\www\bgc\engineering"
+rem The hourly build publishes HTML; do not invoke Kaleido/Chrome for PNG copies.
+set "BGC_WRITE_PNG=0"
 
 if not exist "%LOG_DIR%" mkdir "%LOG_DIR%" >nul 2>&1
 if exist "%LOCK_DIR%" (

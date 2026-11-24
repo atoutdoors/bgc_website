@@ -27,7 +27,10 @@ fi
 : "${BGC_DATA_ROOT:=$Z_ROOT/bgc/data}"
 : "${BGC_ENGINEERING_ROOT:=$Z_ROOT/www/bgc/engineering}"
 : "${MISSION_PAPER_OUTPUT_DIR:=$BGC_ENGINEERING_ROOT}"
-export S2BGC_DATA_ROOT S2BGC_OUTPUT_DIR BGC_DATA_ROOT BGC_ENGINEERING_ROOT MISSION_PAPER_OUTPUT_DIR
+# The hourly build publishes HTML. Keep it independent of Kaleido/Chrome even
+# if an interactive shell or scheduler inherited BGC_WRITE_PNG=1.
+BGC_WRITE_PNG=0
+export S2BGC_DATA_ROOT S2BGC_OUTPUT_DIR BGC_DATA_ROOT BGC_ENGINEERING_ROOT MISSION_PAPER_OUTPUT_DIR BGC_WRITE_PNG
 
 mkdir -p -- "$LOG_DIR"
 if ! mkdir -- "$LOCK_DIR" 2>/dev/null; then
