@@ -24,9 +24,10 @@ BASE_URL = "https://db.whoifloatgroup.org"
 PLATFORMTYPE = "&PLATFORM_TYPE=NAVIS_EBR"
 REQUEST_HEADERS = {"Content-Type": "application/json"}
 MAX_API_WORKERS = int(os.environ.get('BGC_MAX_API_WORKERS', '16'))
-# PNG rendering is much slower than HTML generation. Enable it explicitly with
-# BGC_WRITE_PNG=1 when image copies are required.
-WRITE_PNG = os.environ.get('BGC_WRITE_PNG', '0') == '1'
+# The production hourly workflow publishes HTML and must not require
+# Kaleido/Chrome. Keep PNG export disabled here; HTML Plotly charts remain
+# enabled. Static mission-paper figures use their own dependency-free renderer.
+WRITE_PNG = False
 INTERACTIVE_PLOT_MENU = False  # Click a plot name to view only that figure.
 SAVE_PLOTS = True             # Set to True to save HTML files as well.
 # Set to True to skip plot output and run the health-report section only.
