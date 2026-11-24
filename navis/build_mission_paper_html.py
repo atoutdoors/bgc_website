@@ -288,8 +288,9 @@ def _write_png(path, bars, title):
     """Write a labeled bar chart, with a dependency-free fallback."""
     try:
         import plotly.graph_objects as go
+        tick_values = list(bars.keys())
         figure = go.Figure(go.Bar(
-            x=list(bars.keys()),
+            x=tick_values,
             y=list(bars.values()),
             text=list(bars.values()),
             textposition='outside',
@@ -297,12 +298,23 @@ def _write_png(path, bars, title):
         ))
         figure.update_layout(
             title=title,
-            xaxis_title='Float / profile / parameter',
-            yaxis_title='Number of qualifying changes',
+            xaxis=dict(
+                title='Float / profile / parameter',
+                tickmode='array',
+                tickvals=tick_values,
+                ticktext=[str(value) for value in tick_values],
+                tickangle=-60,
+                tickfont=dict(size=10),
+                automargin=True,
+            ),
+            yaxis=dict(
+                title='Number of qualifying changes',
+                automargin=True,
+            ),
             template='plotly_white',
-            width=1600,
-            height=700,
-            margin=dict(l=100, r=45, t=90, b=130),
+            width=2000,
+            height=850,
+            margin=dict(l=120, r=55, t=100, b=210),
         )
         figure.write_image(str(path), scale=2)
         return

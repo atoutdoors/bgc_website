@@ -65,6 +65,14 @@ if errorlevel 1 call :failed "Main BGC website"
 call :progress 80 "Mission paper HTML"
 powershell -NoProfile -Command "& { & '%NAVIS%\.venv\Scripts\python.exe' -u '%NAVIS%\build_mission_paper_html.py' '%BGC_DATA_ROOT%' 2>&1 | Tee-Object -FilePath '%LOG%' -Append; exit $LASTEXITCODE }"
 if errorlevel 1 call :failed "Mission paper HTML"
+if not errorlevel 1 (
+    findstr /C:"chart-with-axis-labels" "%NAVIS%\analysis_output\mission_analysis\navis_mission_changes_paper.html" >nul 2>&1
+    if errorlevel 1 call :failed "Mission paper HTML is missing axis-label markup"
+    findstr /C:"x-axis-label" "%NAVIS%\analysis_output\mission_analysis\navis_mission_changes_paper.html" >nul 2>&1
+    if errorlevel 1 call :failed "Mission paper HTML is missing x-axis label markup"
+    findstr /C:"y-axis-label" "%NAVIS%\analysis_output\mission_analysis\navis_mission_changes_paper.html" >nul 2>&1
+    if errorlevel 1 call :failed "Mission paper HTML is missing y-axis label markup"
+)
 
 call :progress 100 "Build stages complete"
 
