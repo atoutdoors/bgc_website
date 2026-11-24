@@ -499,7 +499,9 @@ with (OUT/'mission_float_summary_filtered.csv').open(newline='',encoding='utf-8'
 with (OUT/'mission_change_events_filtered.csv').open(newline='',encoding='utf-8') as fh:
     events=list(csv.DictReader(fh))
 by_float=defaultdict(list)
+by_parameter=defaultdict(int)
 for e in events: by_float[e['FloatId']].append(e)
+for e in events: by_parameter[e['Parameter']] += 1
 for v in by_float.values(): v.sort(key=lambda x:(int(x['ProfileId']),x['Parameter']))
 
 def img(name, alt, x_label, y_label, tick_labels):
