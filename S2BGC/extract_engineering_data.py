@@ -199,7 +199,9 @@ def engineering_profile_plots_html(
 const chartData = {chart_data_json};
 const plotGeneratedAt = {generated_at_json};
 const plots = document.getElementById('plots');
-const isPressureChart = chart => /pressure|^pres(?:sure)?$|pres(?:sure)?_?max/i.test(chart.name);
+const isPressureChart = chart =>
+  /pressure|^pres(?:sure)?$|pres(?:sure)?_?max/i.test(chart.name) ||
+  /\(dbar[s]?\)/i.test(chart.unit);
 chartData.forEach((chart, index) => {{
   const card = document.createElement('div');
   card.className = 'card shadow-sm plot-card';
