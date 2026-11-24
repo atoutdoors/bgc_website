@@ -110,7 +110,8 @@ verify_mission_paper_labels() {
     fi
     if ! grep -Fq 'chart-with-axis-labels' "$paper" || \
        ! grep -Fq 'x-axis-label' "$paper" || \
-       ! grep -Fq 'y-axis-label' "$paper"; then
+       ! grep -Fq 'y-axis-label' "$paper" || \
+       ! grep -Fq 'x-tick-strip' "$paper"; then
         failed "Mission paper HTML is missing axis-label markup: $paper"
         return
     fi

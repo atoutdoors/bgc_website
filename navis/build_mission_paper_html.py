@@ -300,9 +300,12 @@ def _write_png(path, bars, title):
             title=title,
             xaxis=dict(
                 title='Float / profile / parameter',
+                type='category',
                 tickmode='array',
                 tickvals=tick_values,
                 ticktext=[str(value) for value in tick_values],
+                categoryorder='array',
+                categoryarray=tick_values,
                 tickangle=-60,
                 tickfont=dict(size=10),
                 automargin=True,
@@ -490,13 +493,15 @@ by_float=defaultdict(list)
 for e in events: by_float[e['FloatId']].append(e)
 for v in by_float.values(): v.sort(key=lambda x:(int(x['ProfileId']),x['Parameter']))
 
-def img(name, alt, x_label, y_label):
+def img(name, alt, x_label, y_label, tick_labels):
     data=base64.b64encode((FIG/name).read_bytes()).decode('ascii')
+    ticks=''.join(f'<span>{html.escape(str(tick))}</span>' for tick in tick_labels)
     return (
         f'<figure><div class="chart-with-axis-labels">'
         f'<div class="y-axis-label">{html.escape(y_label)}</div>'
         f'<img src="data:image/png;base64,{data}" alt="{html.escape(alt)}"></div>'
         f'<div class="x-axis-label">{html.escape(x_label)}</div>'
+        f'<div class="x-tick-strip" aria-label="{html.escape(x_label)} tick labels">{ticks}</div>'
         f'<figcaption>{html.escape(alt)}</figcaption></figure>'
     )
 
@@ -520,8 +525,8 @@ total_changes = len(events)
 total_floats = len(summaries)
 generated_at = datetime.now().astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
 figures = ''.join([
-    img('mission_changes_by_float.png', 'Qualifying mission changes by float', 'Float', 'Number of qualifying changes'),
-    img('mission_parameter_counts.png', 'Counts of qualifying changes by parameter', 'Mission parameter', 'Number of qualifying changes'),
+    img('mission_changes_by_float.png', 'Qualifying mission changes by float', 'Float', 'Number of qualifying changes', sorted(by_float, key=int)),
+    img('mission_parameter_counts.png', 'Counts of qualifying changes by parameter', 'Mission parameter', 'Number of qualifying changes', sorted(by_parameter)),
 ])
 
 document = f'''<!doctype html>
@@ -546,6 +551,8 @@ tr:nth-child(even) {{ background: #f7fafb; }}
 .chart-with-axis-labels img {{ display: block; width: 100%; height: auto; border: 1px solid #ccd7de; }}
 .y-axis-label {{ writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-family: Arial, sans-serif; font-size: .85rem; color: #30485f; }}
 .x-axis-label {{ text-align: center; font-family: Arial, sans-serif; font-size: .85rem; color: #30485f; margin-top: .25rem; }}
+.x-tick-strip {{ display: flex; gap: .65rem; overflow-x: auto; margin: .2rem 0 0 2.4rem; padding: .15rem 0 .25rem; font: .72rem/1.1 Arial, sans-serif; color: #30485f; white-space: nowrap; }}
+.x-tick-strip span {{ display: inline-block; min-width: 2.4rem; text-align: center; }}
 figure {{ margin: 1.4rem 0 2rem; page-break-inside: avoid; }}
 figcaption {{ color: #526777; font-family: Arial, sans-serif; font-size: .9rem; margin-top: .35rem; }}
 .float {{ border-top: 1px solid #cbd5dc; padding-top: .7rem; margin-top: 1rem; page-break-inside: avoid; }}
@@ -583,6 +590,7 @@ required_label_markers = (
     'chart-with-axis-labels',
     'x-axis-label',
     'y-axis-label',
+    'x-tick-strip',
 )
 
 
