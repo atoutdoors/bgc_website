@@ -17,8 +17,8 @@ if not defined BGC_DATA_ROOT set "BGC_DATA_ROOT=Z:\bgc\data"
 if not defined BGC_ENGINEERING_ROOT set "BGC_ENGINEERING_ROOT=Z:\www\bgc\engineering"
 rem The hourly build publishes HTML; do not invoke Kaleido/Chrome for PNG copies.
 set "BGC_WRITE_PNG=0"
-rem Limit concurrent database requests during the main website build.
-if not defined BGC_MAX_API_WORKERS set "BGC_MAX_API_WORKERS=4"
+rem Keep database requests sequential during the main website build.
+set "BGC_MAX_API_WORKERS=1"
 
 if not exist "%LOG_DIR%" mkdir "%LOG_DIR%" >nul 2>&1
 if exist "%LOCK_DIR%" (

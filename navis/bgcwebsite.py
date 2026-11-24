@@ -26,8 +26,9 @@ REQUEST_HEADERS = {"Content-Type": "application/json"}
 # Keep database/API concurrency deliberately low.  This endpoint can return a
 # large profile payload, so a high worker count creates avoidable load on the
 # database server during the hourly build.  Operators may lower the value with
-# BGC_MAX_API_WORKERS, but the production default is capped at four workers.
-MAX_API_WORKERS = min(4, max(1, int(os.environ.get('BGC_MAX_API_WORKERS', '4'))))
+# BGC_MAX_API_WORKERS, but the production build is sequential. Keeping this at
+# one prevents a burst of API/database requests from the hourly workflow.
+MAX_API_WORKERS = 1
 # The production hourly workflow publishes HTML and must not require
 # Kaleido/Chrome. Keep PNG export disabled here; HTML Plotly charts remain
 # enabled. Static mission-paper figures use their own dependency-free renderer.
