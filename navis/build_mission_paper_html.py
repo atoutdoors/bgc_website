@@ -10,6 +10,9 @@ FIG=OUT/'figures_filtered'
 PAPER_NAME = 'navis_mission_changes_paper.html'
 # Set to True to replace an existing paper on the server; False preserves it.
 OVERWRITE_EXISTING_PAPER = True
+# Mission-paper figures are deliberately rendered without Plotly/Kaleido.
+# This keeps the hourly report independent of a Chrome installation.
+USE_PLOTLY_IMAGE_EXPORT = False
 WORKER_COUNT = min(64, max(8, (os.cpu_count() or 4) * 8))
 MISSION_PARAMETER_ALIASES = {
     'activaterecoverymode': 'ActivateRecoveryMode',
@@ -286,43 +289,46 @@ PAPER_OUTPUT_DIR = Path(
 
 def _write_png(path, bars, title):
     """Write a labeled bar chart, with a dependency-free fallback."""
-    try:
-        import plotly.graph_objects as go
-        tick_values = list(bars.keys())
-        figure = go.Figure(go.Bar(
-            x=tick_values,
-            y=list(bars.values()),
-            text=list(bars.values()),
-            textposition='outside',
-            marker_color='#2c7598',
-        ))
-        figure.update_layout(
-            title=title,
-            xaxis=dict(
-                title='Float / profile / parameter',
-                type='category',
-                tickmode='array',
-                tickvals=tick_values,
-                ticktext=[str(value) for value in tick_values],
-                categoryorder='array',
-                categoryarray=tick_values,
-                tickangle=-60,
-                tickfont=dict(size=10),
-                automargin=True,
-            ),
-            yaxis=dict(
-                title='Number of qualifying changes',
-                automargin=True,
-            ),
-            template='plotly_white',
-            width=2000,
-            height=850,
-            margin=dict(l=120, r=55, t=100, b=210),
-        )
-        figure.write_image(str(path), scale=2)
-        return
-    except Exception as error:
-        print(f'[analysis] Plotly image export unavailable; using basic fallback ({error})', flush=True)
+    if USE_PLOTLY_IMAGE_EXPORT:
+        try:
+            import plotly.graph_objects as go
+            tick_values = list(bars.keys())
+            figure = go.Figure(go.Bar(
+                x=tick_values,
+                y=list(bars.values()),
+                text=list(bars.values()),
+                textposition='outside',
+                marker_color='#2c7598',
+            ))
+            figure.update_layout(
+                title=title,
+                xaxis=dict(
+                    title='Float / profile / parameter',
+                    type='category',
+                    tickmode='array',
+                    tickvals=tick_values,
+                    ticktext=[str(value) for value in tick_values],
+                    categoryorder='array',
+                    categoryarray=tick_values,
+                    tickangle=-60,
+                    tickfont=dict(size=10),
+                    automargin=True,
+                ),
+                yaxis=dict(
+                    title='Number of qualifying changes',
+                    automargin=True,
+                ),
+                template='plotly_white',
+                width=2000,
+                height=850,
+                margin=dict(l=120, r=55, t=100, b=210),
+            )
+            figure.write_image(str(path), scale=2)
+            return
+        except Exception as error:
+            print(f'[analysis] Plotly image export unavailable; using basic fallback ({error})', flush=True)
+    else:
+        print('[analysis] Using dependency-free chart renderer (no Plotly/Kaleido/Chrome required).', flush=True)
 
     # Keep the fallback genuinely labeled as well.  This is used on the
     # report server when Kaleido is unavailable, so it must not silently
