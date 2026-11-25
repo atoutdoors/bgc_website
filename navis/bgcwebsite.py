@@ -539,7 +539,7 @@ details{{scroll-margin-top:70px}}
 summary{{cursor:pointer;list-style:none}} summary::-webkit-details-marker{{display:none}} summary::before{{content:'+';display:inline-block;width:1.4rem;font-size:1.2rem}} details[open] summary::before{{content:'-'}}
 .plot-frame{{background:#f1f5f9}} iframe{{display:block;width:100%;height:min(72vh,720px);min-height:480px;border:1px solid #dbe3e9;border-radius:.5rem;background:#fff}}
 .back-top{{font-size:.875rem}} a{{color:var(--slate)}} a:hover{{color:var(--navy)}} .text-primary{{color:var(--slate)!important}} .text-bg-primary{{background-color:var(--slate)!important}} .page-kicker{{letter-spacing:.12em;font-size:.72rem;font-weight:700;color:var(--muted)}}
-</style></head><body class="bg-light" id="top"><nav class="navbar navbar-expand-lg navbar-dark bg-primary year-nav"><div class="container-xxl gap-3"><a class="navbar-brand" href="../index.html">Cohort Plots</a><div class="navbar-nav flex-row flex-nowrap overflow-auto"><a class="nav-link d-inline-block" href="../../index.html">&larr; Engineering website</a>{year_navigation}</div></div></nav><main class="container-xxl py-4">
+</style></head><body class="bg-light" id="top"><nav class="navbar navbar-expand-lg navbar-dark bg-primary year-nav"><div class="container-xxl gap-3"><a class="navbar-brand" href="../index.html">Cohort Plots</a><div class="navbar-nav flex-row flex-nowrap overflow-auto"><a class="nav-link d-inline-block" href="index.html">&larr; Engineering website</a>{year_navigation}</div></div></nav><main class="container-xxl py-4">
 <div class="card shadow-sm border-0 mb-4"><div class="card-body p-4 p-lg-5">
 <div class="d-flex flex-wrap justify-content-between align-items-start gap-3"><div><div class="page-kicker text-uppercase mb-2">WHOI BGC Engineering</div><h1 class="h2 text-primary mb-2">{html.escape(str(deployment_year))} Cohort Plots</h1><p class="text-secondary mb-0">Floats: {html.escape(", ".join(map(str, serial_numbers)))}</p></div><span class="badge text-bg-primary rounded-pill fs-6">{len(plot_paths)} plots</span></div>
 </div></div>
@@ -560,7 +560,7 @@ body{{background:var(--page)!important;color:#334e68}} a{{color:var(--slate)}} a
 .text-primary{{color:var(--slate)!important}} .list-group-item{{border-color:var(--line)}}
 .list-group-item-action{{color:var(--slate)}} .list-group-item-action:hover{{color:var(--navy);background:#eef2f6}} .text-bg-primary{{background-color:var(--slate)!important}} .page-kicker{{letter-spacing:.12em;font-size:.72rem;font-weight:700;color:var(--muted)}}
 </style></head><body class="bg-light"><main class="container py-4">
-<p><a href="../index.html" class="link-primary">&larr; Engineering website</a></p>
+<p><a href="index.html" class="link-primary">&larr; Engineering website</a></p>
 <div class="card shadow-sm border-0"><div class="card-body p-4 p-lg-5"><div class="page-kicker text-uppercase mb-2">WHOI BGC Engineering</div><h1 class="h2 text-primary">Cohort Plots</h1>
 <p class="text-secondary">Across-float engineering plots grouped by deployment year.</p>
 <div class="list-group">{"".join(sections)}</div></div></div><footer class="pt-4 text-secondary small">WHOI BGC Engineering &middot; Cohort plot index</footer></main></body></html>'''
@@ -1875,7 +1875,7 @@ for health_index, serial_number in enumerate(SNs, start=1):
 <html><head><meta charset="utf-8">
 <title>Float {html.escape(str(serial_number))} Health Report</title>
 <style>{health_css}</style></head><body>
-<p><a href="../index.html">&larr; Engineering website</a></p>
+<p><a href="index.html">&larr; Engineering website</a></p>
 <h1>Float {html.escape(str(serial_number))} Health Report</h1>
 <p>Diagnostic screening based on the latest engineering data.</p>
 <div class="summary {overall_class}">
