@@ -50,7 +50,7 @@ PNG_REGISTRY = []
 PNG_WIDTH = 1200
 PNG_HEIGHT = 700
 PNG_SCALE = 1
-FILTER_PLOT_OUTLIERS = True
+FILTER_PLOT_OUTLIERS = False
 OUTLIER_IQR_FACTOR = 9.0  # Larger values keep more extreme observations.
 RH_REFERENCE_TEMPERATURE_C = 20.0
 
@@ -124,7 +124,11 @@ def _read_cached_dataframe(cache_path):
     if cache_path is None or not cache_path.exists():
         return pd.DataFrame()
     try:
-        return pd.read_json(cache_path, orient='records')
+        return pd.read_json(
+            cache_path,
+            orient='records',
+            dtype={'PROFILE_ID': str},
+        )
     except (OSError, ValueError, TypeError):
         progress(f'Ignoring unreadable API cache: {cache_path}')
         return pd.DataFrame()
@@ -236,33 +240,41 @@ def get_discrete_profile_stats(platform_number):
 
 def get_profile_stats_parallel(profile_ids):
     """Fetch only uncached profile statistics while preserving all results."""
-    profile_ids = [str(profile_id) for profile_id in profile_ids]
-    if not profile_ids:
+    platform_numbers = [str(profile_id) for profile_id in profile_ids]
+    if not platform_numbers:
         return pd.DataFrame()
 
     cache_path = _api_cache_path('discrete_profile_stats.json')
     cached = _read_cached_dataframe(cache_path)
-    if not cached.empty and 'PROFILE_ID' in cached.columns:
-        cached['PROFILE_ID'] = cached['PROFILE_ID'].astype(str)
-        cached = cached.drop_duplicates('PROFILE_ID', keep='last')
+    # The request key is a platform/WMO number, while returned rows contain
+    # profile-level PROFILE_ID values. Keep those keys separate so the latest
+    # profile rows are not discarded when reading from the cache.
+    if not cached.empty and '_REQUEST_PLATFORM_NUMBER' in cached.columns:
+        cached['_REQUEST_PLATFORM_NUMBER'] = cached['_REQUEST_PLATFORM_NUMBER'].astype(str)
+        cached = cached.drop_duplicates(
+            ['_REQUEST_PLATFORM_NUMBER', 'PROFILE_ID'], keep='last'
+        )
     else:
         cached = pd.DataFrame()
-    cached_ids = set(cached.get('PROFILE_ID', pd.Series(dtype=str)))
-    missing_ids = [profile_id for profile_id in profile_ids if profile_id not in cached_ids]
+    cached_ids = set(cached.get('_REQUEST_PLATFORM_NUMBER', pd.Series(dtype=str)))
+    missing_ids = [platform_number for platform_number in platform_numbers if platform_number not in cached_ids]
 
     if not missing_ids:
-        progress(f'Using cached pressure statistics for {len(profile_ids):,} profiles')
-        return cached[cached['PROFILE_ID'].isin(profile_ids)].copy()
+        progress(f'Using cached pressure statistics for {len(platform_numbers):,} platforms')
+        return cached[cached['_REQUEST_PLATFORM_NUMBER'].isin(platform_numbers)].drop(
+            columns=['_REQUEST_PLATFORM_NUMBER']
+        ).copy()
 
     frames = []
     with ThreadPoolExecutor(max_workers=MAX_API_WORKERS) as executor:
         futures = {
-            executor.submit(get_discrete_profile_stats, profile_id): index
-            for index, profile_id in enumerate(missing_ids)
+            executor.submit(get_discrete_profile_stats, platform_number): platform_number
+            for platform_number in missing_ids
         }
         for completed_index, future in enumerate(as_completed(futures), start=1):
             frame = future.result()
             if not frame.empty:
+                frame['_REQUEST_PLATFORM_NUMBER'] = futures[future]
                 frames.append(frame)
             progress_stage(
                 f'Fetching pressure statistics ({len(missing_ids):,} uncached)',
@@ -270,15 +282,16 @@ def get_profile_stats_parallel(profile_ids):
                 overall_start=25, overall_end=40,
             )
     fetched = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
-    if not fetched.empty and 'PROFILE_ID' in fetched.columns:
-        fetched['PROFILE_ID'] = fetched['PROFILE_ID'].astype(str)
+    if not fetched.empty and '_REQUEST_PLATFORM_NUMBER' in fetched.columns:
         updated_cache = pd.concat([cached, fetched], ignore_index=True)
-        updated_cache = updated_cache.drop_duplicates('PROFILE_ID', keep='last')
+        updated_cache = updated_cache.drop_duplicates(
+            ['_REQUEST_PLATFORM_NUMBER', 'PROFILE_ID'], keep='last'
+        )
         _write_cached_dataframe(updated_cache, cache_path)
     combined = pd.concat([cached, fetched], ignore_index=True)
-    if 'PROFILE_ID' in combined.columns:
-        combined['PROFILE_ID'] = combined['PROFILE_ID'].astype(str)
-        combined = combined[combined['PROFILE_ID'].isin(profile_ids)]
+    if '_REQUEST_PLATFORM_NUMBER' in combined.columns:
+        combined = combined[combined['_REQUEST_PLATFORM_NUMBER'].isin(platform_numbers)]
+        combined = combined.drop(columns=['_REQUEST_PLATFORM_NUMBER'])
     return combined
 
 
@@ -489,34 +502,68 @@ def save_across_float_figure(figure, plot_name, standard_html, standard_png=None
 
 
 def write_cohort_index():
-    """Write a landing page linking the across-float plots by deployment year."""
+    """Write year links and one embedded all-plots page for each cohort."""
     if HEALTH_REPORTS_ONLY or not GENERATE_ALL_FLOAT_PLOTS or not DEPLOYMENT_COHORTS:
         return
     cohort_directory = Path(filedir) / 'cohort_plots'
     cohort_directory.mkdir(parents=True, exist_ok=True)
     sections = []
     for deployment_year, serial_numbers in DEPLOYMENT_COHORTS.items():
-        links = []
         year_directory = cohort_directory / str(deployment_year)
-        for plot_path in sorted(year_directory.glob('*.html')) if year_directory.exists() else []:
-            links.append(
-                f'<li><a href="{html.escape(str(deployment_year))}/{html.escape(plot_path.name)}">'
-                f'{html.escape(plot_path.stem.replace("_", " "))}</a></li>'
-            )
+        year_directory.mkdir(parents=True, exist_ok=True)
+        plot_paths = sorted(
+            plot_path for plot_path in year_directory.glob('*.html')
+            if plot_path.name != 'index.html'
+        ) if year_directory.exists() else []
+        year_navigation = ' '.join(
+            f'<a class="nav-link d-inline-block" href="../{html.escape(str(year))}/index.html">{html.escape(str(year))}</a>'
+            for year in DEPLOYMENT_COHORTS
+        )
+        embedded_plots = ''.join(
+            f'<details class="card shadow-sm border-0 mb-3" id="plot-{index}"><summary class="card-header text-primary fw-semibold">{html.escape(plot_path.stem.replace("_", " "))}</summary>'
+            f'<div class="plot-frame p-2 p-md-3"><iframe src="{html.escape(plot_path.name)}" title="{html.escape(plot_path.stem)}" '
+            f'loading="lazy"></iframe></div><p class="back-top px-3 pb-2 mb-0"><a href="#top">Back to top</a></p></details>'
+            for index, plot_path in enumerate(plot_paths)
+        ) or '<p>No plots available for this cohort.</p>'
+        year_page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>{html.escape(str(deployment_year))} Cohort Plots</title><style>
+:root{{--navy:#243b53;--slate:#486581;--muted:#627d98;--line:#d9e2ec;--page:#f5f7fa}}
+body{{background:var(--page)!important;color:#334e68}}
+.year-nav{{position:sticky;top:0;z-index:10;background:var(--navy)!important;box-shadow:0 2px 8px #102a4333;border-bottom:1px solid #526b84}}
+.navbar-brand{{font-weight:600;letter-spacing:.01em}} .navbar-nav{{gap:.2rem}}
+.navbar-dark .navbar-nav .nav-link{{color:#d9e2ec!important;border-radius:.35rem;padding:.45rem .7rem}}
+.navbar-dark .navbar-nav .nav-link:hover{{color:#fff!important;background:#ffffff18}}
+details{{scroll-margin-top:70px}}
+summary{{cursor:pointer;list-style:none}} summary::-webkit-details-marker{{display:none}} summary::before{{content:'+';display:inline-block;width:1.4rem;font-size:1.2rem}} details[open] summary::before{{content:'-'}}
+.plot-frame{{background:#f1f5f9}} iframe{{display:block;width:100%;height:min(72vh,720px);min-height:480px;border:1px solid #dbe3e9;border-radius:.5rem;background:#fff}}
+.back-top{{font-size:.875rem}} a{{color:var(--slate)}} a:hover{{color:var(--navy)}} .text-primary{{color:var(--slate)!important}} .text-bg-primary{{background-color:var(--slate)!important}} .page-kicker{{letter-spacing:.12em;font-size:.72rem;font-weight:700;color:var(--muted)}}
+</style></head><body class="bg-light" id="top"><nav class="navbar navbar-expand-lg navbar-dark bg-primary year-nav"><div class="container-xxl gap-3"><a class="navbar-brand" href="../index.html">Cohort Plots</a><div class="navbar-nav flex-row flex-nowrap overflow-auto"><a class="nav-link d-inline-block" href="../../index.html">&larr; Engineering website</a>{year_navigation}</div></div></nav><main class="container-xxl py-4">
+<div class="card shadow-sm border-0 mb-4"><div class="card-body p-4 p-lg-5">
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3"><div><div class="page-kicker text-uppercase mb-2">WHOI BGC Engineering</div><h1 class="h2 text-primary mb-2">{html.escape(str(deployment_year))} Cohort Plots</h1><p class="text-secondary mb-0">Floats: {html.escape(", ".join(map(str, serial_numbers)))}</p></div><span class="badge text-bg-primary rounded-pill fs-6">{len(plot_paths)} plots</span></div>
+</div></div>
+{embedded_plots}</main><footer class="container-xxl pb-4 text-secondary small">WHOI BGC Engineering &middot; Cohort plot report</footer></body></html>'''
+        (year_directory / 'index.html').write_text(year_page, encoding='utf-8')
         sections.append(
-            f'<section><h2>{html.escape(str(deployment_year))}</h2>'
-            f'<p>Floats: {html.escape(", ".join(map(str, serial_numbers)))}</p>'
-            f'<ul>{"".join(links) or "<li>No plots available.</li>"}</ul></section>'
+            f'<a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" '
+            f'href="{html.escape(str(deployment_year))}/index.html">'
+            f'<span>{html.escape(str(deployment_year))} Cohort</span>'
+            f'<span class="badge text-bg-primary rounded-pill">{len(serial_numbers)} floats</span></a>'
         )
     page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <title>Cohort Plots</title><style>
-body{{font-family:Arial,sans-serif;max-width:1000px;margin:32px auto;padding:0 20px;color:#263746}}
-h1,h2{{color:#173f5f}} section{{border:1px solid #dbe3e9;border-radius:8px;padding:16px 20px;margin:18px 0}}
-ul{{columns:3;line-height:1.8}} a{{color:#20639b}} @media(max-width:700px){{ul{{columns:1}}}}
-</style></head><body><p><a href="../index.html">&larr; Engineering website</a></p>
-<h1>Cohort Plots</h1><p>Across-float engineering plots grouped by deployment year.</p>
-{"".join(sections)}</body></html>'''
+:root{{--navy:#243b53;--slate:#486581;--muted:#627d98;--line:#d9e2ec;--page:#f5f7fa}}
+body{{background:var(--page)!important;color:#334e68}} a{{color:var(--slate)}} a:hover{{color:var(--navy)}}
+.text-primary{{color:var(--slate)!important}} .list-group-item{{border-color:var(--line)}}
+.list-group-item-action{{color:var(--slate)}} .list-group-item-action:hover{{color:var(--navy);background:#eef2f6}} .text-bg-primary{{background-color:var(--slate)!important}} .page-kicker{{letter-spacing:.12em;font-size:.72rem;font-weight:700;color:var(--muted)}}
+</style></head><body class="bg-light"><main class="container py-4">
+<p><a href="../index.html" class="link-primary">&larr; Engineering website</a></p>
+<div class="card shadow-sm border-0"><div class="card-body p-4 p-lg-5"><div class="page-kicker text-uppercase mb-2">WHOI BGC Engineering</div><h1 class="h2 text-primary">Cohort Plots</h1>
+<p class="text-secondary">Across-float engineering plots grouped by deployment year.</p>
+<div class="list-group">{"".join(sections)}</div></div></div><footer class="pt-4 text-secondary small">WHOI BGC Engineering &middot; Cohort plot index</footer></main></body></html>'''
     (cohort_directory / 'index.html').write_text(page, encoding='utf-8')
 
 
@@ -892,6 +939,8 @@ profile_stats = maxp.copy()
 
 maxp['PROFILE_ID']=maxp['PROFILE_ID'].astype('object')
 maxp['PRES_MAX'] = maxp['PRES_MAX'].astype('object')
+dat['PROFILE_ID'] = dat['PROFILE_ID'].astype(str)
+maxp['PROFILE_ID'] = maxp['PROFILE_ID'].astype(str)
 #print(dat['PROFILE_ID'])
 #print(maxp['PROFILE_ID'])
 
@@ -908,11 +957,15 @@ for i, j in enumerate(SNs):
     except:
         pass
 for i, j in enumerate(d3):
-    d3[i].reset_index(inplace = True)
+    d3[i] = d3[i].reset_index()
 
 deepp= []
 for i, j in enumerate(d3):
-    deepp.append(d3[i]['PRES_MAX'].iloc[-1])
+    # Negative PRES_MAX values are database/surface sentinels, not valid deep
+    # profile pressures. Select the latest valid positive pressure instead.
+    available_pressures = pd.to_numeric(d3[i]['PRES_MAX'], errors='coerce')
+    available_pressures = available_pressures[available_pressures > 0].dropna()
+    deepp.append(available_pressures.iloc[-1] if not available_pressures.empty else None)
 
 tab = pd.DataFrame()
 tab['Serial Number'] = SNs
@@ -1397,7 +1450,7 @@ for i, j in enumerate(SNs):
     except:
         pass
 for i, j in enumerate(d3):
-    d3[i].reset_index(inplace = True)
+    d3[i] = d3[i].reset_index()
 
 fig = go.Figure()
 for i, j in enumerate(SNs):
@@ -1822,6 +1875,7 @@ for health_index, serial_number in enumerate(SNs, start=1):
 <html><head><meta charset="utf-8">
 <title>Float {html.escape(str(serial_number))} Health Report</title>
 <style>{health_css}</style></head><body>
+<p><a href="../index.html">&larr; Engineering website</a></p>
 <h1>Float {html.escape(str(serial_number))} Health Report</h1>
 <p>Diagnostic screening based on the latest engineering data.</p>
 <div class="summary {overall_class}">

@@ -531,7 +531,7 @@ const turboPalette = [
 const traceColor = index => turboPalette[index % turboPalette.length];
 const isPressureChart = chart =>
   /pressure|^pres(?:sure)?$|pres(?:sure)?_?max/i.test(chart.name) ||
-  /^dbar[s]?$/i.test(chart.unit) || /\(dbar[s]?\)/i.test(chart.unit);
+  /^dbar[s]?$/i.test(chart.unit) || /\\(dbar[s]?\\)/i.test(chart.unit);
 chartData.forEach((chart, chartIndex) => {{
   const card = document.createElement('div');
   card.className = 'card shadow-sm plot-card';
