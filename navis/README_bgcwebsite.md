@@ -158,7 +158,8 @@ The scripts run as one pipeline:
 3. Sort serial numbers numerically and group records by float.
 4. Create output folders for each float.
 5. Calculate report dates, float age, cycle intervals, and pressure statistics.
-6. Retrieve maximum profile pressures using concurrent API requests.
+6. Retrieve maximum profile pressures, using a persistent cache so only
+   previously unseen profiles require API requests.
 7. Generate per-float and across-float plots.
 8. Generate health reports unless plot-only mode is enabled.
 9. Open the interactive plot menu or finish after saving files.
@@ -234,6 +235,12 @@ The longest stages are usually:
 - Maximum-pressure requests
 - Construction of many Plotly figures
 - PNG writing
+
+The production script stores API caches under `<BGC_ENGINEERING_ROOT>/api_cache`.
+Profile pressure statistics are cached by profile ID, and deployment metadata is
+refreshed once every 24 hours. Communication-duration plots reuse the initial
+engineering-data download instead of making a second request. Set
+`BGC_DISABLE_API_CACHE=1` to bypass these caches for troubleshooting.
 
 For faster visual testing, use `PLOTS_ONLY = True` and keep `WRITE_PNG = False` until the plots look correct.
 

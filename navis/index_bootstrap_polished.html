@@ -73,6 +73,9 @@
       <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#miscPlots">Miscellaneous</button></h3><div id="miscPlots" class="accordion-collapse collapse" data-bs-parent="#plotAccordion"><div class="accordion-body"><ul class="plot-link-list">
         <li><a href="by_parameter/IsusPowerCycleCounter.html">ISUS Power Cycles</a></li><li><a href="by_parameter/Sbe41cpHumidity.html">Humidity</a></li><li><a href="calibration_coefficients/index.html">Calibration Coefficients</a></li><li><a href="by_parameter/sensorQC.html">Sensor Quality Control</a></li>
       </ul></div></div></div>
+      <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cohortPlots">Cohort Plots</button></h3><div id="cohortPlots" class="accordion-collapse collapse" data-bs-parent="#plotAccordion"><div class="accordion-body">
+        <p class="mb-2">Across-float engineering plots grouped by deployment year.</p><a class="btn btn-outline-primary btn-sm" href="cohort_plots/index.html">Open cohort plots</a>
+      </div></div></div>
     </div>
   </section>
 </main>
@@ -84,6 +87,11 @@
     const table = parsed.querySelector('table');
     const root = document.getElementById('engineering-table');
     if (!table) throw new Error('No table was found');
+    const tableUrl = new URL('engineeringtable.html', document.baseURI);
+    table.querySelectorAll('a[href]').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href) link.href = new URL(href, tableUrl).href;
+    });
     const firstHeader = table.tHead?.rows[0]?.cells[0];
     if (firstHeader && !firstHeader.textContent.trim()) table.querySelectorAll('tr').forEach(row => row.cells[0]?.remove());
     root.replaceChildren(table);

@@ -29,6 +29,10 @@ REQUEST_HEADERS = {"Content-Type": "application/json"}
 # BGC_MAX_API_WORKERS, but the production build is sequential. Keeping this at
 # one prevents a burst of API/database requests from the hourly workflow.
 MAX_API_WORKERS = 1
+# Cache responses that change only when new profiles or floats are added.  The
+# cache lives beside the published engineering output and can be disabled for
+# troubleshooting with BGC_DISABLE_API_CACHE=1.
+METADATA_CACHE_TTL_HOURS = 24
 # The production hourly workflow publishes HTML and must not require
 # Kaleido/Chrome. Keep PNG export disabled here; HTML Plotly charts remain
 # enabled. Static mission-paper figures use their own dependency-free renderer.
@@ -104,6 +108,35 @@ def _get_dataframe(endpoint, params=None):
     )
     response.raise_for_status()
     return pd.DataFrame(response.json())
+
+
+def _api_cache_path(filename):
+    """Return a cache path once the engineering output directory is known."""
+    if os.environ.get('BGC_DISABLE_API_CACHE') == '1' or 'filedir' not in globals():
+        return None
+    cache_directory = Path(filedir) / 'api_cache'
+    cache_directory.mkdir(parents=True, exist_ok=True)
+    return cache_directory / filename
+
+
+def _read_cached_dataframe(cache_path):
+    """Read a JSON DataFrame cache, treating malformed caches as misses."""
+    if cache_path is None or not cache_path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_json(cache_path, orient='records')
+    except (OSError, ValueError, TypeError):
+        progress(f'Ignoring unreadable API cache: {cache_path}')
+        return pd.DataFrame()
+
+
+def _write_cached_dataframe(dataframe, cache_path):
+    """Write a JSON DataFrame cache atomically so interrupted builds are safe."""
+    if cache_path is None:
+        return
+    temporary_path = cache_path.with_suffix('.tmp')
+    dataframe.to_json(temporary_path, orient='records', date_format='iso')
+    temporary_path.replace(cache_path)
 
 
 def get_gebco_bathymetry_image(dataframe, cache_directory):
@@ -202,23 +235,51 @@ def get_discrete_profile_stats(platform_number):
 
 
 def get_profile_stats_parallel(profile_ids):
-    """Fetch profile statistics concurrently while preserving profile order."""
-    profile_ids = list(profile_ids)
+    """Fetch only uncached profile statistics while preserving all results."""
+    profile_ids = [str(profile_id) for profile_id in profile_ids]
     if not profile_ids:
         return pd.DataFrame()
-    frames = [None] * len(profile_ids)
+
+    cache_path = _api_cache_path('discrete_profile_stats.json')
+    cached = _read_cached_dataframe(cache_path)
+    if not cached.empty and 'PROFILE_ID' in cached.columns:
+        cached['PROFILE_ID'] = cached['PROFILE_ID'].astype(str)
+        cached = cached.drop_duplicates('PROFILE_ID', keep='last')
+    else:
+        cached = pd.DataFrame()
+    cached_ids = set(cached.get('PROFILE_ID', pd.Series(dtype=str)))
+    missing_ids = [profile_id for profile_id in profile_ids if profile_id not in cached_ids]
+
+    if not missing_ids:
+        progress(f'Using cached pressure statistics for {len(profile_ids):,} profiles')
+        return cached[cached['PROFILE_ID'].isin(profile_ids)].copy()
+
+    frames = []
     with ThreadPoolExecutor(max_workers=MAX_API_WORKERS) as executor:
         futures = {
             executor.submit(get_discrete_profile_stats, profile_id): index
-            for index, profile_id in enumerate(profile_ids)
+            for index, profile_id in enumerate(missing_ids)
         }
         for completed_index, future in enumerate(as_completed(futures), start=1):
-            frames[futures[future]] = future.result()
+            frame = future.result()
+            if not frame.empty:
+                frames.append(frame)
             progress_stage(
-                'Fetching pressure statistics', completed_index, len(profile_ids),
+                f'Fetching pressure statistics ({len(missing_ids):,} uncached)',
+                completed_index, len(missing_ids),
                 overall_start=25, overall_end=40,
             )
-    return pd.concat(frames, ignore_index=True)
+    fetched = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    if not fetched.empty and 'PROFILE_ID' in fetched.columns:
+        fetched['PROFILE_ID'] = fetched['PROFILE_ID'].astype(str)
+        updated_cache = pd.concat([cached, fetched], ignore_index=True)
+        updated_cache = updated_cache.drop_duplicates('PROFILE_ID', keep='last')
+        _write_cached_dataframe(updated_cache, cache_path)
+    combined = pd.concat([cached, fetched], ignore_index=True)
+    if 'PROFILE_ID' in combined.columns:
+        combined['PROFILE_ID'] = combined['PROFILE_ID'].astype(str)
+        combined = combined[combined['PROFILE_ID'].isin(profile_ids)]
+    return combined
 
 
 def filter_plot_outliers(figure):
@@ -297,7 +358,7 @@ def style_figure(figure):
         showgrid=True, gridcolor='#E5E7EB', gridwidth=1,
         zeroline=False, title_standoff=12,
     )
-    if figure.layout.title.text:
+    if figure.layout.title.text and 'Created:' not in str(figure.layout.title.text):
         figure.update_layout(
             title=dict(
                 text=f'{figure.layout.title.text}<br><sup>Created: {PLOT_CREATED_AT}</sup>',
@@ -393,6 +454,70 @@ def save_figure(figure, html_path, png_path=None):
         figure.write_html(html_path, include_plotlyjs='cdn')
         if WRITE_PNG and png_path is not None:
             PNG_REGISTRY.append((figure, png_path))
+
+
+def _trace_serial(trace_name, serial_numbers):
+    """Find the float serial represented by an across-float trace name."""
+    label = str(trace_name)
+    for serial_number in sorted((str(value) for value in serial_numbers), key=len, reverse=True):
+        if label == serial_number or label.startswith(serial_number):
+            return serial_number
+    return None
+
+
+def save_across_float_figure(figure, plot_name, standard_html, standard_png=None):
+    """Save an across-float plot and a filtered copy for each deployment cohort."""
+    save_figure(figure, standard_html, standard_png)
+    if HEALTH_REPORTS_ONLY or not GENERATE_ALL_FLOAT_PLOTS or not DEPLOYMENT_COHORTS:
+        return
+
+    for deployment_year, serial_numbers in DEPLOYMENT_COHORTS.items():
+        cohort_figure = go.Figure(figure)
+        cohort_figure.data = tuple(
+            trace for trace in cohort_figure.data
+            if _trace_serial(getattr(trace, 'name', ''), serial_numbers) in serial_numbers
+        )
+        if not cohort_figure.data:
+            continue
+        cohort_directory = Path(filedir) / 'cohort_plots' / str(deployment_year)
+        cohort_directory.mkdir(parents=True, exist_ok=True)
+        save_figure(
+            cohort_figure,
+            cohort_directory / f'{plot_name}.html',
+            cohort_directory / f'{plot_name}.png',
+        )
+
+
+def write_cohort_index():
+    """Write a landing page linking the across-float plots by deployment year."""
+    if HEALTH_REPORTS_ONLY or not GENERATE_ALL_FLOAT_PLOTS or not DEPLOYMENT_COHORTS:
+        return
+    cohort_directory = Path(filedir) / 'cohort_plots'
+    cohort_directory.mkdir(parents=True, exist_ok=True)
+    sections = []
+    for deployment_year, serial_numbers in DEPLOYMENT_COHORTS.items():
+        links = []
+        year_directory = cohort_directory / str(deployment_year)
+        for plot_path in sorted(year_directory.glob('*.html')) if year_directory.exists() else []:
+            links.append(
+                f'<li><a href="{html.escape(str(deployment_year))}/{html.escape(plot_path.name)}">'
+                f'{html.escape(plot_path.stem.replace("_", " "))}</a></li>'
+            )
+        sections.append(
+            f'<section><h2>{html.escape(str(deployment_year))}</h2>'
+            f'<p>Floats: {html.escape(", ".join(map(str, serial_numbers)))}</p>'
+            f'<ul>{"".join(links) or "<li>No plots available.</li>"}</ul></section>'
+        )
+    page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cohort Plots</title><style>
+body{{font-family:Arial,sans-serif;max-width:1000px;margin:32px auto;padding:0 20px;color:#263746}}
+h1,h2{{color:#173f5f}} section{{border:1px solid #dbe3e9;border-radius:8px;padding:16px 20px;margin:18px 0}}
+ul{{columns:3;line-height:1.8}} a{{color:#20639b}} @media(max-width:700px){{ul{{columns:1}}}}
+</style></head><body><p><a href="../index.html">&larr; Engineering website</a></p>
+<h1>Cohort Plots</h1><p>Across-float engineering plots grouped by deployment year.</p>
+{"".join(sections)}</body></html>'''
+    (cohort_directory / 'index.html').write_text(page, encoding='utf-8')
 
 
 def write_registered_pngs():
@@ -516,10 +641,18 @@ def get_surface_all(output_fields):
 
 
 def get_metadata_all(output_fields):
-    return _get_dataframe(
+    cache_path = _api_cache_path('deployment_metadata.json')
+    if cache_path is not None and cache_path.exists():
+        cache_age_hours = (datetime.now().timestamp() - cache_path.stat().st_mtime) / 3600
+        if cache_age_hours < METADATA_CACHE_TTL_HOURS:
+            progress(f'Using cached deployment metadata ({cache_age_hours:.1f} hours old)')
+            return _read_cached_dataframe(cache_path)
+    metadata = _get_dataframe(
         "deployment_metadata",
         {"deployment_fields": output_fields, "PLATFORM_TYPE": "NAVIS_EBR"},
     )
+    _write_cached_dataframe(metadata, cache_path)
+    return metadata
 
 
 def get_cal_sn(float_number):
@@ -642,6 +775,25 @@ for float_index, serial_number in enumerate(SNs):
     else:
         hue = (float_index * 137.508) % 360
         FLOAT_COLOR_MAP[str(serial_number)] = f'hsl({hue:.1f}, 65%, 45%)'
+
+# Group floats by the year of their first engineering telemetry record.  This
+# keeps cohort membership tied to the same source data used by the plots.
+deployment_year_by_float = (
+    data.assign(TimeStartTelemetry=pd.to_datetime(data['TimeStartTelemetry'], errors='coerce', utc=True))
+    .dropna(subset=['FloatId', 'TimeStartTelemetry'])
+    # The database uses epoch-era timestamps (1969/1970) as missing-value
+    # sentinels for some records; they are not real deployment dates.
+    .loc[lambda frame: frame['TimeStartTelemetry'].dt.year >= 2000]
+    .groupby('FloatId')['TimeStartTelemetry']
+    .min()
+    .dt.year
+)
+DEPLOYMENT_COHORTS = {}
+for serial_number in SNs:
+    deployment_year = deployment_year_by_float.get(serial_number)
+    deployment_year = int(deployment_year) if pd.notna(deployment_year) else 'Unknown'
+    DEPLOYMENT_COHORTS.setdefault(deployment_year, []).append(str(serial_number))
+DEPLOYMENT_COHORTS = dict(sorted(DEPLOYMENT_COHORTS.items(), key=lambda item: str(item[0])))
 groups = data.groupby('FloatId', sort=False)
 indfloat = [groups.get_group(sn).sort_values('ProfileId').reset_index(drop=True) for sn in SNs]
 
@@ -991,7 +1143,7 @@ for j, k in enumerate(params):
     fig=px.line(dat, x='ProfileId', y=params[j], color='FloatId', render_mode='webgl', category_orders={'FloatId': SNs}, labels={'AirBladderPressure':'Air Bladder Pressure (counts)', 'ProfileId':'Profile Number', 'BuoyancyPumpOnTime':'Buoyancy Pump Run Time (s)',\
         'ActiveBallastAdjustments':'Number of Active Ballast Adjustments','GpsFixTime':'Time for GPS Fix (s)', 'IsusPowerCycleCounter':'Number of Isus Power Cycles', 'ParkBuoyancyPosition':'Buoyancy Position of Park (counts)',\
         'SurfacePressure':'Surface Pressure (dbar)','DeepProfileBuoyancyPosition':'Deep Profile Buoyancy Position (counts)','SurfaceBuoyancyPosition':'Surface Buoyancy Position (counts)','BatteryCounts':'Battery Counts','BuoyancyPumpEnergy':'Buoyancy Pump Energy (J)', 'Sbe41cpHumidity':'Internal Humidity (%)', 'TemperatureCorrectedRH':'Temperature-corrected RH (%)'}, title = ('Temperature-corrected RH (20 °C)' if params[j] == 'TemperatureCorrectedRH' else params[j]))
-    save_figure(fig, filedir+'by_parameter/'+str(params[j])+'.html', filedir+'by_parameter/'+str(params[j])+'.png')
+    save_across_float_figure(fig, str(params[j]), filedir+'by_parameter/'+str(params[j])+'.html', filedir+'by_parameter/'+str(params[j])+'.png')
 
 # Plot of Parameters for Each Float
 i=0
@@ -1090,7 +1242,7 @@ for i, d in enumerate(amps):
         xaxis_title = 'Profile Number',
         yaxis_title = 'Current (amps)'
     )
-    save_figure(fig, filedir+'by_parameter/'+str(amps[i])+'.html', filedir+'by_parameter/'+str(amps[i])+'.png')
+    save_across_float_figure(fig, str(amps[i]), filedir+'by_parameter/'+str(amps[i])+'.html', filedir+'by_parameter/'+str(amps[i])+'.png')
 
 #Volts Plots Across Floats
 progress('Generating voltage plots across floats')
@@ -1111,7 +1263,7 @@ for i, d in enumerate(volts):
         xaxis_title = 'Profile Number',
         yaxis_title = 'Voltage'
     )
-    save_figure(fig, filedir+'by_parameter/'+str(volts[i])+'.html', filedir+'by_parameter/'+str(volts[i])+'.png')
+    save_across_float_figure(fig, str(volts[i]), filedir+'by_parameter/'+str(volts[i])+'.html', filedir+'by_parameter/'+str(volts[i])+'.png')
 progress('Generating combined motor-voltage plots')
 #Volts Plots Across Floats
 dat['FloatId']=dat['FloatId'].astype("category")
@@ -1130,7 +1282,7 @@ for i, d in enumerate(indfloat):
         xaxis_title = 'Profile Number',
         yaxis_title = 'Volts'
     )
-    save_figure(fig, filedir+'BPvsMCOMS.html', filedir+'BPvsMCOMS.png')
+    save_across_float_figure(fig, 'BPvsMCOMS', filedir+'BPvsMCOMS.html', filedir+'BPvsMCOMS.png')
 #Amps Plots
 progress('Generating per-float amperage plots')
 amps = ['McomsAmps','Sbe63Amps','Sbe41cpAmps','QuiescentAmps','BuoyancyPumpAmps','AirPumpAmps' ]
@@ -1161,7 +1313,7 @@ fig.update_layout(
     yaxis_title = 'Pressure (dbars)',
     yaxis = dict(autorange='reversed')
 )
-save_figure(fig, filedir+'by_parameter/ParkPressure.html', filedir+'by_parameter/ParkPressure.png')
+save_across_float_figure(fig, 'ParkPressure', filedir+'by_parameter/ParkPressure.html', filedir+'by_parameter/ParkPressure.png')
 
 
 
@@ -1193,7 +1345,7 @@ fig.update_layout(
     yaxis_title = 'Pressure (dbars)',
     yaxis = dict(autorange='reversed')
 )
-save_figure(fig, filedir+'by_parameter/ParkPressurevsBP.html', filedir+'by_parameter/ParkPressurevsBP.png')
+save_across_float_figure(fig, 'ParkPressurevsBP', filedir+'by_parameter/ParkPressurevsBP.html', filedir+'by_parameter/ParkPressurevsBP.png')
 progress('Generating pressure-versus-buoyancy plots')
 
 # 
@@ -1221,7 +1373,7 @@ fig.update_layout(
     yaxis_title = 'Pressure (dbars)',
     yaxis = dict(autorange='reversed')
 )
-save_figure(fig, filedir+'by_parameter/PVBP.html', filedir+'by_parameter/PVBP.png')
+save_across_float_figure(fig, 'PVBP', filedir+'by_parameter/PVBP.html', filedir+'by_parameter/PVBP.png')
 
 
 # GET THE MAX PRESSURE FOR EVERY PROFILE AND ADD TO THIS DATAFRAME
@@ -1263,7 +1415,7 @@ fig.update_layout(
     yaxis_title = 'Maximum Pressure (dbars)',
     yaxis = dict(autorange='reversed')
 )
-save_figure(fig, filedir+'by_parameter/MAXP.html', filedir+'by_parameter/MAXP.png')
+save_across_float_figure(fig, 'MAXP', filedir+'by_parameter/MAXP.html', filedir+'by_parameter/MAXP.png')
 
 for i, j in enumerate(SNs):
     fig = px.scatter(d3[i],x = 'DeepProfileBuoyancyPosition', y = 'PRES_MAX', color = 'ProfileId')
@@ -1316,7 +1468,7 @@ fig.update_layout(
     yaxis = dict(autorange='reversed'),
     showlegend = False
 )
-save_figure(fig, filedir+'by_parameter/PVBP.html', filedir+'by_parameter/PVBP.png')
+save_across_float_figure(fig, 'PVBP', filedir+'by_parameter/PVBP.html', filedir+'by_parameter/PVBP.png')
 
 # 
 for i, j in enumerate(d3):
@@ -1353,7 +1505,9 @@ for i, j in enumerate(SNs):
 # Communication duration plots
 progress('Downloading communication-duration data')
 
-data = get_engineering_all("PROFILE_ID,GPS_DURATION,TRANS_DURATION")
+# Reuse the first all-float engineering download instead of requesting the
+# same duration fields again from the API.
+data = data[['PROFILE_ID', 'GPS_DURATION', 'TRANS_DURATION']].copy()
 meta = get_metadata_all("FLOAT_SERIAL_NO,PLATFORM_NUMBER")
 
 # split PROIFLE_ID column and remove; create SN colomn
@@ -1401,6 +1555,22 @@ fig.update_traces(
     )
 fig.add_hline(y=sat_mean_all/60, line_dash='dot',line_color='red')
 save_figure(fig, filedir+'/by_parameter/COMDUR.html', filedir+'/by_parameter/COMDUR.png')
+if not HEALTH_REPORTS_ONLY and GENERATE_ALL_FLOAT_PLOTS:
+    for deployment_year, serial_numbers in DEPLOYMENT_COHORTS.items():
+        cohort_sat = sat[sat['SN'].astype(str).isin(serial_numbers)]
+        if cohort_sat.empty:
+            continue
+        cohort_fig = px.bar(
+            x=cohort_sat.SN,
+            y=cohort_sat.MEAN / 60,
+            height=900,
+            width=1600,
+            error_y=cohort_sat.STD / 60,
+        )
+        cohort_fig.update_layout(title='Communication Duration By Float', xaxis_title='Float Serial No', yaxis_title='Minutes')
+        cohort_directory = Path(filedir) / 'cohort_plots' / str(deployment_year)
+        cohort_directory.mkdir(parents=True, exist_ok=True)
+        save_figure(cohort_fig, cohort_directory / 'COMDUR.html', cohort_directory / 'COMDUR.png')
 
 # Per-float health reports
 # ---------------------------------------------------------------------------
@@ -1669,6 +1839,7 @@ Review the underlying plots and test records before making operational decisions
     report_path.write_text(report_html, encoding='utf-8')
 
 progress('Completed per-float health reports')
+write_cohort_index()
 write_registered_pngs()
 progress(
     'Engineering report complete; health reports only'
